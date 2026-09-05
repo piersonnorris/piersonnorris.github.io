@@ -1,0 +1,23 @@
+# --- credentials: never committed, no exceptions ---
+secrets/
+*service-account*.json
+*serviceaccount*.json
+*.pem
+*.key
+.env
+.env.*
+
+# --- local junk ---
+.DS_Store
+Thumbs.db
+node_modules/
+npm-debug.log*
+*.log
+
+# --- scratch ---
+tmp/
+scratch/
+
+# leftover local app junk
+Obsidian/
+_to_delete_obsidian_junk/

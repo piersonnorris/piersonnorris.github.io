@@ -1,0 +1,26 @@
+# Pierson Norris
+
+> Personal site of Pierson Norris (goes by Pierce): Finance & Accounting student at Elon University (class of 2027), founder of True North Services LLC (Chicago North Shore exterior services), former AI intern at Screencastify, incoming president of Elon's AI & ET Club. This file is the machine-readable summary; the site's HTML is fully semantic and crawlable.
+
+This site is under construction (scaffold live 2026-08-23; full launch to follow). Content below is kept in sync with the site at each milestone.
+
+## Who he is
+
+- Founder & owner, True North Services LLC (2026; grew from Oasis Exterior Cleaning, founded May 2023): 50+ clients and five-figure revenue in the first summer, +68% customer growth, wrote the company's ops framework and crew-training program.
+- AI Intern, Screencastify (Jun–Aug 2026): mapped 7 workflows across 6 departments in 48 hours via one written diagnostic prompt; shipped 3 live automation fixes, including one cutting a 4–8 hr/week finance task to under 15 minutes.
+- Elon University: Finance & Accounting dual major, minors in Entrepreneurship and Mandarin Chinese (near-fluent). Incoming president, AI & ET Club (2026–27).
+- Self-directed investor since 2020; builds his own tools, including a live (private) portfolio tracker on this site.
+
+## Pages
+
+- /: profile and elevator pitch
+- /about/: full story
+- /experience/: timeline 2023–2027 + skills
+- /projects/: True North digital infrastructure, portfolio tracker, Screencastify tooling, this site
+- /tools/: tools hub (tracker is password-gated; not for crawling)
+- /contact/: email + LinkedIn
+
+## Contact
+
+- Email: norrispierce506@gmail.com
+- LinkedIn: https://www.linkedin.com/in/pierson-norris-634954246

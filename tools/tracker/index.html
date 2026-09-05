@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Portfolio Tracker — Pierson Norris</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=IBM+Plex+Sans:wght@400;450;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    :root{
+      --bg:#0e1116; --panel:#151b23; --line:#232d39; --line2:#2e3947;
+      --ink:#e9edf3; --mut:#8b95a5; --dim:#5c6675;
+      --acc:#5FAE5A; --acc-hi:#8ED18A; --bad:#e5534b;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);
+      font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+      font-size:16px;line-height:1.6;font-weight:450;min-height:100svh;padding:0 0 64px}
+    ::selection{background:var(--acc);color:#0e1116}
+    a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+    .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+    header{border-bottom:1px solid var(--line)}
+    nav{display:flex;align-items:center;gap:22px;padding:16px 0;
+      font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px}
+    .brand{font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:15px;color:var(--ink);text-decoration:none;margin-right:auto}
+    nav a{color:var(--mut);text-decoration:none}
+    nav a:hover{color:var(--acc)}
+    nav a[aria-current="page"]{color:var(--acc);border-bottom:1px solid var(--acc);padding-bottom:2px}
+
+    /* lock screen */
+    #lock{display:grid;place-items:center;min-height:70svh;padding:40px 0}
+    .card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);
+      border-radius:16px;padding:36px 32px;text-align:center}
+    .glyph{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px;letter-spacing:.3em;
+      color:var(--acc);border:1px solid var(--line2);border-radius:999px;display:inline-block;
+      padding:6px 16px 6px 19px;margin-bottom:20px}
+    .card h1{font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:28px;
+      letter-spacing:-.02em;margin:0 0 8px}
+    .card p{color:var(--mut);font-size:14px;margin:0 0 24px;line-height:1.65}
+    .pinrow{display:flex;gap:10px}
+    #pin{flex:1;background:var(--bg);border:1px solid var(--line2);border-radius:10px;color:var(--ink);
+      font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:20px;letter-spacing:.4em;
+      text-align:center;padding:12px 8px 12px 14px}
+    #pin::placeholder{letter-spacing:.15em;font-size:13px;color:var(--dim)}
+    #go{background:var(--acc);color:#0e1116;border:0;border-radius:10px;cursor:pointer;
+      font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:14px;font-weight:500;padding:12px 20px}
+    #go:hover{background:var(--acc-hi)}
+    #go:disabled{opacity:.55;cursor:wait}
+    #msg{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;min-height:20px;margin:14px 0 0;color:var(--dim)}
+    #msg.err{color:var(--bad)}
+    .shake{animation:shake .35s}
+    @keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+    @media (prefers-reduced-motion: reduce){.shake{animation:none}}
+    .finelock{margin-top:22px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:var(--dim);line-height:1.7}
+
+    /* unlocked content */
+    #vault{display:none}
+    .bar{display:flex;align-items:center;gap:14px;margin:32px 0 20px}
+    .bar h1{font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:clamp(26px,5vw,38px);letter-spacing:-.02em;margin:0}
+    #relock{margin-left:auto;background:var(--panel);color:var(--mut);border:1px solid var(--line2);
+      border-radius:8px;cursor:pointer;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;padding:8px 14px}
+    #relock:hover{color:var(--acc);border-color:var(--acc)}
+    .meta{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:var(--dim);margin:0 0 22px}
+    .meta b{color:var(--mut);font-weight:500}
+    .platform{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px 8px;margin:0 0 18px}
+    .platform h2{font-family:'Archivo',system-ui,sans-serif;font-weight:700;font-size:18px;letter-spacing:-.01em;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+    .pdot{width:9px;height:9px;border-radius:50%;flex:none}
+    .pcount{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:var(--dim);font-weight:400;margin-left:auto}
+    .tscroll{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:500;text-align:left;padding:10px 10px 8px;border-bottom:1px solid var(--line2)}
+    td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+    tr:last-child td{border-bottom:0}
+    td.label{font-weight:600;white-space:nowrap}
+    td.amt{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+    td.unit{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:var(--dim);white-space:nowrap}
+    td.notes{color:var(--mut);font-size:13.5px;min-width:180px}
+    th.r{text-align:right}
+  </style>
+</head>
+<body>
+  <header><div class="wrap"><nav>
+    <a class="brand" href="/">Pierson Norris</a>
+    <a href="/">Home</a>
+    <a href="/experience/">Experience</a>
+    <a href="/tools/tracker/" aria-current="page">Tracker</a>
+  </nav></div></header>
+
+  <div class="wrap">
+    <section id="lock">
+      <form class="card" id="lockcard">
+        <span class="glyph">ENCRYPTED</span>
+        <h1>Portfolio Tracker</h1>
+        <p>Holdings are sealed into this page with AES-256 encryption. Enter the PIN to unlock — decryption happens in your browser, nothing is sent anywhere.</p>
+        <div class="pinrow">
+          <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN">
+          <button id="go" type="submit">Unlock</button>
+        </div>
+        <p id="msg" aria-live="polite"></p>
+        <p class="finelock">No cookies · no storage · locks again when the tab closes</p>
+      </form>
+    </section>
+
+    <section id="vault">
+      <div class="bar"><h1>Portfolio Tracker</h1><button id="relock" type="button">Lock</button></div>
+      <div id="content"></div>
+    </section>
+  </div>
+
+  <script>
+    var PAYLOAD = {"salt":"Y8h6YBBflkUQYbXDAbZMSg==","iv":"+bCVHpUeTw3HpGKa","ct":"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","iter":600000};
+
+    function b64(s){var bin=atob(s),a=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+
+    var form=document.getElementById('lockcard'), pinEl=document.getElementById('pin'),
+        go=document.getElementById('go'), msg=document.getElementById('msg');
+
+    async function unlock(pin){
+      var enc=new TextEncoder();
+      var base=await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveKey']);
+      var key=await crypto.subtle.deriveKey(
+        {name:'PBKDF2', salt:b64(PAYLOAD.salt), iterations:PAYLOAD.iter, hash:'SHA-256'},
+        base, {name:'AES-GCM', length:256}, false, ['decrypt']);
+      var pt=await crypto.subtle.decrypt({name:'AES-GCM', iv:b64(PAYLOAD.iv)}, key, b64(PAYLOAD.ct));
+      return new TextDecoder().decode(pt);
+    }
+
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var pin=pinEl.value.trim();
+      if(!pin){pinEl.focus();return;}
+      go.disabled=true; msg.className=''; msg.textContent='verifying…';
+      unlock(pin).then(function(html){
+        document.getElementById('content').innerHTML=html;
+        document.getElementById('lock').style.display='none';
+        document.getElementById('vault').style.display='block';
+        pinEl.value='';
+        go.disabled=false; msg.textContent='';
+      }).catch(function(){
+        go.disabled=false; msg.className='err'; msg.textContent='Wrong PIN.';
+        pinEl.value=''; pinEl.focus();
+        form.classList.remove('shake'); void form.offsetWidth; form.classList.add('shake');
+      });
+    });
+
+    document.getElementById('relock').addEventListener('click', function(){
+      document.getElementById('content').innerHTML='';
+      document.getElementById('vault').style.display='none';
+      document.getElementById('lock').style.display='grid';
+      pinEl.focus();
+    });
+  </script>
+</body>
+</html>

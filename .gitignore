@@ -19,3 +19,7 @@
 !/docs/**
 !/experience/
 !/experience/**
+!/tools/
+!/tools/tracker/
+!/tools/tracker/index.html
+/docs/STOCK_UPDATE_PROMPT.md

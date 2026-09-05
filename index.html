@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pierson Norris</title>
-  <meta name="description" content="Pierson Norris — founder of True North Services LLC, Finance & Accounting student at Elon University (class of 2027), AI-workflow builder. Full site coming soon.">
+  <meta name="description" content="Pierson Norris — founder of True North Services LLC, Finance & Accounting student at Elon University (class of 2027), AI-workflow builder.">
   <link rel="canonical" href="https://piersonnorris.github.io/">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=IBM+Plex+Sans:wght@400;450;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <script type="application/ld+json">
@@ -28,44 +28,122 @@
   <style>
     :root{
       --bg:#0e1116; --panel:#151b23; --line:#232d39; --line2:#2e3947;
-      --ink:#e9edf3; --mut:#8b95a5; --dim:#5c6675; --acc:#5FAE5A;
+      --ink:#e9edf3; --mut:#8b95a5; --dim:#5c6675;
+      --acc:#5FAE5A; --acc-hi:#8ED18A;
     }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--ink);
       font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
-      font-size:16px;line-height:1.6;font-weight:450;
-      min-height:100svh;display:grid;place-items:center;padding:24px}
+      font-size:16px;line-height:1.6;font-weight:450;padding:0 0 64px}
     ::selection{background:var(--acc);color:#0e1116}
-    main{max-width:640px;width:100%}
+    a:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+    .wrap{max-width:880px;margin:0 auto;padding:0 20px}
+
+    header{border-bottom:1px solid var(--line)}
+    nav{display:flex;align-items:center;gap:22px;padding:16px 0;flex-wrap:wrap;
+      font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px}
+    .brand{font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:15px;color:var(--ink);text-decoration:none;margin-right:auto}
+    nav a{color:var(--mut);text-decoration:none}
+    nav a:hover{color:var(--acc)}
+    nav a[aria-current="page"]{color:var(--acc);border-bottom:1px solid var(--acc);padding-bottom:2px}
+    nav .soon{color:var(--dim);cursor:default}
+    nav .soon i{font-style:normal;font-size:10px;letter-spacing:.08em;color:var(--dim)}
+
+    .hero{padding:72px 0 20px}
     .eyebrow{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;
-      letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin-bottom:18px}
+      letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin:0 0 18px}
     h1{font-family:'Archivo',system-ui,sans-serif;font-weight:800;
-      font-size:clamp(40px,9vw,64px);line-height:1;letter-spacing:-.02em;margin:0 0 18px}
+      font-size:clamp(44px,9vw,72px);line-height:1;letter-spacing:-.02em;margin:0 0 18px;text-wrap:balance}
     h1 span{color:var(--acc)}
-    p{color:var(--mut);max-width:52ch;margin:0 0 14px}
-    p b{color:var(--ink);font-weight:600}
-    .rule{height:1px;background:var(--line);margin:28px 0}
+    .tag{color:var(--mut);max-width:56ch;margin:0 0 10px;font-size:17px}
+    .tag b{color:var(--ink);font-weight:600}
+    .sub{color:var(--mut);max-width:58ch;margin:0 0 30px}
+
+    .ctas{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 56px}
+    .btn{display:inline-flex;align-items:center;gap:8px;text-decoration:none;border-radius:10px;
+      font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13.5px;font-weight:500;padding:12px 20px}
+    .btn.primary{background:var(--acc);color:#0e1116}
+    .btn.primary:hover{background:var(--acc-hi)}
+    .btn.ghost{color:var(--acc);border:1px solid var(--line2)}
+    .btn.ghost:hover{border-color:var(--acc)}
+    .btn .lockdot{font-size:11px;letter-spacing:.08em;color:inherit;opacity:.75}
+
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:0 0 56px}
+    .fact{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;
+      transition:border-color .15s}
+    .fact:hover{border-color:var(--line2)}
+    .fact .k{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.14em;
+      text-transform:uppercase;color:var(--acc);margin:0 0 8px}
+    .fact .v{font-family:'Archivo',system-ui,sans-serif;font-weight:700;font-size:17px;letter-spacing:-.01em;margin:0 0 4px}
+    .fact .d{color:var(--mut);font-size:13.5px;margin:0;line-height:1.55}
+
+    .soonstrip{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:baseline;border-top:1px solid var(--line);
+      padding-top:22px;margin-bottom:40px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:var(--dim)}
+    .soonstrip .lbl{letter-spacing:.14em;text-transform:uppercase;font-size:11px}
+
+    footer{border-top:1px solid var(--line);padding-top:20px}
     address{font-style:normal;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px;line-height:2.1;color:var(--dim)}
     address a{color:var(--mut);text-decoration:none;border-bottom:1px solid var(--line2)}
     address a:hover{color:var(--acc);border-bottom-color:var(--acc)}
-    a:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
-    .cta{display:inline-flex;align-items:center;gap:8px;margin:6px 0 0;font-family:'IBM Plex Mono',ui-monospace,monospace;
-      font-size:13px;color:var(--acc);text-decoration:none;border-bottom:1px solid var(--acc);padding-bottom:2px}
-    .cta:hover{color:#8ED18A;border-color:#8ED18A}
   </style>
 </head>
 <body>
-  <main>
-    <p class="eyebrow">piersonnorris.com — under construction</p>
-    <h1>Pierson Norris<span>.</span></h1>
-    <p><b>Founder, operator, and builder</b> — business on the ground, AI in the workflow.</p>
-    <p>Founder of True North Services LLC. Finance &amp; Accounting at Elon University, class of 2027. Former AI intern at Screencastify. Incoming president of Elon's AI &amp; ET Club. The full profile, portfolio, and tools hub land here soon.</p>
-    <a class="cta" href="/experience/">→ See the Experience timeline, 2023–now</a>
-    <div class="rule"></div>
-    <address>
-      <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a><br>
-      <a href="https://www.linkedin.com/in/pierson-norris-634954246" rel="noopener">LinkedIn — Pierson Norris</a>
-    </address>
+  <header><div class="wrap"><nav>
+    <a class="brand" href="/">Pierson Norris</a>
+    <a href="/" aria-current="page">Home</a>
+    <a href="/experience/">Experience</a>
+    <a href="/tools/tracker/">Tracker</a>
+    <span class="soon">About <i>·soon</i></span>
+    <span class="soon">Projects <i>·soon</i></span>
+    <span class="soon">Contact <i>·soon</i></span>
+  </nav></div></header>
+
+  <main class="wrap">
+    <section class="hero">
+      <p class="eyebrow">piersonnorris.com</p>
+      <h1>Pierson Norris<span>.</span></h1>
+      <p class="tag"><b>Founder, operator, and builder</b> — business on the ground, AI in the workflow.</p>
+      <p class="sub">Running True North Services LLC while finishing Finance &amp; Accounting at Elon. The profile, projects, and tools hub are landing here piece by piece — the timeline below is live now.</p>
+      <div class="ctas">
+        <a class="btn primary" href="/experience/">→ Experience timeline, 2023–now</a>
+        <a class="btn ghost" href="/tools/tracker/">Portfolio tracker <span class="lockdot">· PIN</span></a>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Highlights">
+      <div class="fact">
+        <p class="k">Founder</p>
+        <p class="v">True North Services LLC</p>
+        <p class="d">Home services company — operations, sales, and the systems behind them.</p>
+      </div>
+      <div class="fact">
+        <p class="k">Student</p>
+        <p class="v">Elon University</p>
+        <p class="d">Finance &amp; Accounting, class of 2027.</p>
+      </div>
+      <div class="fact">
+        <p class="k">Leadership</p>
+        <p class="v">AI &amp; ET Club</p>
+        <p class="d">Incoming president of Elon's AI &amp; Emerging Tech Club.</p>
+      </div>
+      <div class="fact">
+        <p class="k">Industry</p>
+        <p class="v">Screencastify</p>
+        <p class="d">Former AI intern.</p>
+      </div>
+    </section>
+
+    <div class="soonstrip">
+      <span class="lbl">Landing soon</span>
+      <span>About</span><span>Projects</span><span>Contact</span><span>Tools hub</span>
+    </div>
+
+    <footer>
+      <address>
+        <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a><br>
+        <a href="https://www.linkedin.com/in/pierson-norris-634954246" rel="noopener">LinkedIn — Pierson Norris</a>
+      </address>
+    </footer>
   </main>
 </body>
 </html>

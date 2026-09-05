@@ -1,23 +1,19 @@
-# --- credentials: never committed, no exceptions ---
-secrets/
-*service-account*.json
-*serviceaccount*.json
-*.pem
-*.key
-.env
-.env.*
+# This folder doubles as an Obsidian vault for daily working notes/context.
+# Those notes should stay local and never end up in the public site repo,
+# so everything is ignored by default and only the actual site files are
+# explicitly allowed back in below. Add new site files/folders here as
+# the site grows.
 
-# --- local junk ---
-.DS_Store
-Thumbs.db
-node_modules/
-npm-debug.log*
-*.log
+*
 
-# --- scratch ---
-tmp/
-scratch/
-
-# leftover local app junk
-Obsidian/
-_to_delete_obsidian_junk/
+!/.gitignore
+!/.nojekyll
+!/README.md
+!/HANDOFF_PROMPT.md
+!/index.html
+!/llms.txt
+!/robots.txt
+!/assets/
+!/assets/**
+!/docs/
+!/docs/**

@@ -19,7 +19,7 @@ Mirrors the Build HQ page. Check items off here (or there) and tell Claude/ChatG
 
 ## Phase 3 — when the build starts (with ChatGPT)
 
-- [ ] Create the repo `YOURUSERNAME.github.io` (public) + enable Pages (Settings → Pages → main / root)
+- [ ] Create the repo `piersonnorris.github.io` (public) + enable Pages (Settings → Pages → main / root)
 - [ ] Add Actions secrets: `GOOGLE_SERVICE_ACCOUNT_JSON`, `TRACKER_PASSWORD`, `SHEET_ID`
 - [ ] ChatGPT Project: upload the `docs/` files, paste `HANDOFF_PROMPT.md`
 

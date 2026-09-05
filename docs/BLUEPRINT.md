@@ -20,8 +20,8 @@ Secondary mission: a **Tools hub** for things Pierson builds for himself, starti
 | Decision | Value |
 |---|---|
 | Stack | Plain HTML/CSS/JS. No framework, no build step, no npm for the site itself. |
-| Hosting | GitHub Pages, repo `YOURUSERNAME.github.io`, branch `main`, root. `.nojekyll` present. |
-| Domain | `YOURUSERNAME.github.io` now; `piersonnorris.com` attached later (build all URLs relative; put absolute URLs only in the crawl kit files, and update them at domain switch — see §7). |
+| Hosting | GitHub Pages, repo `piersonnorris.github.io`, branch `main`, root. `.nojekyll` present. |
+| Domain | `piersonnorris.github.io` now; `piersonnorris.com` attached later (build all URLs relative; put absolute URLs only in the crawl kit files, and update them at domain switch — see §7). |
 | Brand | Dark + sleek. Dark ground; the eye goes to what's bright. Full system in §4. |
 | Blog | Not in v1. No placeholder page. Structure must make adding one later trivial. |
 | Asset tracker | Password-gated only. Real numbers never in the repo or the public build. See `ASSET_TRACKER_SPEC.md`. |
@@ -118,7 +118,7 @@ Starters for `robots.txt` and `llms.txt` are already in the repo root — extend
   "@type": "Person",
   "name": "Pierson Norris",
   "alternateName": "Pierce Norris",
-  "url": "https://YOURUSERNAME.github.io/",
+  "url": "https://piersonnorris.github.io/",
   "email": "mailto:norrispierce506@gmail.com",
   "jobTitle": "Founder & Owner, True North Services LLC",
   "affiliation": [

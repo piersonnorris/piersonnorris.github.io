@@ -34,4 +34,4 @@ Allow: /
 User-agent: *
 Disallow: /tools/tracker/
 
-Sitemap: https://YOURUSERNAME.github.io/sitemap.xml
+Sitemap: https://piersonnorris.github.io/sitemap.xml

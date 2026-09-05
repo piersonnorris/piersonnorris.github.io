@@ -23,13 +23,13 @@ This folder is the complete, ready-to-push starting point for Pierson Norris's p
 1. **Install [GitHub Desktop](https://desktop.github.com)** and sign in with your GitHub account.
 2. In GitHub Desktop: **File → Add local repository** → choose this folder. It will say the folder isn't a repo yet — click **create a repository** here. Name it exactly:
    ```
-   YOURUSERNAME.github.io
+   piersonnorris.github.io
    ```
-   (Replace `YOURUSERNAME` with your actual GitHub username, lowercase. This exact name is what makes GitHub serve it as your personal site. If `piersonnorris` is free as a username, claim it — your site becomes `piersonnorris.github.io`.)
+   (Replace `piersonnorris` with your actual GitHub username, lowercase. This exact name is what makes GitHub serve it as your personal site. If `piersonnorris` is free as a username, claim it — your site becomes `piersonnorris.github.io`.)
 3. Leave "Initialize with README" unchecked (this folder already has one). Click **Create Repository**.
 4. Click **Publish repository**. Uncheck **"Keep this code private"** — GitHub Pages is free only for public repos. Publish.
 5. On github.com, open the repo → **Settings → Pages** → under "Build and deployment," Source: **Deploy from a branch** → Branch: **main**, folder **/ (root)** → Save.
-6. Wait ~1 minute, then visit `https://YOURUSERNAME.github.io` — you should see the dark "coming soon" page. The site is live.
+6. Wait ~1 minute, then visit `https://piersonnorris.github.io` — you should see the dark "coming soon" page. The site is live.
 
 > Nothing in this folder is sensitive. Your real portfolio numbers, the Google service-account key, and the tracker password must NEVER be added to this repo — the `.gitignore` and the blueprint both enforce this.
 

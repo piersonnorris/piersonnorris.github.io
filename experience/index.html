@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Experience — Pierson Norris</title>
+  <meta name="description" content="Pierson Norris — experience timeline, 2023 to now. True North Services, Elon University, Screencastify AI internship, and what's next.">
+  <link rel="canonical" href="https://YOURUSERNAME.github.io/experience/">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    :root{
+      --bg:#0e1116; --panel:#151b23; --panel2:#1a222d; --line:#232d39; --line2:#2e3947;
+      --ink:#e9edf3; --mut:#8b95a5; --dim:#5c6675; --acc:#ffb224; --acc-soft:rgba(255,178,36,.12);
+      --good:#45c26b; --open:#ffb224;
+    }
+    *{box-sizing:border-box}
+    html{background:var(--bg)}
+    body{margin:0;background:var(--bg);color:var(--ink);
+      font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+      font-size:15.5px;line-height:1.62;font-weight:450}
+    ::selection{background:var(--acc);color:#0e1116}
+    a{color:inherit}
+    .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+    .mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+    .eyebrow{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;
+      letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+
+    header{border-bottom:1px solid var(--line);padding:18px 0}
+    nav{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    nav a{text-decoration:none}
+    .brand{font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;color:var(--ink)}
+    .navlinks{display:flex;gap:20px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em}
+    .navlinks a{color:var(--mut);border-bottom:1px solid transparent;padding-bottom:2px}
+    .navlinks a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
+    .navlinks span{color:var(--dim)}
+
+    main{padding:56px 0 80px}
+    h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(32px,6vw,48px);
+      letter-spacing:-.02em;line-height:1.05;margin:14px 0 10px}
+    .lede{color:var(--mut);max-width:62ch;margin:0 0 28px}
+    .lede b{color:var(--ink);font-weight:600}
+
+    .legend{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 40px}
+    .chip{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+      padding:6px 12px;border-radius:999px;border:1px solid var(--line2);color:var(--mut);
+      background:var(--panel);cursor:pointer;user-select:none}
+    .chip[aria-pressed="true"]{color:#0e1116;background:var(--acc);border-color:var(--acc)}
+    .chip .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;position:relative;top:-1px}
+    .dot.classroom{background:#4CC9F0}
+    .dot.outside{background:var(--good)}
+    .dot.events{background:var(--acc)}
+
+    .rail{position:relative;padding-left:26px;border-left:1px solid var(--line)}
+    .year{margin:44px 0 18px}
+    .year:first-child{margin-top:0}
+    .year h2{font-family:'Archivo',sans-serif;font-weight:800;font-size:26px;margin:0;
+      display:flex;align-items:center;gap:10px}
+    .year h2::before{content:"";width:11px;height:11px;border-radius:50%;background:var(--acc);
+      margin-left:-31px;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--line2)}
+
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin:14px 0}
+    .card .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px}
+    .tag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+      padding:3px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--mut)}
+    .tag.classroom{color:#4CC9F0;border-color:#4CC9F0}
+    .tag.outside{color:var(--good);border-color:var(--good)}
+    .tag.events{color:var(--acc);border-color:var(--acc)}
+    .date{color:var(--dim);font-size:12.5px}
+    .card h3{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700;margin:0 0 8px}
+    .card p{margin:0 0 8px;color:var(--ink)}
+    .card p b{font-weight:600}
+    .takeaway{border-left:2px solid var(--acc);padding-left:12px;margin:10px 0 0;color:var(--mut);font-size:14px}
+
+    .open{background:var(--acc-soft);border:1px dashed var(--acc);border-radius:8px;padding:16px 20px;margin:14px 0}
+    .open .tag{color:var(--acc);border-color:var(--acc);margin-bottom:8px;display:inline-block}
+    .open p{margin:0;color:var(--ink)}
+    .open p.q{font-weight:600}
+
+    .prologue{margin-top:44px;padding-top:28px;border-top:1px dashed var(--line2)}
+    .prologue .eyebrow{margin-bottom:8px}
+    .prologue p{color:var(--dim);font-size:13.5px;max-width:70ch}
+
+    [data-cat]{display:block}
+    .rail.filter-classroom [data-cat]:not([data-cat="classroom"]),
+    .rail.filter-outside [data-cat]:not([data-cat="outside"]),
+    .rail.filter-events [data-cat]:not([data-cat="events"]) { display:none }
+    .rail.filter-classroom .year:has(> [data-cat="classroom"]) { display:block }
+
+    .skills{margin-top:64px}
+    .skills h2{font-family:'Archivo',sans-serif;font-size:22px;margin:0 0 18px}
+    .skillgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+    .skillgrid li{list-style:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+      padding:14px 16px;font-size:14px;color:var(--mut)}
+    .skillgrid li b{color:var(--ink);display:block;font-family:'Archivo',sans-serif;font-size:13px;
+      text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+
+    .resume{margin-top:48px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    .btn{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;padding:11px 18px;
+      border-radius:6px;border:1px solid var(--line2);color:var(--dim);background:var(--panel);
+      cursor:default}
+
+    footer{border-top:1px solid var(--line);padding:28px 0;margin-top:20px}
+    address{font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--dim);line-height:2}
+    address a{text-decoration:none;border-bottom:1px solid var(--line2)}
+    a:focus-visible,.chip:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <nav aria-label="Primary">
+        <a class="brand" href="/">Pierson Norris</a>
+        <div class="navlinks">
+          <a href="/">Home</a>
+          <a href="/about/">About<span> ·soon</span></a>
+          <a href="/experience/" aria-current="page">Experience</a>
+          <a href="/projects/">Projects<span> ·soon</span></a>
+          <a href="/tools/">Tools<span> ·soon</span></a>
+          <a href="/contact/">Contact<span> ·soon</span></a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap">
+      <p class="eyebrow">Experience — 2023 → now</p>
+      <h1>What I've actually done.</h1>
+      <p class="lede">Newest first. Every entry is <b>tagged</b> by where it happened — the classroom, outside it, or a standalone milestone — so you can filter to what you care about.</p>
+
+      <div class="legend" role="group" aria-label="Filter by category">
+        <button class="chip" data-filter="all" aria-pressed="true"><span class="dot" style="background:var(--mut)"></span>All</button>
+        <button class="chip" data-filter="classroom" aria-pressed="false"><span class="dot classroom"></span>Classroom</button>
+        <button class="chip" data-filter="outside" aria-pressed="false"><span class="dot outside"></span>Outside the Classroom</button>
+        <button class="chip" data-filter="events" aria-pressed="false"><span class="dot events"></span>Additional Events</button>
+      </div>
+
+      <div class="rail" id="rail">
+
+        <div class="year" data-cat="_2027">
+          <h2>2027</h2>
+          <div class="open">
+            <span class="tag">OPEN — Pierson</span>
+            <p class="q">What's the 2027 headline? Club-presidency goals, graduation in May, what you're aiming at after — tell me and this becomes a real entry.</p>
+          </div>
+        </div>
+
+        <div class="year">
+          <h2>2026</h2>
+
+          <div class="card" data-cat="events">
+            <div class="meta"><span class="tag events">Additional Events</span><span class="date mono">2026–27 · ongoing</span></div>
+            <h3>Incoming President, Elon AI &amp; ET Club</h3>
+            <div class="open" style="margin-top:8px">
+              <span class="tag">OPEN — Pierson</span>
+              <p class="q">Exact title, term dates, and one line on your agenda for the club?</p>
+            </div>
+          </div>
+
+          <div class="card" data-cat="events">
+            <div class="meta"><span class="tag events">Additional Events</span><span class="date mono">Jun 9 – Aug 7, 2026</span></div>
+            <h3>AI Intern, Screencastify</h3>
+            <p>One written prompt mapped <b>7 workflows across 6 departments in 48 hours</b>. The recurring finding: a person acting as the API between systems that don't talk. Shipped <b>3 live fixes</b>, including an AR-collections workflow cut from <b>4–8 hrs/week to under 15 minutes</b>; a 76-post content audit reframed marketing as under-concentrated, not under-worked.</p>
+            <p class="takeaway">The method is the résumé line — find the problem in someone's actual Tuesday, get sign-off, build it with them, ship it.</p>
+          </div>
+
+          <div class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">May – Aug 2026</span></div>
+            <h3>Built True North's digital infrastructure</h3>
+            <p>Hand-built company site (standalone HTML, Netlify, custom domain), a Google Form lead-capture wired to service categories, a 90+ photo marketing library, and SMS-automation scoping.</p>
+          </div>
+
+          <div class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">Apr – May 2026</span></div>
+            <h3>Incorporated True North Services LLC</h3>
+            <p>LLC filing, an operations framework, a priority system, and a crew-training program (two decks) written from scratch. Team of <b>four-plus</b>, with a team lead now running weekly ops calls.</p>
+            <p class="takeaway">From hustle to institution — docs, training, and structure that run without you in the room.</p>
+          </div>
+
+          <div class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">2026 · ongoing</span></div>
+            <h3>Asset Tracking system</h3>
+            <p>Five-platform portfolio tracker built in Google Sheets, monthly-tab automation, and a gated live dashboard on this site.</p>
+          </div>
+        </div>
+
+        <div class="year">
+          <h2>2025</h2>
+
+          <div class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">Spring 2025</span></div>
+            <h3>Manager &amp; equity partner, Student Maintenance LLC</h3>
+            <p>Brought on as manager with an ownership stake: on-site quoting, closing leads, marketing content, and sales-team leadership.</p>
+            <div class="open" style="margin-top:8px">
+              <span class="tag">OPEN — Pierson</span>
+              <p class="q">Keep this on the public site at all? If yes — confirm the dates and how you want the equity stake described.</p>
+            </div>
+          </div>
+
+          <div class="open">
+            <span class="tag">OPEN — Pierson</span>
+            <p class="q">What else defined 2025 — junior-year classes worth naming, a club role, something outside the business?</p>
+          </div>
+        </div>
+
+        <div class="year">
+          <h2>2024</h2>
+
+          <div class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">2024</span></div>
+            <h3>Business + portfolio, year two</h3>
+            <p>Ran the cleaning business back-to-back summers while carrying the dual major; self-managed investment portfolio active since 2020.</p>
+          </div>
+
+          <div class="open">
+            <span class="tag">OPEN — Pierson</span>
+            <p class="q">What defined 2024 for you — clubs, coursework, a summer story? Right now this year is thin.</p>
+          </div>
+        </div>
+
+        <div class="year">
+          <h2>2023</h2>
+
+          <div class="card" data-cat="classroom">
+            <div class="meta"><span class="tag classroom">Classroom</span><span class="date mono">Aug 2023</span></div>
+            <h3>Started at Elon University</h3>
+            <p>Finance &amp; Accounting dual major; minors in Entrepreneurship and Mandarin Chinese (near-fluent).</p>
+            <div class="open" style="margin-top:8px">
+              <span class="tag">OPEN — Pierson</span>
+              <p class="q">Still accurate as written?</p>
+            </div>
+          </div>
+
+          <div class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">May 2023</span></div>
+            <h3>Founded Oasis Exterior Cleaning</h3>
+            <p>Power washing + window washing, Chicago North Shore. <b>50+ clients</b>, five-figure revenue (~$12k profit) in the first summer, <b>+68% customer growth</b> from hand-built local marketing (flyers, Nextdoor, Instagram, Facebook), managing a crew of high-school and college students.</p>
+            <p class="takeaway">Sold a service door-to-door and ran a crew before most people pick a major.</p>
+            <div class="open" style="margin-top:8px">
+              <span class="tag">OPEN — Pierson</span>
+              <p class="q">Is Oasis → True North one continuous story (a rebrand) or two separate chapters? Changes how this and the 2026 entry connect.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="prologue">
+        <p class="eyebrow">Before Elon</p>
+        <p><span class="mono">2020–2023</span> — First W-2 at Taco Bell (2021) · mover/assistant at Inspired Interiors (2021–23) · one-month internship under Gemini Builds It CEO Courtney Wright (spring 2023) · trading his own portfolio since Aug 2020 · New Trier High School, class of 2023.</p>
+        <div class="open" style="margin-top:4px"><span class="tag">OPEN — Pierson</span><p class="q">Keep this prologue block on the public page, or cut it?</p></div>
+      </div>
+
+      <div class="skills">
+        <h2>Skills</h2>
+        <ul class="skillgrid">
+          <li><b>Operations &amp; Leadership</b>Crew hiring + training programs, ops frameworks, weekly ops cadence, client management (50+ clients).</li>
+          <li><b>Sales &amp; Local Marketing</b>Door-to-door and referral sales, Nextdoor/Meta local campaigns, lead-capture funnels.</li>
+          <li><b>Finance &amp; Markets</b>Finance &amp; Accounting dual major; active self-directed investor since 2020 (equities + options + crypto, five platforms).</li>
+          <li><b>AI &amp; Automation</b>Workflow mapping, prompt-built internal tools, Google Sheets/Apps Script automation, N8N exploration, Sheets API.</li>
+          <li><b>Web</b>Hand-built HTML/CSS sites (True North on Netlify; this site).</li>
+          <li><b>Languages</b>English; Mandarin Chinese (near-fluent).</li>
+        </ul>
+      </div>
+
+      <div class="resume">
+        <span class="btn">Résumé (PDF) — pending</span>
+        <span class="date mono" style="color:var(--dim)">drops in once the PDF exists at /assets/resume/</span>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <address>
+        <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a><br>
+        <a href="https://www.linkedin.com/in/pierson-norris-634954246" rel="noopener">LinkedIn — Pierson Norris</a><br>
+        Built by hand — plain HTML, no framework.
+      </address>
+    </div>
+  </footer>
+
+  <script>
+    (function(){
+      var chips = document.querySelectorAll('.chip');
+      var rail = document.getElementById('rail');
+      chips.forEach(function(chip){
+        chip.addEventListener('click', function(){
+          chips.forEach(function(c){ c.setAttribute('aria-pressed', 'false'); });
+          chip.setAttribute('aria-pressed', 'true');
+          var f = chip.getAttribute('data-filter');
+          rail.className = 'rail' + (f === 'all' ? '' : ' filter-' + f);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -146,6 +146,14 @@
     .cal-side{background:rgba(10,14,19,.48);border:1px solid var(--line);border-radius:10px;padding:14px}.cal-side h3{font-size:16px;margin:0 0 3px}.cal-side>.muted{font-size:12px;margin:0 0 12px}.cal-dayevents{display:grid;gap:7px;margin-bottom:14px}.cal-dayevent{border:1px solid var(--line);border-left:3px solid var(--event,var(--mut));border-radius:8px;background:var(--panel);padding:9px 10px}.cal-dayevent.ex-dividend{--event:#4cc9f0}.cal-dayevent.payment{--event:#5fae5a}.cal-dayevent.earnings{--event:#e8a33d}.cal-dayevent.reminder,.cal-dayevent.review,.cal-dayevent.tax{--event:#c084fc}.cal-dayevent b{display:block;font-size:13px}.cal-dayevent p{font-size:11px;color:var(--mut);margin:2px 0 7px}.cal-eventactions{display:flex;gap:6px;align-items:center}.cal-eventactions a,.cal-eventactions button{appearance:none;background:transparent;border:0;padding:0;color:var(--dim);font:10px/1.2 var(--mono);cursor:pointer;text-decoration:none}.cal-eventactions a:hover,.cal-eventactions button:hover{color:var(--acc-hi)}.cal-form{border-top:1px solid var(--line);padding-top:13px}.cal-form h4{font-size:14px;margin:0 0 9px}.cal-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cal-formgrid .wide{grid-column:1/-1}.cal-form .fld span{font-size:9px}.cal-form textarea{min-height:76px;resize:vertical}.cal-formactions{display:flex;align-items:center;gap:7px;margin-top:8px}.cal-formactions .btn{justify-content:center}.cal-formstatus{font:10px/1.35 var(--mono);color:var(--dim);margin:8px 0 0;min-height:14px}
     .cal-eventactions span{font:10px/1.2 var(--mono);color:var(--dim)}.cal-form fieldset{border:0;padding:0;margin:0;min-width:0}.cal-form fieldset:disabled{opacity:.52}
     .cal-agenda{margin-top:14px;border-top:1px solid var(--line);padding-top:14px}.cal-agendahead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:9px}.cal-agendahead h3{font-size:16px;margin:0}.cal-agendahead p{font:10px var(--mono);color:var(--dim);margin:0}.cal-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}.cal-agendalist{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px}.cal-agendaitem{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:center;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 10px}.cal-agendadate{text-align:center;font:10px/1.1 var(--mono);color:var(--dim)}.cal-agendadate b{display:block;font:700 19px/1 var(--display);color:var(--ink);margin:2px 0}.cal-agendaitem>div:last-child b{display:block;font-size:12.5px}.cal-agendaitem>div:last-child span{display:block;font:10px/1.35 var(--mono);color:var(--mut);margin-top:2px}.cal-empty{font-size:13px;color:var(--mut);padding:12px;border:1px dashed var(--line2);border-radius:8px}
+    .project-board-shell{position:relative;overflow:hidden;background:linear-gradient(145deg,#171e28 0%,var(--panel) 68%);border:1px solid var(--line2);border-radius:14px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.17)}
+    .project-board-shell::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(142,209,138,.7),transparent)}
+    .proj-head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}.proj-head h2{font-size:22px;margin:0 0 3px}.proj-head p{font-size:13px;color:var(--mut);margin:0}.proj-head .cal-private{margin-left:auto}
+    .proj-summary{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:8px;margin-bottom:14px}.proj-stat{background:rgba(10,14,19,.52);border:1px solid var(--line);border-radius:9px;padding:11px 12px}.proj-stat b{display:block;font:700 19px/1.15 var(--display)}.proj-stat span{font:9px/1.25 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+    .proj-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}.proj-toolbar p{font:11px/1.45 var(--mono);color:var(--dim);margin:0}.proj-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+    .goal-editor{background:rgba(10,14,19,.7);border:1px solid var(--line2);border-radius:10px;padding:14px;margin-bottom:14px}.goal-editor h3{font-size:16px;margin:0 0 10px}.goal-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.goal-formgrid .wide{grid-column:1/-1}.goal-formgrid textarea{min-height:78px;resize:vertical}.goal-formgrid .fld span{font-size:10px}.goal-formactions{display:flex;align-items:center;gap:8px;margin-top:10px}.goal-formstatus{font:10px/1.35 var(--mono);color:var(--dim);margin:0 0 0 auto}
+    .proj-boardscroll{overflow-x:auto;padding-bottom:5px}.proj-board{display:grid;grid-template-columns:repeat(5,minmax(245px,1fr));gap:10px;min-width:1265px;align-items:start}.proj-column{--stage:var(--mut);background:rgba(9,12,16,.48);border:1px solid var(--line);border-top:2px solid var(--stage);border-radius:10px;padding:10px;min-height:230px}.proj-column[data-status="planned"]{--stage:#4cc9f0}.proj-column[data-status="in-progress"]{--stage:#e8a33d}.proj-column[data-status="blocked"]{--stage:#f0726b}.proj-column[data-status="complete"]{--stage:#75d477}.proj-colhead{display:flex;align-items:center;gap:8px;padding:2px 2px 10px}.proj-colhead h3{font-size:14px;margin:0}.proj-colhead span{margin-left:auto;font:10px/1 var(--mono);color:var(--stage);border:1px solid color-mix(in srgb,var(--stage) 35%,transparent);border-radius:999px;padding:4px 6px}.proj-cards{display:grid;gap:8px}.proj-empty{font:11px/1.5 var(--mono);color:var(--dim);border:1px dashed var(--line2);border-radius:8px;padding:13px;margin:0}
+    .proj-card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px;box-shadow:0 8px 20px rgba(0,0,0,.12)}.proj-card h4{font-size:14px;line-height:1.35;margin:0 0 6px}.proj-outcome{font-size:12px;line-height:1.45;color:var(--mut);margin:0 0 9px}.proj-next{border-left:2px solid var(--stage);padding-left:8px;margin:0 0 9px}.proj-next span{display:block;font:9px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}.proj-next b{display:block;font-size:12px;line-height:1.4;font-weight:500}.proj-progress{display:flex;align-items:center;gap:7px;margin:8px 0}.proj-progressbar{height:4px;flex:1;background:var(--line);border-radius:999px;overflow:hidden}.proj-progressbar i{display:block;height:100%;background:var(--stage)}.proj-progress>span{font:9px/1 var(--mono);color:var(--dim)}.proj-meta{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.proj-meta span{font:9px/1.2 var(--mono);color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:4px 6px}.proj-meta .overdue{color:var(--bad);border-color:rgba(240,114,107,.35)}.proj-cardactions{display:flex;align-items:center;gap:5px;border-top:1px solid var(--line);padding-top:8px;margin-top:8px}.proj-cardactions button,.proj-cardactions a{appearance:none;border:0;background:transparent;color:var(--dim);font:10px/1 var(--mono);padding:5px;cursor:pointer;text-decoration:none}.proj-cardactions button:hover,.proj-cardactions a:hover{color:var(--acc-hi)}.proj-cardactions .proj-edit{margin-left:auto}
     .stockchart{position:relative;overflow:hidden;background:linear-gradient(145deg,#171e28 0%,var(--panel) 62%);border:1px solid var(--line2);border-radius:14px;padding:20px;margin:0 0 22px;box-shadow:0 24px 60px rgba(0,0,0,.18)}
     .stockchart::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(142,209,138,.7),transparent)}
     .stockchart h2{font-size:19px;margin:0}.stockchart .chart-copy{font-size:13px;color:var(--mut);margin:4px 0 0}
@@ -161,8 +169,8 @@
     .tracker-panel[hidden]{display:none}.tracker-panel{animation:panel-in .18s ease-out}@keyframes panel-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
     .dividend-chart{margin:18px 0 0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:15px}.dividend-chart h3{font-size:16px;margin:0 0 2px}.dividend-chart .sub{font:11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px}
     .obsidian-sync{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.obsidian-sync .sync-status{font:12px var(--mono);color:var(--dim);margin:0}
-    @media (max-width:900px){.cal-layout{grid-template-columns:1fr}.cal-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cal-filters{margin-left:0}.cal-side{padding:14px}}
-    @media (max-width:700px){.market-quote{margin-left:0;text-align:left}.market-controls{align-items:stretch}.tickerbar{flex-basis:100%}.rangebar{width:max-content}.market-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.market-kpi:last-child{grid-column:1/-1}.stockchart{padding:16px}.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}.pj-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pj-entry{grid-template-columns:1fr 1fr}.pj-entry .btn{grid-column:1/-1}.pj-lot{grid-template-columns:1fr 1fr}.pj-lot span:nth-child(4){display:none}.pj-lot button{grid-column:2;grid-row:1;text-align:right}.purchase-journal{padding:14px}.portfolio-calendar{padding:15px}.cal-private{margin-left:0}.cal-toolbar{align-items:flex-start}.cal-monthtitle{min-width:145px}.cal-formgrid{grid-template-columns:1fr}.cal-formgrid .wide{grid-column:auto}}
+    @media (max-width:900px){.cal-layout{grid-template-columns:1fr}.cal-summary,.proj-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cal-filters{margin-left:0}.cal-side{padding:14px}}
+    @media (max-width:700px){.market-quote{margin-left:0;text-align:left}.market-controls{align-items:stretch}.tickerbar{flex-basis:100%}.rangebar{width:max-content}.market-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.market-kpi:last-child{grid-column:1/-1}.stockchart{padding:16px}.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}.pj-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pj-entry{grid-template-columns:1fr 1fr}.pj-entry .btn{grid-column:1/-1}.pj-lot{grid-template-columns:1fr 1fr}.pj-lot span:nth-child(4){display:none}.pj-lot button{grid-column:2;grid-row:1;text-align:right}.purchase-journal{padding:14px}.portfolio-calendar,.project-board-shell{padding:15px}.cal-private{margin-left:0}.cal-toolbar{align-items:flex-start}.cal-monthtitle{min-width:145px}.cal-formgrid,.goal-formgrid{grid-template-columns:1fr}.cal-formgrid .wide,.goal-formgrid .wide{grid-column:auto}.proj-actions{margin-left:0}.goal-formstatus{margin-left:0;width:100%}}
   </style>
 </head>
 <body>
@@ -248,6 +256,7 @@
           <button class="tracker-tab" type="button" role="tab" id="tab-positions" data-panel="positions" aria-controls="panel-positions" aria-selected="true">Positions</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-dividends" data-panel="dividends" aria-controls="panel-dividends" aria-selected="false">Dividends</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-calendar" data-panel="calendar" aria-controls="panel-calendar" aria-selected="false">Calendar</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-projects" data-panel="projects" aria-controls="panel-projects" aria-selected="false">Projects</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-charts" data-panel="charts" aria-controls="panel-charts" aria-selected="false">Charts</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-obsidian" data-panel="obsidian" aria-controls="panel-obsidian" aria-selected="false">Obsidian</button>
         </div>
@@ -267,6 +276,10 @@
 
         <section class="tracker-panel" id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" hidden>
           <section class="portfolio-calendar" id="portfolio-calendar"></section>
+        </section>
+
+        <section class="tracker-panel" id="panel-projects" role="tabpanel" aria-labelledby="tab-projects" hidden>
+          <section class="project-board-shell" id="portfolio-projects"></section>
         </section>
 
         <section class="tracker-panel" id="panel-charts" role="tabpanel" aria-labelledby="tab-charts" hidden>
@@ -298,6 +311,7 @@
   <script src="/assets/js/charts.js"></script>
   <script src="/assets/js/prices.js"></script>
   <script src="/assets/js/calendar.js"></script>
+  <script src="/assets/js/taskboard.js"></script>
   <script src="/assets/js/vault.js"></script>
   <script src="/assets/js/notes-ui.js"></script>
   <script>
@@ -346,6 +360,7 @@
     var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, activeChartRange = '3M', expandedPositionKey = null, positionNoteSaveTimer = null, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
     var calendarAnchor = window.PNCalendar.anchorKey(new Date()), calendarSelectedDate = window.PNCalendar.dateKey(new Date()), calendarEditingId = null, privateCalendarEvents = [];
     var calendarFilters = { 'ex-dividend': true, payment: true, earnings: true, private: true };
+    var projectGoals = [], projectEditingId = null, projectBoardReady = false;
 
     // ------------------------------------------------------ helpers
 
@@ -459,7 +474,7 @@
     });
 
     $('relock').addEventListener('click', function () {
-      DATA = null; valued = []; sessionPin = null; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null;
+      DATA = null; valued = []; sessionPin = null; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
       if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
       $('vault').style.display = 'none';
       $('lock').style.display = 'grid';
@@ -480,7 +495,7 @@
       activeMonth = 0;
       dividendSyncDone = false;
       setupTrackerTabs();
-      activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#calendar' ? 'calendar' : location.hash === '#dividends' ? 'dividends' : 'positions', false);
+      activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#projects' ? 'projects' : location.hash === '#calendar' ? 'calendar' : location.hash === '#dividends' ? 'dividends' : 'positions', false);
 
       if (data.sample) {
         $('samplebanner').innerHTML =
@@ -553,6 +568,7 @@
           renderPlatforms();
           renderDividends();
           renderCalendar();
+          renderProjectBoard();
         })
         .catch(function (err) {
           status.textContent = 'Could not fetch quotes — ' + (err && err.message ? err.message : 'request failed') +
@@ -566,6 +582,7 @@
           renderPlatforms();
           renderDividends();
           renderCalendar();
+          renderProjectBoard();
         });
     }
 
@@ -1053,6 +1070,107 @@
       $('calexport').addEventListener('click', function () { downloadCalendar(visible, 'private-portfolio-calendar.ics'); });
     }
 
+    function saveProjectGoals(statusText) {
+      projectGoals = window.PNTaskboard.normalize(projectGoals);
+      if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) return Promise.resolve(false);
+      return stockNotes.saveProjectBoard(projectGoals).then(function (saved) {
+        renderProjectBoard();
+        var status = $('projstatus');
+        if (status && statusText) status.textContent = statusText;
+        return saved;
+      });
+    }
+
+    function projectProgress(goal) {
+      if (goal.status === 'complete') return 100;
+      if (goal.status === 'in-progress') return 60;
+      if (goal.status === 'blocked') return 35;
+      if (goal.status === 'planned') return 20;
+      return 0;
+    }
+
+    function renderProjectBoard() {
+      var host = $('portfolio-projects');
+      if (!host) return;
+      var vaultReady = !!(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked() && projectBoardReady);
+      var goals = window.PNTaskboard.normalize(projectGoals);
+      var stats = window.PNTaskboard.metrics(goals, new Date().toISOString().slice(0, 10));
+      var today = new Date().toISOString().slice(0, 10);
+      var editing = projectEditingId && projectEditingId !== '__new__' ? goals.filter(function (goal) { return goal.id === projectEditingId; })[0] : null;
+      var showEditor = projectEditingId === '__new__' || !!editing;
+
+      var editorHtml = showEditor ? '<form class="goal-editor" id="goalform"><h3>' + (editing ? 'Edit goal' : 'Add project goal') + '</h3><fieldset' + (vaultReady ? '' : ' disabled') + '><div class="goal-formgrid">' +
+        '<label class="fld wide"><span>Goal</span><input type="text" name="title" value="' + esc(editing ? editing.title : '') + '" placeholder="Connect read-only portfolio data" maxlength="120" required></label>' +
+        '<label class="fld"><span>Stage</span><select name="status">' + window.PNTaskboard.columns.map(function (column) { return '<option value="' + column.id + '"' + ((editing ? editing.status : 'planned') === column.id ? ' selected' : '') + '>' + column.label + '</option>'; }).join('') + '</select></label>' +
+        '<label class="fld"><span>Target date</span><input type="date" name="targetDate" value="' + esc(editing ? editing.targetDate : '') + '"></label>' +
+        '<label class="fld wide"><span>Outcome</span><textarea name="outcome" placeholder="What will be true when this is finished?">' + esc(editing ? editing.outcome : '') + '</textarea></label>' +
+        '<label class="fld wide"><span>Next action</span><textarea name="nextAction" placeholder="The next concrete step to move this forward.">' + esc(editing ? editing.nextAction : '') + '</textarea></label>' +
+        '<label class="fld"><span>Milestones · one per line</span><textarea name="milestones" placeholder="Define scope&#10;Build the first slice&#10;Verify and publish">' + esc(editing ? editing.milestones.join('\n') : '') + '</textarea></label>' +
+        '<label class="fld"><span>Dependencies · one per line</span><textarea name="dependencies" placeholder="OAuth approval&#10;Read-only provider">' + esc(editing ? editing.dependencies.join('\n') : '') + '</textarea></label>' +
+        '<label class="fld wide"><span>Related tracker or calendar link</span><input type="text" name="relatedLink" value="' + esc(editing ? editing.relatedLink : '') + '" placeholder="#calendar or https://…"></label>' +
+        '</div><div class="goal-formactions"><button type="submit" class="btn primary">' + (editing ? 'Update goal' : 'Save goal') + '</button><button type="button" class="btn" id="goalcancel">Cancel</button><p class="goal-formstatus">Encrypted on this device.</p></div></fieldset></form>' : '';
+
+      var boardHtml = window.PNTaskboard.columns.map(function (column) {
+        var columnGoals = goals.filter(function (goal) { return goal.status === column.id; });
+        var cards = columnGoals.length ? columnGoals.map(function (goal) {
+          var progress = projectProgress(goal);
+          var overdue = goal.targetDate && goal.targetDate < today && goal.status !== 'complete';
+          var meta = (goal.targetDate ? '<span class="' + (overdue ? 'overdue' : '') + '">' + (overdue ? 'overdue · ' : 'target · ') + esc(goal.targetDate) + '</span>' : '') +
+            (goal.milestones.length ? '<span>' + goal.milestones.length + ' milestone' + (goal.milestones.length === 1 ? '' : 's') + '</span>' : '') +
+            (goal.dependencies.length ? '<span>' + goal.dependencies.length + ' dependenc' + (goal.dependencies.length === 1 ? 'y' : 'ies') + '</span>' : '');
+          var related = goal.relatedLink ? (goal.relatedLink.charAt(0) === '#'
+            ? '<button type="button" class="proj-link" data-link="' + esc(goal.relatedLink) + '">Open linked view</button>'
+            : '<a href="' + esc(goal.relatedLink) + '" target="_blank" rel="noopener noreferrer">Open link</a>') : '';
+          return '<article class="proj-card" data-goal-id="' + esc(goal.id) + '"><h4>' + esc(goal.title) + '</h4>' +
+            (goal.outcome ? '<p class="proj-outcome">' + esc(goal.outcome) + '</p>' : '') +
+            (goal.nextAction ? '<div class="proj-next"><span>Next action</span><b>' + esc(goal.nextAction) + '</b></div>' : '') +
+            '<div class="proj-progress" aria-label="' + progress + ' percent stage progress"><div class="proj-progressbar"><i style="width:' + progress + '%"></i></div><span>' + progress + '%</span></div>' +
+            (meta ? '<div class="proj-meta">' + meta + '</div>' : '') +
+            '<div class="proj-cardactions"><button type="button" class="proj-move" data-dir="-1"' + (column.id === 'backlog' ? ' disabled' : '') + ' aria-label="Move ' + esc(goal.title) + ' left">←</button><button type="button" class="proj-move" data-dir="1"' + (column.id === 'complete' ? ' disabled' : '') + ' aria-label="Move ' + esc(goal.title) + ' right">→</button>' + related + '<button type="button" class="proj-edit">Edit</button><button type="button" class="proj-delete">Delete</button></div></article>';
+        }).join('') : '<p class="proj-empty">No goals in this stage.</p>';
+        return '<section class="proj-column" data-status="' + column.id + '"><div class="proj-colhead"><h3>' + column.label + '</h3><span>' + columnGoals.length + '</span></div><div class="proj-cards">' + cards + '</div></section>';
+      }).join('');
+
+      host.innerHTML = '<div class="proj-head"><div><h2>Portfolio project board</h2><p>Goals, milestones, blockers, and the next concrete action.</p></div><span class="cal-private">encrypted · Obsidian ready</span></div>' +
+        '<div class="proj-summary"><div class="proj-stat"><b>' + stats.active + '</b><span>active goals</span></div><div class="proj-stat"><b>' + stats.dueSoon + '</b><span>due next 30 days</span></div><div class="proj-stat"><b>' + stats.blocked + '</b><span>blocked</span></div><div class="proj-stat"><b>' + stats.complete + '</b><span>complete</span></div></div>' +
+        '<div class="proj-toolbar"><p id="projstatus">' + (vaultReady ? 'Changes save into the encrypted stock vault.' : 'Unlocking the encrypted stock vault…') + '</p><div class="proj-actions"><button type="button" class="btn primary" id="projnew"' + (vaultReady ? '' : ' disabled') + '>+ New goal</button><button type="button" class="btn" id="projobsidian"' + (vaultReady ? '' : ' disabled') + '>Open in Obsidian</button></div></div>' + editorHtml + '<div class="proj-boardscroll"><div class="proj-board" aria-label="Portfolio project goals">' + boardHtml + '</div></div>';
+
+      if ($('projnew')) $('projnew').addEventListener('click', function () { projectEditingId = '__new__'; renderProjectBoard(); var title = $('goalform') && $('goalform').elements.title; if (title) title.focus(); });
+      if ($('projobsidian')) $('projobsidian').addEventListener('click', function () {
+        saveProjectGoals().then(function () { if (stockNotes.openProjectBoard()) { activateTrackerPanel('obsidian', false); document.getElementById('stocknotes').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+      });
+      if ($('goalcancel')) $('goalcancel').addEventListener('click', function () { projectEditingId = null; renderProjectBoard(); });
+      if ($('goalform')) $('goalform').addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (!vaultReady) return;
+        var fields = event.currentTarget.elements, now = new Date().toISOString();
+        var next = {
+          id: editing ? editing.id : 'goal-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          title: fields.title.value.trim(), status: fields.status.value, outcome: fields.outcome.value.trim(),
+          nextAction: fields.nextAction.value.trim(), targetDate: fields.targetDate.value,
+          milestones: fields.milestones.value.split(/\r?\n/), dependencies: fields.dependencies.value.split(/\r?\n/),
+          relatedLink: fields.relatedLink.value.trim(), created: editing ? editing.created : now, updated: now
+        };
+        if (!next.title) return;
+        if (editing) projectGoals = projectGoals.map(function (goal) { return goal.id === editing.id ? next : goal; });
+        else projectGoals.push(next);
+        projectEditingId = null;
+        saveProjectGoals('Goal saved in the encrypted vault.');
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.proj-move'), function (button) {
+        button.addEventListener('click', function () { var card = button.closest('.proj-card'); projectGoals = window.PNTaskboard.move(projectGoals, card.dataset.goalId, Number(button.dataset.dir)); saveProjectGoals('Goal stage updated.'); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.proj-edit'), function (button) {
+        button.addEventListener('click', function () { projectEditingId = button.closest('.proj-card').dataset.goalId; renderProjectBoard(); var title = $('goalform') && $('goalform').elements.title; if (title) title.focus(); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.proj-delete'), function (button) {
+        button.addEventListener('click', function () { var id = button.closest('.proj-card').dataset.goalId; var goal = projectGoals.filter(function (item) { return item.id === id; })[0]; if (!goal || !confirm('Delete “' + goal.title + '” from the private project board?')) return; projectGoals = projectGoals.filter(function (item) { return item.id !== id; }); saveProjectGoals('Goal deleted.'); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.proj-link'), function (button) {
+        button.addEventListener('click', function () { activateTrackerPanel(button.dataset.link.slice(1), true); });
+      });
+    }
+
     function journalFor(row) {
       if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) return null;
       return stockNotes.getPositionJournal(positionKey(row));
@@ -1251,11 +1369,19 @@
             var savedCalendar = stockNotes.getCalendarData();
             privateCalendarEvents = savedCalendar && Array.isArray(savedCalendar.events) ? savedCalendar.events : [];
             dividendEdits = Object.assign({}, savedCalendar && savedCalendar.dividendOverrides || {}, dividendEdits);
+            var savedBoard = stockNotes.getProjectBoard();
+            projectBoardReady = true;
+            if (savedBoard && savedBoard.id) projectGoals = window.PNTaskboard.normalize(savedBoard.goals);
+            else {
+              projectGoals = window.PNTaskboard.seed();
+              stockNotes.saveProjectBoard(projectGoals);
+            }
           }
           renderPlatforms();
           renderHeadline(currentQuoteSummary());
           renderDividends();
           renderCalendar();
+          renderProjectBoard();
         });
       }
     }

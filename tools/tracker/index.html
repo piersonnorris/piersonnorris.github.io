@@ -146,6 +146,14 @@
     .cal-side{background:rgba(10,14,19,.48);border:1px solid var(--line);border-radius:10px;padding:14px}.cal-side h3{font-size:16px;margin:0 0 3px}.cal-side>.muted{font-size:12px;margin:0 0 12px}.cal-dayevents{display:grid;gap:7px;margin-bottom:14px}.cal-dayevent{border:1px solid var(--line);border-left:3px solid var(--event,var(--mut));border-radius:8px;background:var(--panel);padding:9px 10px}.cal-dayevent.ex-dividend{--event:#4cc9f0}.cal-dayevent.payment{--event:#5fae5a}.cal-dayevent.earnings{--event:#e8a33d}.cal-dayevent.reminder,.cal-dayevent.review,.cal-dayevent.tax{--event:#c084fc}.cal-dayevent b{display:block;font-size:13px}.cal-dayevent p{font-size:11px;color:var(--mut);margin:2px 0 7px}.cal-eventactions{display:flex;gap:6px;align-items:center}.cal-eventactions a,.cal-eventactions button{appearance:none;background:transparent;border:0;padding:0;color:var(--dim);font:10px/1.2 var(--mono);cursor:pointer;text-decoration:none}.cal-eventactions a:hover,.cal-eventactions button:hover{color:var(--acc-hi)}.cal-form{border-top:1px solid var(--line);padding-top:13px}.cal-form h4{font-size:14px;margin:0 0 9px}.cal-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cal-formgrid .wide{grid-column:1/-1}.cal-form .fld span{font-size:9px}.cal-form textarea{min-height:76px;resize:vertical}.cal-formactions{display:flex;align-items:center;gap:7px;margin-top:8px}.cal-formactions .btn{justify-content:center}.cal-formstatus{font:10px/1.35 var(--mono);color:var(--dim);margin:8px 0 0;min-height:14px}
     .cal-eventactions span{font:10px/1.2 var(--mono);color:var(--dim)}.cal-form fieldset{border:0;padding:0;margin:0;min-width:0}.cal-form fieldset:disabled{opacity:.52}
     .cal-agenda{margin-top:14px;border-top:1px solid var(--line);padding-top:14px}.cal-agendahead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:9px}.cal-agendahead h3{font-size:16px;margin:0}.cal-agendahead p{font:10px var(--mono);color:var(--dim);margin:0}.cal-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}.cal-agendalist{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px}.cal-agendaitem{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:center;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 10px}.cal-agendadate{text-align:center;font:10px/1.1 var(--mono);color:var(--dim)}.cal-agendadate b{display:block;font:700 19px/1 var(--display);color:var(--ink);margin:2px 0}.cal-agendaitem>div:last-child b{display:block;font-size:12.5px}.cal-agendaitem>div:last-child span{display:block;font:10px/1.35 var(--mono);color:var(--mut);margin-top:2px}.cal-empty{font-size:13px;color:var(--mut);padding:12px;border:1px dashed var(--line2);border-radius:8px}
+    .project-board-shell{position:relative;overflow:hidden;background:linear-gradient(145deg,#171e28 0%,var(--panel) 68%);border:1px solid var(--line2);border-radius:14px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.17)}
+    .project-board-shell::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(142,209,138,.7),transparent)}
+    .proj-head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}.proj-head h2{font-size:22px;margin:0 0 3px}.proj-head p{font-size:13px;color:var(--mut);margin:0}.proj-head .cal-private{margin-left:auto}
+    .proj-summary{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:8px;margin-bottom:14px}.proj-stat{background:rgba(10,14,19,.52);border:1px solid var(--line);border-radius:9px;padding:11px 12px}.proj-stat b{display:block;font:700 19px/1.15 var(--display)}.proj-stat span{font:9px/1.25 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+    .proj-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}.proj-toolbar p{font:11px/1.45 var(--mono);color:var(--dim);margin:0}.proj-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+    .goal-editor{background:rgba(10,14,19,.7);border:1px solid var(--line2);border-radius:10px;padding:14px;margin-bottom:14px}.goal-editor h3{font-size:16px;margin:0 0 10px}.goal-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.goal-formgrid .wide{grid-column:1/-1}.goal-formgrid textarea{min-height:78px;resize:vertical}.goal-formgrid .fld span{font-size:10px}.goal-formactions{display:flex;align-items:center;gap:8px;margin-top:10px}.goal-formstatus{font:10px/1.35 var(--mono);color:var(--dim);margin:0 0 0 auto}
+    .proj-boardscroll{overflow-x:auto;padding-bottom:5px}.proj-board{display:grid;grid-template-columns:repeat(5,minmax(245px,1fr));gap:10px;min-width:1265px;align-items:start}.proj-column{--stage:var(--mut);background:rgba(9,12,16,.48);border:1px solid var(--line);border-top:2px solid var(--stage);border-radius:10px;padding:10px;min-height:230px}.proj-column[data-status="planned"]{--stage:#4cc9f0}.proj-column[data-status="in-progress"]{--stage:#e8a33d}.proj-column[data-status="blocked"]{--stage:#f0726b}.proj-column[data-status="complete"]{--stage:#75d477}.proj-colhead{display:flex;align-items:center;gap:8px;padding:2px 2px 10px}.proj-colhead h3{font-size:14px;margin:0}.proj-colhead span{margin-left:auto;font:10px/1 var(--mono);color:var(--stage);border:1px solid color-mix(in srgb,var(--stage) 35%,transparent);border-radius:999px;padding:4px 6px}.proj-cards{display:grid;gap:8px}.proj-empty{font:11px/1.5 var(--mono);color:var(--dim);border:1px dashed var(--line2);border-radius:8px;padding:13px;margin:0}
+    .proj-card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px;box-shadow:0 8px 20px rgba(0,0,0,.12)}.proj-card h4{font-size:14px;line-height:1.35;margin:0 0 6px}.proj-outcome{font-size:12px;line-height:1.45;color:var(--mut);margin:0 0 9px}.proj-next{border-left:2px solid var(--stage);padding-left:8px;margin:0 0 9px}.proj-next span{display:block;font:9px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}.proj-next b{display:block;font-size:12px;line-height:1.4;font-weight:500}.proj-progress{display:flex;align-items:center;gap:7px;margin:8px 0}.proj-progressbar{height:4px;flex:1;background:var(--line);border-radius:999px;overflow:hidden}.proj-progressbar i{display:block;height:100%;background:var(--stage)}.proj-progress>span{font:9px/1 var(--mono);color:var(--dim)}.proj-meta{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.proj-meta span{font:9px/1.2 var(--mono);color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:4px 6px}.proj-meta .overdue{color:var(--bad);border-color:rgba(240,114,107,.35)}.proj-cardactions{display:flex;align-items:center;gap:5px;border-top:1px solid var(--line);padding-top:8px;margin-top:8px}.proj-cardactions button,.proj-cardactions a{appearance:none;border:0;background:transparent;color:var(--dim);font:10px/1 var(--mono);padding:5px;cursor:pointer;text-decoration:none}.proj-cardactions button:hover,.proj-cardactions a:hover{color:var(--acc-hi)}.proj-cardactions .proj-edit{margin-left:auto}
     .stockchart{position:relative;overflow:hidden;background:linear-gradient(145deg,#171e28 0%,var(--panel) 62%);border:1px solid var(--line2);border-radius:14px;padding:20px;margin:0 0 22px;box-shadow:0 24px 60px rgba(0,0,0,.18)}
     .stockchart::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(142,209,138,.7),transparent)}
     .stockchart h2{font-size:19px;margin:0}.stockchart .chart-copy{font-size:13px;color:var(--mut);margin:4px 0 0}
@@ -161,8 +169,8 @@
     .tracker-panel[hidden]{display:none}.tracker-panel{animation:panel-in .18s ease-out}@keyframes panel-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
     .dividend-chart{margin:18px 0 0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:15px}.dividend-chart h3{font-size:16px;margin:0 0 2px}.dividend-chart .sub{font:11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px}
     .obsidian-sync{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.obsidian-sync .sync-status{font:12px var(--mono);color:var(--dim);margin:0}
-    @media (max-width:900px){.cal-layout{grid-template-columns:1fr}.cal-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cal-filters{margin-left:0}.cal-side{padding:14px}}
-    @media (max-width:700px){.market-quote{margin-left:0;text-align:left}.market-controls{align-items:stretch}.tickerbar{flex-basis:100%}.rangebar{width:max-content}.market-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.market-kpi:last-child{grid-column:1/-1}.stockchart{padding:16px}.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}.pj-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pj-entry{grid-template-columns:1fr 1fr}.pj-entry .btn{grid-column:1/-1}.pj-lot{grid-template-columns:1fr 1fr}.pj-lot span:nth-child(4){display:none}.pj-lot button{grid-column:2;grid-row:1;text-align:right}.purchase-journal{padding:14px}.portfolio-calendar{padding:15px}.cal-private{margin-left:0}.cal-toolbar{align-items:flex-start}.cal-monthtitle{min-width:145px}.cal-formgrid{grid-template-columns:1fr}.cal-formgrid .wide{grid-column:auto}}
+    @media (max-width:900px){.cal-layout{grid-template-columns:1fr}.cal-summary,.proj-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cal-filters{margin-left:0}.cal-side{padding:14px}}
+    @media (max-width:700px){.market-quote{margin-left:0;text-align:left}.market-controls{align-items:stretch}.tickerbar{flex-basis:100%}.rangebar{width:max-content}.market-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.market-kpi:last-child{grid-column:1/-1}.stockchart{padding:16px}.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}.pj-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pj-entry{grid-template-columns:1fr 1fr}.pj-entry .btn{grid-column:1/-1}.pj-lot{grid-template-columns:1fr 1fr}.pj-lot span:nth-child(4){display:none}.pj-lot button{grid-column:2;grid-row:1;text-align:right}.purchase-journal{padding:14px}.portfolio-calendar,.project-board-shell{padding:15px}.cal-private{margin-left:0}.cal-toolbar{align-items:flex-start}.cal-monthtitle{min-width:145px}.cal-formgrid,.goal-formgrid{grid-template-columns:1fr}.cal-formgrid .wide,.goal-formgrid .wide{grid-column:auto}.proj-actions{margin-left:0}.goal-formstatus{margin-left:0;width:100%}}
   </style>
 </head>
 <body>
@@ -248,6 +256,7 @@
           <button class="tracker-tab" type="button" role="tab" id="tab-positions" data-panel="positions" aria-controls="panel-positions" aria-selected="true">Positions</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-dividends" data-panel="dividends" aria-controls="panel-dividends" aria-selected="false">Dividends</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-calendar" data-panel="calendar" aria-controls="panel-calendar" aria-selected="false">Calendar</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-projects" data-panel="projects" aria-controls="panel-projects" aria-selected="false">Projects</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-charts" data-panel="charts" aria-controls="panel-charts" aria-selected="false">Charts</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-obsidian" data-panel="obsidian" aria-controls="panel-obsidian" aria-selected="false">Obsidian</button>
         </div>
@@ -267,6 +276,10 @@
 
         <section class="tracker-panel" id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" hidden>
           <section class="portfolio-calendar" id="portfolio-calendar"></section>
+        </section>
+
+        <section class="tracker-panel" id="panel-projects" role="tabpanel" aria-labelledby="tab-projects" hidden>
+          <section class="project-board-shell" id="portfolio-projects"></section>
         </section>
 
         <section class="tracker-panel" id="panel-charts" role="tabpanel" aria-labelledby="tab-charts" hidden>
@@ -298,6 +311,7 @@
   <script src="/assets/js/charts.js"></script>
   <script src="/assets/js/prices.js"></script>
   <script src="/assets/js/calendar.js"></script>
+  <script src="/assets/js/taskboard.js"></script>
   <script src="/assets/js/vault.js"></script>
   <script src="/assets/js/notes-ui.js"></script>
   <script>
@@ -308,7 +322,7 @@
        with the AES-GCM payload of the real holdings. Until it does,
        PAYLOAD stays null and every stock surface remains locked. SAMPLE
        is a fabricated fixture only; it is never displayed by this source. */
-    var PAYLOAD = /*__PAYLOAD__*/{"salt":"Y8h6YBBflkUQYbXDAbZMSg==","iv":"+bCVHpUeTw3HpGKa","ct":"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","iter":600000}/*__END__*/;
+    var PAYLOAD = /*__PAYLOAD__*/{"salt":"SpgyA7JWeSxV18Uf0/8j5A==","iv":"dGkSMrMLHoWxgR+y","ct":"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","iter":600000}/*__END__*/;
 
     var SAMPLE = {
       generatedAt: '2026-08-23T11:00:00Z',
@@ -346,6 +360,7 @@
     var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, activeChartRange = '3M', expandedPositionKey = null, positionNoteSaveTimer = null, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
     var calendarAnchor = window.PNCalendar.anchorKey(new Date()), calendarSelectedDate = window.PNCalendar.dateKey(new Date()), calendarEditingId = null, privateCalendarEvents = [];
     var calendarFilters = { 'ex-dividend': true, payment: true, earnings: true, private: true };
+    var projectGoals = [], projectEditingId = null, projectBoardReady = false;
 
     // ------------------------------------------------------ helpers
 
@@ -459,7 +474,7 @@
     });
 
     $('relock').addEventListener('click', function () {
-      DATA = null; valued = []; sessionPin = null; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null;
+      DATA = null; valued = []; sessionPin = null; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
       if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
       $('vault').style.display = 'none';
       $('lock').style.display = 'grid';
@@ -480,7 +495,7 @@
       activeMonth = 0;
       dividendSyncDone = false;
       setupTrackerTabs();
-      activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#calendar' ? 'calendar' : location.hash === '#dividends' ? 'dividends' : 'positions', false);
+      activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#projects' ? 'projects' : location.hash === '#calendar' ? 'calendar' : location.hash === '#dividends' ? 'dividends' : 'positions', false);
 
       if (data.sample) {
         $('samplebanner').innerHTML =
@@ -553,6 +568,7 @@
           renderPlatforms();
           renderDividends();
           renderCalendar();
+          renderProjectBoard();
         })
         .catch(function (err) {
           status.textContent = 'Could not fetch quotes — ' + (err && err.message ? err.message : 'request failed') +
@@ -566,6 +582,7 @@
           renderPlatforms();
           renderDividends();
           renderCalendar();
+          renderProjectBoard();
         });
     }
 
@@ -1053,6 +1070,107 @@
       $('calexport').addEventListener('click', function () { downloadCalendar(visible, 'private-portfolio-calendar.ics'); });
     }
 
+    function saveProjectGoals(statusText) {
+      projectGoals = window.PNTaskboard.normalize(projectGoals);
+      if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) return Promise.resolve(false);
+      return stockNotes.saveProjectBoard(projectGoals).then(function (saved) {
+        renderProjectBoard();
+        var status = $('projstatus');
+        if (status && statusText) status.textContent = statusText;
+        return saved;
+      });
+    }
+
+    function projectProgress(goal) {
+      if (goal.status === 'complete') return 100;
+      if (goal.status === 'in-progress') return 60;
+      if (goal.status === 'blocked') return 35;
+      if (goal.status === 'planned') return 20;
+      return 0;
+    }
+
+    function renderProjectBoard() {
+      var host = $('portfolio-projects');
+      if (!host) return;
+      var vaultReady = !!(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked() && projectBoardReady);
+      var goals = window.PNTaskboard.normalize(projectGoals);
+      var stats = window.PNTaskboard.metrics(goals, new Date().toISOString().slice(0, 10));
+      var today = new Date().toISOString().slice(0, 10);
+      var editing = projectEditingId && projectEditingId !== '__new__' ? goals.filter(function (goal) { return goal.id === projectEditingId; })[0] : null;
+      var showEditor = projectEditingId === '__new__' || !!editing;
+
+      var editorHtml = showEditor ? '<form class="goal-editor" id="goalform"><h3>' + (editing ? 'Edit goal' : 'Add project goal') + '</h3><fieldset' + (vaultReady ? '' : ' disabled') + '><div class="goal-formgrid">' +
+        '<label class="fld wide"><span>Goal</span><input type="text" name="title" value="' + esc(editing ? editing.title : '') + '" placeholder="Connect read-only portfolio data" maxlength="120" required></label>' +
+        '<label class="fld"><span>Stage</span><select name="status">' + window.PNTaskboard.columns.map(function (column) { return '<option value="' + column.id + '"' + ((editing ? editing.status : 'planned') === column.id ? ' selected' : '') + '>' + column.label + '</option>'; }).join('') + '</select></label>' +
+        '<label class="fld"><span>Target date</span><input type="date" name="targetDate" value="' + esc(editing ? editing.targetDate : '') + '"></label>' +
+        '<label class="fld wide"><span>Outcome</span><textarea name="outcome" placeholder="What will be true when this is finished?">' + esc(editing ? editing.outcome : '') + '</textarea></label>' +
+        '<label class="fld wide"><span>Next action</span><textarea name="nextAction" placeholder="The next concrete step to move this forward.">' + esc(editing ? editing.nextAction : '') + '</textarea></label>' +
+        '<label class="fld"><span>Milestones · one per line</span><textarea name="milestones" placeholder="Define scope&#10;Build the first slice&#10;Verify and publish">' + esc(editing ? editing.milestones.join('\n') : '') + '</textarea></label>' +
+        '<label class="fld"><span>Dependencies · one per line</span><textarea name="dependencies" placeholder="OAuth approval&#10;Read-only provider">' + esc(editing ? editing.dependencies.join('\n') : '') + '</textarea></label>' +
+        '<label class="fld wide"><span>Related tracker or calendar link</span><input type="text" name="relatedLink" value="' + esc(editing ? editing.relatedLink : '') + '" placeholder="#calendar or https://…"></label>' +
+        '</div><div class="goal-formactions"><button type="submit" class="btn primary">' + (editing ? 'Update goal' : 'Save goal') + '</button><button type="button" class="btn" id="goalcancel">Cancel</button><p class="goal-formstatus">Encrypted on this device.</p></div></fieldset></form>' : '';
+
+      var boardHtml = window.PNTaskboard.columns.map(function (column) {
+        var columnGoals = goals.filter(function (goal) { return goal.status === column.id; });
+        var cards = columnGoals.length ? columnGoals.map(function (goal) {
+          var progress = projectProgress(goal);
+          var overdue = goal.targetDate && goal.targetDate < today && goal.status !== 'complete';
+          var meta = (goal.targetDate ? '<span class="' + (overdue ? 'overdue' : '') + '">' + (overdue ? 'overdue · ' : 'target · ') + esc(goal.targetDate) + '</span>' : '') +
+            (goal.milestones.length ? '<span>' + goal.milestones.length + ' milestone' + (goal.milestones.length === 1 ? '' : 's') + '</span>' : '') +
+            (goal.dependencies.length ? '<span>' + goal.dependencies.length + ' dependenc' + (goal.dependencies.length === 1 ? 'y' : 'ies') + '</span>' : '');
+          var related = goal.relatedLink ? (goal.relatedLink.charAt(0) === '#'
+            ? '<button type="button" class="proj-link" data-link="' + esc(goal.relatedLink) + '">Open linked view</button>'
+            : '<a href="' + esc(goal.relatedLink) + '" target="_blank" rel="noopener noreferrer">Open link</a>') : '';
+          return '<article class="proj-card" data-goal-id="' + esc(goal.id) + '"><h4>' + esc(goal.title) + '</h4>' +
+            (goal.outcome ? '<p class="proj-outcome">' + esc(goal.outcome) + '</p>' : '') +
+            (goal.nextAction ? '<div class="proj-next"><span>Next action</span><b>' + esc(goal.nextAction) + '</b></div>' : '') +
+            '<div class="proj-progress" aria-label="' + progress + ' percent stage progress"><div class="proj-progressbar"><i style="width:' + progress + '%"></i></div><span>' + progress + '%</span></div>' +
+            (meta ? '<div class="proj-meta">' + meta + '</div>' : '') +
+            '<div class="proj-cardactions"><button type="button" class="proj-move" data-dir="-1"' + (column.id === 'backlog' ? ' disabled' : '') + ' aria-label="Move ' + esc(goal.title) + ' left">←</button><button type="button" class="proj-move" data-dir="1"' + (column.id === 'complete' ? ' disabled' : '') + ' aria-label="Move ' + esc(goal.title) + ' right">→</button>' + related + '<button type="button" class="proj-edit">Edit</button><button type="button" class="proj-delete">Delete</button></div></article>';
+        }).join('') : '<p class="proj-empty">No goals in this stage.</p>';
+        return '<section class="proj-column" data-status="' + column.id + '"><div class="proj-colhead"><h3>' + column.label + '</h3><span>' + columnGoals.length + '</span></div><div class="proj-cards">' + cards + '</div></section>';
+      }).join('');
+
+      host.innerHTML = '<div class="proj-head"><div><h2>Portfolio project board</h2><p>Goals, milestones, blockers, and the next concrete action.</p></div><span class="cal-private">encrypted · Obsidian ready</span></div>' +
+        '<div class="proj-summary"><div class="proj-stat"><b>' + stats.active + '</b><span>active goals</span></div><div class="proj-stat"><b>' + stats.dueSoon + '</b><span>due next 30 days</span></div><div class="proj-stat"><b>' + stats.blocked + '</b><span>blocked</span></div><div class="proj-stat"><b>' + stats.complete + '</b><span>complete</span></div></div>' +
+        '<div class="proj-toolbar"><p id="projstatus">' + (vaultReady ? 'Changes save into the encrypted stock vault.' : 'Unlocking the encrypted stock vault…') + '</p><div class="proj-actions"><button type="button" class="btn primary" id="projnew"' + (vaultReady ? '' : ' disabled') + '>+ New goal</button><button type="button" class="btn" id="projobsidian"' + (vaultReady ? '' : ' disabled') + '>Open in Obsidian</button></div></div>' + editorHtml + '<div class="proj-boardscroll"><div class="proj-board" aria-label="Portfolio project goals">' + boardHtml + '</div></div>';
+
+      if ($('projnew')) $('projnew').addEventListener('click', function () { projectEditingId = '__new__'; renderProjectBoard(); var title = $('goalform') && $('goalform').elements.title; if (title) title.focus(); });
+      if ($('projobsidian')) $('projobsidian').addEventListener('click', function () {
+        saveProjectGoals().then(function () { if (stockNotes.openProjectBoard()) { activateTrackerPanel('obsidian', false); document.getElementById('stocknotes').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
+      });
+      if ($('goalcancel')) $('goalcancel').addEventListener('click', function () { projectEditingId = null; renderProjectBoard(); });
+      if ($('goalform')) $('goalform').addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (!vaultReady) return;
+        var fields = event.currentTarget.elements, now = new Date().toISOString();
+        var next = {
+          id: editing ? editing.id : 'goal-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          title: fields.title.value.trim(), status: fields.status.value, outcome: fields.outcome.value.trim(),
+          nextAction: fields.nextAction.value.trim(), targetDate: fields.targetDate.value,
+          milestones: fields.milestones.value.split(/\r?\n/), dependencies: fields.dependencies.value.split(/\r?\n/),
+          relatedLink: fields.relatedLink.value.trim(), created: editing ? editing.created : now, updated: now
+        };
+        if (!next.title) return;
+        if (editing) projectGoals = projectGoals.map(function (goal) { return goal.id === editing.id ? next : goal; });
+        else projectGoals.push(next);
+        projectEditingId = null;
+        saveProjectGoals('Goal saved in the encrypted vault.');
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.proj-move'), function (button) {
+        button.addEventListener('click', function () { var card = button.closest('.proj-card'); projectGoals = window.PNTaskboard.move(projectGoals, card.dataset.goalId, Number(button.dataset.dir)); saveProjectGoals('Goal stage updated.'); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.proj-edit'), function (button) {
+        button.addEventListener('click', function () { projectEditingId = button.closest('.proj-card').dataset.goalId; renderProjectBoard(); var title = $('goalform') && $('goalform').elements.title; if (title) title.focus(); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.proj-delete'), function (button) {
+        button.addEventListener('click', function () { var id = button.closest('.proj-card').dataset.goalId; var goal = projectGoals.filter(function (item) { return item.id === id; })[0]; if (!goal || !confirm('Delete “' + goal.title + '” from the private project board?')) return; projectGoals = projectGoals.filter(function (item) { return item.id !== id; }); saveProjectGoals('Goal deleted.'); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.proj-link'), function (button) {
+        button.addEventListener('click', function () { activateTrackerPanel(button.dataset.link.slice(1), true); });
+      });
+    }
+
     function journalFor(row) {
       if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) return null;
       return stockNotes.getPositionJournal(positionKey(row));
@@ -1251,11 +1369,19 @@
             var savedCalendar = stockNotes.getCalendarData();
             privateCalendarEvents = savedCalendar && Array.isArray(savedCalendar.events) ? savedCalendar.events : [];
             dividendEdits = Object.assign({}, savedCalendar && savedCalendar.dividendOverrides || {}, dividendEdits);
+            var savedBoard = stockNotes.getProjectBoard();
+            projectBoardReady = true;
+            if (savedBoard && savedBoard.id) projectGoals = window.PNTaskboard.normalize(savedBoard.goals);
+            else {
+              projectGoals = window.PNTaskboard.seed();
+              stockNotes.saveProjectBoard(projectGoals);
+            }
           }
           renderPlatforms();
           renderHeadline(currentQuoteSummary());
           renderDividends();
           renderCalendar();
+          renderProjectBoard();
         });
       }
     }

@@ -185,6 +185,7 @@
       noteType: (fields && fields.noteType) || null,
       calendarEvents: (fields && fields.calendarEvents) || [],
       dividendOverrides: (fields && fields.dividendOverrides) || {},
+      projectGoals: (fields && fields.projectGoals) || [],
       created: now,
       updated: now
     };
@@ -269,6 +270,9 @@
     if (note.dividendOverrides && Object.keys(note.dividendOverrides).length) {
       fm.push('dividend_overrides_json: ' + yamlStr(JSON.stringify(note.dividendOverrides)));
     }
+    if (note.projectGoals && note.projectGoals.length) {
+      fm.push('project_goals_json: ' + yamlStr(JSON.stringify(note.projectGoals)));
+    }
     if (note.tags && note.tags.length) {
       fm.push('tags: [' + note.tags.map(yamlStr).join(', ') + ']');
     }
@@ -314,6 +318,31 @@
       });
       body += '\n<!-- pn-calendar:end -->\n\n';
     }
+    if (note.projectGoals && note.projectGoals.length) {
+      var boardCell = function (value) { return String(value || '').replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); };
+      var boardColumns = [
+        ['backlog', 'Backlog'], ['planned', 'Planned'], ['in-progress', 'In progress'],
+        ['blocked', 'Blocked'], ['complete', 'Complete']
+      ];
+      body += '<!-- pn-taskboard:start -->\n## Portfolio project board\n\n';
+      boardColumns.forEach(function (column) {
+        body += '### ' + column[1] + '\n\n';
+        var goals = note.projectGoals.filter(function (goal) { return goal.status === column[0]; });
+        if (!goals.length) body += '- _No goals_\n';
+        goals.forEach(function (goal) {
+          body += '- [' + (goal.status === 'complete' ? 'x' : ' ') + '] **' + boardCell(goal.title) + '**';
+          if (goal.targetDate) body += ' — target ' + boardCell(goal.targetDate);
+          body += '\n';
+          if (goal.outcome) body += '  - Outcome: ' + boardCell(goal.outcome) + '\n';
+          if (goal.nextAction) body += '  - Next: ' + boardCell(goal.nextAction) + '\n';
+          if (goal.milestones && goal.milestones.length) body += '  - Milestones: ' + goal.milestones.map(boardCell).join(' · ') + '\n';
+          if (goal.dependencies && goal.dependencies.length) body += '  - Dependencies: ' + goal.dependencies.map(boardCell).join(' · ') + '\n';
+          if (goal.relatedLink) body += '  - Related: ' + boardCell(goal.relatedLink) + '\n';
+        });
+        body += '\n';
+      });
+      body += '<!-- pn-taskboard:end -->\n\n';
+    }
     body += note.body || '';
 
     return fm.join('\n') + body + '\n';
@@ -329,7 +358,7 @@
     var note = {
       title: fallbackTitle || 'Imported note',
       body: text || '',
-      tags: [], ticker: null, outlook: null, positionKey: null, purchases: [], noteType: null, calendarEvents: [], dividendOverrides: {},
+      tags: [], ticker: null, outlook: null, positionKey: null, purchases: [], noteType: null, calendarEvents: [], dividendOverrides: {}, projectGoals: [],
       created: new Date().toISOString(),
       updated: new Date().toISOString()
     };
@@ -371,6 +400,12 @@
             note.dividendOverrides = dividendOverrides && typeof dividendOverrides === 'object' && !Array.isArray(dividendOverrides) ? dividendOverrides : {};
           } catch (e) { note.dividendOverrides = {}; }
         }
+        else if (k === 'project_goals_json') {
+          try {
+            var projectGoals = JSON.parse(unq(v));
+            note.projectGoals = Array.isArray(projectGoals) ? projectGoals : [];
+          } catch (e) { note.projectGoals = []; }
+        }
         else if (k === 'tags') {
           var inner = v.replace(/^\[|\]$/g, '');
           note.tags = inner ? inner.split(',').map(function (t) { return unq(t); }).filter(Boolean) : [];
@@ -390,6 +425,7 @@
        repeated Obsidian round trips never duplicate the table. */
     note.body = String(note.body || '').replace(/<!-- pn-purchases:start -->[\s\S]*?<!-- pn-purchases:end -->\s*/g, '');
     note.body = note.body.replace(/<!-- pn-calendar:start -->[\s\S]*?<!-- pn-calendar:end -->\s*/g, '');
+    note.body = note.body.replace(/<!-- pn-taskboard:start -->[\s\S]*?<!-- pn-taskboard:end -->\s*/g, '');
 
     /* Inline #tags in the body get folded into the tag list too. */
     var inlineTags = (note.body.match(/(^|\s)#([a-z0-9][\w/-]*)/gi) || [])

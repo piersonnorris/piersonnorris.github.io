@@ -1,4 +1,4 @@
-/* Build the password-gated tracker in CI.  This file never prints holdings,
+/* Build the password-gated tracker in CI or from the ignored local snapshot. This file never prints holdings,
    calendar data, spreadsheet IDs, credentials, or the tracker password. */
 const crypto = require('node:crypto');
 const fs = require('node:fs');
@@ -85,6 +85,22 @@ function reuseEncryptedPayload() {
   render(payload);
 }
 
+function buildFromLocalSnapshot() {
+  const handoffPath = path.join(ROOT, 'private', 'STOCK_HANDOFF.md');
+  const pinPath = path.join(ROOT, 'private', '.tracker-pin');
+  if (!fs.existsSync(handoffPath) || !fs.existsSync(pinPath)) fail('Private local tracker inputs were not found.');
+  const handoff = fs.readFileSync(handoffPath, 'utf8');
+  const match = /## Machine-readable snapshot[\s\S]*?```json\s*([\s\S]*?)```/.exec(handoff);
+  if (!match) fail('Private local tracker snapshot was not found.');
+  let snapshot;
+  try { snapshot = JSON.parse(match[1]); }
+  catch { fail('Private local tracker snapshot is invalid JSON.'); }
+  if (!snapshot || !Array.isArray(snapshot.holdings) || !snapshot.holdings.length) fail('Private local tracker snapshot has no holdings.');
+  const password = fs.readFileSync(pinPath, 'utf8').trim();
+  if (!password) fail('Private local tracker PIN is empty.');
+  render(seal({ generatedAt: new Date().toISOString(), months: [snapshot], quotes: {}, dividendCalendar: loadCalendar() }, password));
+}
+
 async function fetchMonths() {
   const { google } = require('googleapis');
   if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON || !process.env.SHEET_ID) fail('Missing Google Sheets tracker secrets.');
@@ -104,6 +120,10 @@ async function fetchMonths() {
 }
 
 async function main() {
+  if (process.argv.includes('--local-snapshot')) {
+    buildFromLocalSnapshot();
+    return;
+  }
   if (process.argv.includes('--reuse-payload')) {
     reuseEncryptedPayload();
     return;

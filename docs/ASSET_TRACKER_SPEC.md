@@ -174,3 +174,7 @@ The chart experience, provider boundary, accessibility requirements, phased enha
 ## 9. Private portfolio calendar
 
 The calendar data model, privacy boundary, accuracy rules, Google Calendar handoff, and deferred task-board/data-connection phases are maintained in [PORTFOLIO_CALENDAR_PLAN.md](PORTFOLIO_CALENDAR_PLAN.md).
+
+## 10. Private project task board
+
+The five-stage goals workflow, encrypted persistence model, Obsidian round trip, and Phase 3 integration boundary are maintained in [PORTFOLIO_TASKBOARD_PLAN.md](PORTFOLIO_TASKBOARD_PLAN.md).

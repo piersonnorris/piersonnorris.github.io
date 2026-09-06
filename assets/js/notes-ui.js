@@ -546,6 +546,31 @@
         var write = hit ? vault.update(hit.id, patch) : vault.create_note(patch);
         return write.then(function (note) { renderAll(); return note; });
       },
+      getProjectBoard: function () {
+        if (!vault.isUnlocked()) return null;
+        var hit = vault.list().filter(function (n) { return n.noteType === 'portfolio-project-board'; })[0];
+        return hit ? { id: hit.id, goals: Array.isArray(hit.projectGoals) ? hit.projectGoals.slice() : [] } : { id: null, goals: [] };
+      },
+      saveProjectBoard: function (goals) {
+        if (!vault.isUnlocked()) return Promise.resolve(false);
+        var hit = vault.list().filter(function (n) { return n.noteType === 'portfolio-project-board'; })[0];
+        var patch = {
+          title: 'Portfolio project board', noteType: 'portfolio-project-board',
+          projectGoals: Array.isArray(goals) ? goals : [],
+          tags: ['portfolio', 'projects', 'goals'], body: hit ? hit.body || '' : ''
+        };
+        var write = hit ? vault.update(hit.id, patch) : vault.create_note(patch);
+        return write.then(function (note) { renderAll(); return note; });
+      },
+      openProjectBoard: function () {
+        if (!vault.isUnlocked()) return false;
+        var hit = vault.list().filter(function (n) { return n.noteType === 'portfolio-project-board'; })[0];
+        if (!hit) return false;
+        state.selected = hit.id;
+        state.preview = true;
+        renderAll();
+        return true;
+      },
       /* used by the tracker page to jump straight into a ticker's note */
       openTicker: function (ticker) {
         if (!vault.isUnlocked()) return false;

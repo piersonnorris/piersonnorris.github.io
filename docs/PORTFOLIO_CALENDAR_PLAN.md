@@ -79,11 +79,11 @@ This phase uses safe Google Calendar handoff links and standards-based `.ics` ex
 - Filtered event types remain visually distinct without relying on color alone.
 - Calendar controls are native buttons, links, and form controls for keyboard access.
 
-## Next phases — held for review
+## Next phases
 
-### Phase 2: Project task board
+### Phase 2: Project task board — implemented
 
-Create a private goals board with Backlog, Planned, In progress, Blocked, and Complete columns. Each goal should include an outcome, milestones, next action, target date, dependencies, related portfolio/calendar links, and an Obsidian export.
+The private goals board is now available in the tracker's **Projects** tab. It includes Backlog, Planned, In progress, Blocked, and Complete columns; outcome, milestones, next action, target date, dependencies, related portfolio/calendar links; and an encrypted Obsidian export. See [PORTFOLIO_TASKBOARD_PLAN.md](PORTFOLIO_TASKBOARD_PLAN.md).
 
 ### Phase 3: Data connections
 

@@ -326,6 +326,17 @@
         nextAction: 'Add a bit of depth (sand texture/shadow under the board) and make sure its type pairing (Kalam + mono) still reads as a deliberate extension of the site’s Archivo/Plex system, not a break from it.',
         milestones: ['Texture/shadow pass', 'Typography consistency check'],
         dependencies: [], relatedLink: '', created: now, updated: now
+      },
+
+      /* ---- PN Tasks: Pierce's own queue -- open questions + ideas that
+         need his decision before anyone builds them. Mirrors
+         docs/ROADMAP.md §5. ---- */
+      {
+        id: 'goal-pn-easter-egg', title: 'PN Tasks · Ship-in-a-bottle Obsidian Easter egg', status: 'backlog',
+        outcome: 'A bottle-and-ship graphic (home and/or /notes/) pops its cork and frees the ship on click; clicking the ship opens a genuinely polished embedded Obsidian-vault viewer -- plus a similarly small-footprint, high-impact touch on the home page.',
+        nextAction: "Pierce picks a design direction (this overlaps R10 -- the viewer's look answers both) before Claude or ChatGPT builds anything.",
+        milestones: ['Design direction chosen (ties to R10)', 'Bottle/cork/ship click interaction', 'Embedded Obsidian viewer UI', 'Matching home-page touch'],
+        dependencies: ['R10 · Obsidian visual style', 'Pierce design direction'], relatedLink: '#projects', created: now, updated: now
       }
     ]);
   }

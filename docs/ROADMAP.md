@@ -4,7 +4,7 @@ The shared task list for the three people building this site: **Pierce** (owner,
 
 Sync rule: this file is canonical. The same list is mirrored to `TASKS.md` (Pierce's local Obsidian vault note, untracked) and seeded into the tracker's **Projects** board (`assets/js/taskboard.js → seed()`), which is also what `/island/` reads — so a card added there shows up in three places automatically. When a task changes state, update this file and the mirror you touched — whoever commits next reconciles the third.
 
-Updated: 2026-09-06 — §3a: 14 of the 22-item UI backlog built same-day, 8 deliberately deferred (each says why).
+Updated: 2026-09-06 — §5 PN Tasks added (Pierce's open-questions queue + idea backlog); §3a: 14 of the 22-item UI backlog built same-day, 8 deliberately deferred (each says why).
 
 ---
 
@@ -96,4 +96,17 @@ A full pass over the live site (Home, Experience, Notes, Tracker, Island), verif
 3. **Plain HTML/CSS/JS.** No frameworks, npm dependencies, or build steps for the site itself (the tracker's Node build script is the one sanctioned build).
 4. **The tracker ships encrypted.** Only `tools/tracker/build.js` writes `tools/tracker/index.html`; verify no plaintext holdings after every build.
 5. **Board ↔ Obsidian ↔ this file stay in sync** (see sync rule at top).
-6. **Local rebuild + test loop:** `node tools/tracker/build.js --local-snapshot`, `node tools/tracker/calendar.test.js`, `node tools/tracker/taskboard.test.js`, then click through the demo page.
+6. **Questions for Pierce get logged, not just asked in chat.** Anything Claude or ChatGPT can't resolve without Pierce goes in **§5 PN Tasks → Open questions** so it survives past one session.
+7. **Local rebuild + test loop:** `node tools/tracker/build.js --local-snapshot`, `node tools/tracker/calendar.test.js`, `node tools/tracker/taskboard.test.js`, then click through the demo page.
+
+## 5. PN Tasks — Pierce's queue
+
+A dedicated inbox for anything that specifically needs Pierce: an open question Claude or ChatGPT can't resolve alone, or a feature idea that needs his call before anyone starts building. Standing rule (also in §4): **log it here as soon as it comes up — don't just ask in chat and let the answer evaporate.** Mirrors `TASKS.md` and the taskboard seed (`assets/js/taskboard.js`) like everything else in this file.
+
+### Open questions for Pierce
+
+*(none open right now — the next one lands here, not buried in a reply)*
+
+### Idea backlog — needs Pierce's decision before anyone builds it
+
+- **Ship-in-a-bottle Easter egg** (raised 2026-09-06). A bottle-and-ship graphic somewhere on the site — click the bottle and the cork pops, pull the ship free; click the ship and it opens an embedded Obsidian-vault viewer with a genuinely polished UI, not just an iframe dump. Directly overlaps **R10 (Obsidian visual style)** — the viewer's look *is* that open design question, so picking one direction answers both. Pierce also wants something similarly small-footprint-but-high-impact on the home page itself. **Owner: Pierce.** Needs a design direction first — single-note view vs. graph view, colors/typography carried over from R10's pick, where the bottle actually lives (home vs. `/notes/`) — before Claude or ChatGPT should build any of it.

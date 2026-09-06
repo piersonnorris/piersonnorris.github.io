@@ -4,7 +4,7 @@ The shared task list for the three people building this site: **Pierce** (owner,
 
 Sync rule: this file is canonical. The same list is mirrored to `TASKS.md` (Pierce's local Obsidian vault note, untracked) and seeded into the tracker's **Projects** board (`assets/js/taskboard.js → seed()`), which is also what `/island/` reads — so a card added there shows up in three places automatically. When a task changes state, update this file and the mirror you touched — whoever commits next reconciles the third.
 
-Updated: 2026-09-06 — added §3a, the 22-item UI polish backlog from that day's site audit.
+Updated: 2026-09-06 — §3a: 14 of the 22-item UI backlog built same-day, 8 deliberately deferred (each says why).
 
 ---
 
@@ -55,39 +55,39 @@ Produce the PDF; it drops in at `/assets/resume/pierson-norris-resume.pdf`. The 
 - **R11. Real launch hardening** — before promoting the site: revisit the template page's deliberate demo login (`tools/tracker/index.template.html`, fake by design "for now" per Pierce 2026-09-05), run the BLUEPRINT §10 definition-of-done list, attach the `piersonnorris.com` domain (CNAME + absolute-URL sweep).
 - **R12. Chart indicators v2** — candlesticks, RSI/MACD, and EMA-crossover flags on the vault graph, only if Pierce actually uses v1.
 
-## 3a. UI polish backlog — audited 2026-09-06, catalogued only
+## 3a. UI polish backlog — audited 2026-09-06, 14/22 built 2026-09-06
 
-A full pass over the live site (Home, Experience, Notes, Tracker, Island), verified against the actual code rather than assumed — contrast ratios were measured, the favicon/skip-link/og:image gaps were grepped for, not guessed. All 22 mirror the taskboard seed (`assets/js/taskboard.js`) in the `backlog` column, so they show up on both the private Projects board and the public `/island/` page. **Nothing below is built yet** — move a card to `planned` before starting it.
+A full pass over the live site (Home, Experience, Notes, Tracker, Island), verified against the actual code rather than assumed — contrast ratios were measured, the favicon/skip-link/og:image gaps were grepped for, not guessed. All 22 mirror the taskboard seed (`assets/js/taskboard.js`), so they show up on both the private Projects board and the public `/island/` page. 14 were built the same day; 8 stayed in `backlog` on purpose (see each item).
 
 **Accessibility & standards**
-- **U1 — Fix low-contrast meta text.** `--dim` (#5c6675) on `--bg` measures 3.25:1, below the 4.5:1 WCAG AA floor for normal text. It's used for timestamps, footnotes, and dimmed labels across every page.
-- **U2 — Restore visible focus rings.** `site.css` sets `outline:none` on all input/textarea/select focus (border-color only takes over); the vault graph's `.vg-node:focus` does the same. Keyboard users lose a clear focus indicator in both places.
-- **U3 — Add a skip-to-content link.** None of the five pages has one.
-- **U4 — Ship the favicon.** Confirmed zero pages declare one, despite BLUEPRINT.md calling for a dark-ground "PN" mark since the start.
-- **U5 — Complete Open Graph + og:image.** Home has og:title/description; no page has an og:image, so shared links preview blank.
+- ✅ **U1 — Fix low-contrast meta text.** `--dim` measured 3.25:1 on `--bg`, below the 4.5:1 WCAG AA floor. Bumped to `#7a8392` (4.94:1).
+- ✅ **U2 — Restore visible focus rings.** Correction made *while* fixing this: input/textarea/select were already fine (a later `:focus-visible` rule with equal specificity already wins the outline back in the cascade) — only `.pnchart-graph .vg-node:focus` was genuinely broken, because its two-class selector (0,0,3,0) outranks the generic `[tabindex]:focus-visible` rule (0,0,2,0) regardless of source order. Added `.vg-node:focus-visible` with its own ring.
+- ✅ **U3 — Add a skip-to-content link.** Added to all five pages + 404.
+- ✅ **U4 — Ship the favicon.** A bold green "P" mark, dark rounded-square ground, as an SVG (`assets/img/favicon.svg`) linked from every `<head>`.
+- 🔲 **U5 — Complete Open Graph + og:image.** Still open: a compliant og:image needs a real raster (PNG/JPG) asset — Facebook/Twitter's crawlers don't reliably render SVG og:images, and this session has no image-generation tool. Needs a dedicated design pass.
 
 **Navigation & information architecture**
-- **U6 — Mobile nav menu.** Six nav links plus `·pin`/`·soon` tags now share one flex-wrap row; needs a hamburger/drawer under narrow widths.
-- **U7 — One real icon set.** Emoji are ad hoc today (🏝 in nav, 🐚⭐🦀 on the island, plain "·pin" text elsewhere) with no shared visual language.
-- **U8 — Wire the home feed to `updates.js`.** The homepage "Recent" list is hand-typed static HTML that will silently go stale; point it at the same data the tracker's Updates tab already reads.
-- **U9 — Site-wide "last updated" stamp**, sourced from U8's feed once it exists.
+- 🔲 **U6 — Mobile nav menu.** Real usability issue, sizable build (hamburger/drawer across five pages) — deferred to its own pass rather than rushed alongside 13 other changes.
+- 🔲 **U7 — One real icon set.** Deferred as a real design project; U15's empty-state icon is a first small step toward it.
+- ✅ **U8 — Wire the home feed to `updates.js`.** Re-scoped before building: `updates.js` tracks *website-engineering* changes, wrong subject matter for a career-facing homepage. Pinned an explicit sync-note comment to the real source of truth (the Experience page / CONTENT.md §3) instead.
+- 🔲 **U9 — Site-wide "last updated" stamp.** Re-scoped: `updates.js` is the wrong source here too, for the same reason as U8. Needs someone to decide what "last updated" should mean for a *public* page before anything gets built.
 
 **Tracker-specific UI**
-- **U10 — Sticky first column** on the platform tables, which now run 8 columns wide.
-- **U11 — Show/hide toggle on the API-key field** (currently a plain `type=password` with no reveal option).
-- **U12 — Compact agenda view for the calendar on mobile**, replacing the forced 680px-min horizontal scroll.
-- **U13 — Loading skeletons** instead of plain "Loading…" text in Charts/Positions.
-- **U14 — Group the Charts tab's control rows** (ticker chips / range / EMA toggles read as one dense stack today).
-- **U15 — Friendlier empty states** for a brand-new Obsidian vault, calendar, or project board.
-- **U16 — Row-hover highlight** across tracker tables.
+- ✅ **U10 — Sticky first column** on wide platform tables (verified via computed style: `position:sticky`).
+- ✅ **U11 — Show/hide toggle on the API-key field.**
+- 🔲 **U12 — Compact agenda view for the calendar on mobile.** Deferred: touching the calendar's rendering carries real regression risk; wanted its own focused pass.
+- 🔲 **U13 — Loading skeletons.** Deferred for time.
+- ✅ **U14 — Group the Charts tab's control rows** into three labeled groups (Stock / Range / Indicators).
+- ✅ **U15 — Friendlier empty states.** Checked all three named cases first: the Obsidian vault's blank state really was plain text (got an icon); the Calendar's per-day state and the board's per-column state were already dashed-box/friendly-copy — left those two alone.
+- ✅ **U16 — Row-hover highlight** across tracker tables.
 
 **Visual polish & consistency**
-- **U17 — Consolidate duplicated component CSS.** `.tile`/card/button patterns are redefined slightly differently per page.
-- **U18 — Subtle entrance animation** on Home's console tiles and the Experience timeline, respecting `prefers-reduced-motion`.
-- **U19 — Build the 404 page** (spec'd in BLUEPRINT.md, never built).
-- **U20 — `theme-color` meta tag** so mobile browser chrome matches the dark background.
-- **U21 — One radius/shadow scale.** `--r`/`--r-lg` exist, but notes.css/island.css/tracker inline styles each pick extra one-off values.
-- **U22 — Tie the Island page's look back to the brand** — a bit more depth/texture, and confirm its type pairing reads as an extension of the site system rather than a break from it.
+- 🔲 **U17 — Consolidate duplicated component CSS.** Deferred: real but risky, needs its own careful pass rather than a rushed refactor.
+- ✅ **U18 — Subtle entrance animation** on Home's console tiles and the Experience timeline's year sections, via a shared `.enter-fade` keyframe respecting `prefers-reduced-motion`.
+- ✅ **U19 — Build the 404 page.**
+- ✅ **U20 — `theme-color` meta tag** on every page (island uses its own sky-blue).
+- 🔲 **U21 — One radius/shadow scale.** Actually counted it: 13 distinct border-radius values (2–16px) across the repo, not a small drift. Forcing them all onto the existing two tokens would visibly break small elements (a 3px nail dot doesn't want a 10px radius) — the real fix is a proper 4–5 step scale mapped by hand, not a blind find-replace. Deferred rather than done carelessly.
+- ✅ **U22 — Tie the Island page's look back to the brand** — added a soft ground shadow under the sign board so it reads as sitting in the sand.
 
 ## 4. Standing rules (all three of us)
 

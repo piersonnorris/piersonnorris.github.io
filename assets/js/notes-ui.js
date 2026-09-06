@@ -274,6 +274,10 @@
       if (!note) {
         mainEl.innerHTML =
           '<div class="nv-blank">' +
+            '<svg class="nv-blankicon" width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">' +
+              '<path d="M4 13h4l1.5 3h5L16 13h4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' +
+              '<path d="M6 6h12l2 7v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6l2-7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' +
+            '</svg>' +
             '<p class="eyebrow">' + (mode === 'stocks' ? 'Stock notes' : 'Notes') + '</p>' +
             '<h3>' + (vault.list().length ? 'Pick a note' : 'Your vault is empty') + '</h3>' +
             '<p class="muted">' + (vault.list().length

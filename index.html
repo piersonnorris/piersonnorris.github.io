@@ -6,6 +6,8 @@
   <title>Pierson Norris</title>
   <meta name="description" content="Pierson Norris — founder of True North Services LLC, Finance &amp; Accounting student at Elon University (class of 2027), AI-workflow builder. Profile, portfolio, and the tools he builds for himself.">
   <link rel="canonical" href="https://piersonnorris.github.io/">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0e1116">
 
   <meta property="og:type" content="profile">
   <meta property="og:title" content="Pierson Norris">
@@ -137,6 +139,14 @@
       letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
       border:1px solid var(--line2);border-radius:999px;padding:3px 9px;
     }
+    /* U18: stagger the console tiles in on first load */
+    .console.enter-fade > *:nth-child(1){animation-delay:.02s}
+    .console.enter-fade > *:nth-child(2){animation-delay:.08s}
+    .console.enter-fade > *:nth-child(3){animation-delay:.14s}
+    .console.enter-fade > *:nth-child(4){animation-delay:.2s}
+    .console.enter-fade > *:nth-child(5){animation-delay:.26s}
+    .console.enter-fade > *:nth-child(6){animation-delay:.32s}
+
     .soonstrip{
       display:flex;flex-wrap:wrap;gap:10px 26px;align-items:baseline;
       border-top:1px solid var(--line);padding-top:22px;margin-top:40px;
@@ -153,6 +163,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
   <header class="sitehead">
     <div class="wrap">
       <nav class="sitenav" aria-label="Primary">
@@ -168,7 +179,7 @@
     </div>
   </header>
 
-  <main class="wrap">
+  <main class="wrap" id="main">
     <section class="hero">
       <div class="hero-grid">
         <div class="hero-copy">
@@ -211,7 +222,7 @@
       </div>
       <p>Personal systems</p>
     </div>
-    <div class="console">
+    <div class="console enter-fade">
 
       <a class="tile featured" href="/tools/tracker/">
         <p class="k">Portfolio <span class="lock">PIN</span></p>
@@ -243,6 +254,13 @@
         <span class="go">Open stock desk <span aria-hidden="true">→</span></span>
       </a>
 
+      <!-- U8: this feed is career highlights, hand-curated on purpose (it
+           needs editorial judgment about what's headline-worthy, not a
+           chronological log). Its real source of truth is the Experience
+           page / docs/CONTENT.md §3 — when either changes, update this
+           list to match. (assets/js/updates.js is a different feed: the
+           SITE's own build changelog, shown in the tracker's Updates tab —
+           wrong content for a career-facing homepage, so it stays separate.) -->
       <div class="tile wide" style="cursor:default">
         <p class="k">Recent</p>
         <h3>What's moved lately</h3>

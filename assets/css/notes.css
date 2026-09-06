@@ -110,6 +110,7 @@
   background:#161d26;border:0;border-radius:0;padding:24px;min-height:460px;
 }
 .nv-blank{display:grid;place-content:center;text-align:center;min-height:360px;gap:6px}
+.nv-blankicon{color:var(--line2);margin:0 auto 4px}
 .nv-blank h3{margin:6px 0 0}
 .nv-blank p{max-width:44ch;margin:0 auto}
 

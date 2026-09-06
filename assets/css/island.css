@@ -112,6 +112,13 @@ body.island-page{
 .island-lede{color:var(--ink-soft);max-width:56ch;margin:0 auto 30px;font-size:15px}
 
 .posts{position:relative;display:inline-block;margin:0 auto}
+/* U22: a soft ground shadow so the board reads as sitting IN the sand,
+   not floating over it */
+.posts::after{
+  content:"";position:absolute;left:8%;right:8%;bottom:-52px;height:22px;
+  background:radial-gradient(ellipse,rgba(74,49,23,.32),transparent 72%);
+  z-index:-1;
+}
 .postleg{
   position:absolute;bottom:-46px;width:16px;height:60px;background:linear-gradient(180deg,var(--wood-lt),var(--wood-dk));
   border-radius:3px;box-shadow:inset -3px 0 0 rgba(0,0,0,.15);

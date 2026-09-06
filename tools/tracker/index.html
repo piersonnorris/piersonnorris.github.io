@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>Portfolio Tracker — Pierson Norris</title>
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0e1116">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="/assets/css/site.css">
   <link rel="stylesheet" href="/assets/css/notes.css">
@@ -79,6 +81,23 @@
     .prices .body{padding:0 18px 18px;border-top:1px solid var(--line)}
     .prices .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:16px}
     .manualgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+    /* U11 */
+    .keyfield{position:relative}
+    .keyfield input{padding-right:40px}
+    .keyeye{
+      position:absolute;right:4px;top:50%;transform:translateY(-50%);
+      width:32px;height:32px;display:grid;place-items:center;background:transparent;border:0;
+      border-radius:7px;color:var(--dim);cursor:pointer;transition:color .15s,background .15s;
+    }
+    .keyeye:hover{color:var(--ink);background:var(--panel2)}
+    .keyeye[aria-pressed="true"]{color:var(--acc)}
+    /* U14: label each control row inside the Charts tab */
+    .ctrl-label{
+      font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+      color:var(--dim);margin:0 0 6px;display:block;
+    }
+    .ctrl-group{margin:0 0 14px}
+    .ctrl-group:last-child{margin-bottom:0}
     .manualgrid label > span{text-transform:none;letter-spacing:.04em;color:var(--acc)}
     .pricenote{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:14px 0 0;line-height:1.7}
 
@@ -192,7 +211,11 @@
     .stockchart h2{font-size:19px;margin:0}.stockchart .chart-copy{font-size:13px;color:var(--mut);margin:4px 0 0}
     .market-head{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:18px}.market-title{min-width:210px}.market-symbol{display:flex;align-items:center;gap:9px}.market-symbol b{font:800 27px/1 var(--display);letter-spacing:-.025em}.market-symbol span{font:10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--acc-hi);border:1px solid rgba(142,209,138,.32);border-radius:999px;padding:5px 7px}
     .market-quote{margin-left:auto;text-align:right}.market-quote strong{display:block;font:800 28px/1 var(--display);font-variant-numeric:tabular-nums}.market-quote span{font:500 12px/1.3 var(--mono)}.market-quote .up{color:#75d477}.market-quote .down{color:#f0726b}.market-quote .flat{color:var(--mut)}
-    .market-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}.tickerbar{display:flex;gap:6px;flex:1;min-width:220px;overflow-x:auto;padding-bottom:2px}.tickerbar .chip{padding:7px 10px;font-size:11px;white-space:nowrap}.rangebar{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}.rangebtn{appearance:none;border:0;background:transparent;color:var(--dim);font:500 10px/1 var(--mono);padding:7px 8px;border-radius:5px;cursor:pointer}.rangebtn:hover{color:var(--ink)}.rangebtn[aria-pressed="true"]{background:var(--line2);color:var(--acc-hi)}
+    /* U14: three clearly-labeled control groups instead of one dense row */
+    .market-controls{padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}
+    .tickerbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}.tickerbar .chip{padding:7px 10px;font-size:11px;white-space:nowrap}
+    .rangebar{display:inline-flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+    .rangebtn{appearance:none;border:0;background:transparent;color:var(--dim);font:500 10px/1 var(--mono);padding:7px 8px;border-radius:5px;cursor:pointer}.rangebtn:hover{color:var(--ink)}.rangebtn[aria-pressed="true"]{background:var(--line2);color:var(--acc-hi)}
     .market-chart-shell{position:relative;min-height:300px}.market-frame{position:relative}.pnchart-market{min-height:260px}.pnchart-market:focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}.market-tooltip{position:absolute;z-index:3;min-width:156px;transform:translate(-50%,-110%);pointer-events:none;background:rgba(10,14,19,.96);border:1px solid var(--line2);border-radius:8px;padding:9px 10px;box-shadow:0 12px 30px rgba(0,0,0,.35);font:10.5px/1.45 var(--mono);color:var(--mut)}.market-tooltip b,.market-tooltip span{display:block}.market-tooltip b{color:var(--ink);margin-bottom:3px}.market-tooltip span:first-of-type{color:var(--acc-hi)}
     .market-kpis{display:grid;grid-template-columns:repeat(5,minmax(90px,1fr));gap:8px;margin-top:12px}.market-kpi{background:rgba(10,14,19,.5);border:1px solid var(--line);border-radius:8px;padding:9px 10px}.market-kpi span{display:block;font:9px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}.market-kpi b{font:600 13px/1.2 var(--mono);font-variant-numeric:tabular-nums}.market-kpi b.up{color:#75d477}.market-kpi b.down{color:#f0726b}
     .stockchart-status{font-family:var(--mono);font-size:11px;color:var(--dim);margin:12px 0 0}.market-setup{display:grid;place-items:center;min-height:285px;border:1px dashed var(--line2);border-radius:10px;background:rgba(9,12,16,.3);text-align:center;padding:28px}.market-setup b{display:block;font:700 17px var(--display);color:var(--ink);margin-bottom:6px}.market-setup p{max-width:52ch;margin:0;color:var(--mut);font-size:13px}
@@ -207,6 +230,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
   <header class="sitehead">
     <div class="wrap">
       <nav class="sitenav" aria-label="Primary">
@@ -222,7 +246,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main">
     <div class="wrap-wide">
 
       <section id="lock">
@@ -269,7 +293,15 @@
                 </select>
               </label>
               <label class="fld"><span>API key</span>
-                <input type="password" id="apikey" placeholder="paste your key" autocomplete="off">
+                <div class="keyfield">
+                  <input type="password" id="apikey" placeholder="paste your key" autocomplete="off">
+                  <button type="button" class="keyeye" id="apikeytoggle" aria-label="Show API key" aria-pressed="false">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8"/>
+                      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>
+                    </svg>
+                  </button>
+                </div>
               </label>
               <label class="fld"><span>&nbsp;</span>
                 <button type="button" class="btn primary" id="refresh" style="width:100%;justify-content:center">Refresh prices</button>
@@ -618,6 +650,15 @@
       if (cfg.apikey) $('apikey').value = cfg.apikey;
     }
 
+    /* U11 */
+    $('apikeytoggle').addEventListener('click', function () {
+      var input = $('apikey');
+      var showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      $('apikeytoggle').setAttribute('aria-pressed', String(!showing));
+      $('apikeytoggle').setAttribute('aria-label', showing ? 'Show API key' : 'Hide API key');
+    });
+
     $('refresh').addEventListener('click', function () {
       var cfg = window.PNPrices.loadCfg();
       cfg.provider = $('provider').value;
@@ -883,15 +924,18 @@
       $('stockchart').innerHTML =
         '<div class="market-head"><div class="market-title"><div class="market-symbol"><b>' + esc(activeChartSymbol) + '</b><span>owned</span></div><p class="chart-copy">Price, volume, and position context</p></div>' +
         '<div class="market-quote" id="marketquote"><strong>' + (isFinite(holding.price) ? esc(money(holding.price)) : '—') + '</strong><span class="flat">Waiting for history</span></div></div>' +
-        '<div class="market-controls"><div class="tickerbar" aria-label="Choose an owned stock">' + list.map(function (symbol) {
+        '<div class="market-controls">' +
+        '<div class="ctrl-group"><span class="ctrl-label">Stock</span><div class="tickerbar" aria-label="Choose an owned stock">' + list.map(function (symbol) {
           return '<button type="button" class="chip" data-symbol="' + esc(symbol) + '" aria-pressed="' + (symbol === activeChartSymbol) + '">' + esc(symbol.replace('/USD', '')) + '</button>';
-        }).join('') + '</div><div class="rangebar" aria-label="Chart range">' + ['1M', '3M', '6M', '1Y'].map(function (range) {
+        }).join('') + '</div></div>' +
+        '<div class="ctrl-group"><span class="ctrl-label">Range</span><div class="rangebar" aria-label="Chart range">' + ['1M', '3M', '6M', '1Y'].map(function (range) {
           return '<button type="button" class="rangebtn" data-range="' + range + '" aria-pressed="' + (range === activeChartRange) + '">' + range + '</button>';
-        }).join('') + '</div><div class="emabar" role="group" aria-label="Moving-average overlays"><span class="lbl">EMA</span>' +
+        }).join('') + '</div></div>' +
+        '<div class="ctrl-group"><span class="ctrl-label">Indicators</span><div class="emabar" role="group" aria-label="Moving-average overlays">' +
         EMA_PERIODS.map(function (period) {
           return '<button type="button" class="emabtn" data-ema="' + period + '" style="--ema:' + EMA_COLORS[period] +
             '" aria-pressed="' + !!loadEmaState()[period] + '">' + period + '</button>';
-        }).join('') + '<button type="button" class="emabtn off" data-ema="off">Turn off</button></div></div><div class="market-chart-shell" id="c-stock"></div><div class="market-kpis" id="marketkpis">' +
+        }).join('') + '<button type="button" class="emabtn off" data-ema="off">Turn off</button></div></div></div><div class="market-chart-shell" id="c-stock"></div><div class="market-kpis" id="marketkpis">' +
         '<div class="market-kpi"><span>Range return</span><b>—</b></div><div class="market-kpi"><span>Range high</span><b>—</b></div><div class="market-kpi"><span>Range low</span><b>—</b></div><div class="market-kpi"><span>Average close</span><b>—</b></div><div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' shares</b></div>' +
         '</div><p class="stockchart-status" id="stockchartstatus"></p>';
       Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-symbol]'), function (button) {

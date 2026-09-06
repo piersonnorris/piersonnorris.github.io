@@ -8,6 +8,7 @@
 
 !/.gitignore
 !/.nojekyll
+!/404.html
 !/README.md
 !/HANDOFF_PROMPT.md
 !/index.html

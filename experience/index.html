@@ -6,6 +6,8 @@
   <title>Experience — Pierson Norris</title>
   <meta name="description" content="Pierson Norris — experience timeline, 2023 to now. True North Services LLC, Elon University, the Screencastify AI internship, and the systems behind each.">
   <link rel="canonical" href="https://piersonnorris.github.io/experience/">
+  <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0e1116">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <style>
     :root{
@@ -205,6 +207,12 @@
     a:focus-visible,.chip:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
     [hidden]{display:none !important}
 
+    /* U18: stagger the year sections in on first load */
+    .rail.enter-fade > .year:nth-of-type(1){animation-delay:.02s}
+    .rail.enter-fade > .year:nth-of-type(2){animation-delay:.1s}
+    .rail.enter-fade > .year:nth-of-type(3){animation-delay:.18s}
+    .rail.enter-fade > .year:nth-of-type(4){animation-delay:.26s}
+
     @media (max-width:640px){
       body{font-size:15px}
       .wrap{padding:0 18px}
@@ -221,6 +229,7 @@
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
   <header>
     <div class="wrap">
       <nav aria-label="Primary">
@@ -238,7 +247,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="main">
     <div class="wrap">
       <section class="intro" aria-labelledby="pagetitle">
         <p class="eyebrow">Experience — 2023 → now</p>
@@ -267,7 +276,7 @@
     </div>
 
     <div class="wrap">
-      <div class="rail" id="rail">
+      <div class="rail enter-fade" id="rail">
 
         <!-- ================= 2026 ================= -->
         <section class="year" id="y2026" aria-labelledby="h2026">

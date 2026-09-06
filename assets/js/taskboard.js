@@ -160,6 +160,165 @@
         nextAction: 'Collect feedback; candlesticks/RSI only if v1 gets real use (R12).',
         milestones: ['EMA overlays + toggles', 'Payout projection', 'Fake demo login', 'Vault graph'],
         dependencies: [], relatedLink: '#charts', created: now, updated: now
+      },
+
+      /* ---- U1-U22: UI audit, 2026-09-06. Catalogued only — nothing
+         here is built yet. Mirrors docs/ROADMAP.md "UI polish backlog".
+         All start in backlog; move a card to plan one, don't build
+         from this list without moving it first. */
+      {
+        id: 'goal-ui-contrast', title: 'U1 · Fix low-contrast meta text', status: 'backlog',
+        outcome: 'Timestamps, footnotes, and dimmed labels meet WCAG AA (4.5:1) instead of failing at 3.25:1.',
+        nextAction: 'Lighten --dim in site.css (measured 3.25:1 on --bg) and re-check every page that leans on it for meta/timestamp text.',
+        milestones: ['Re-measure all token pairs', 'Pick a compliant --dim', 'Sweep pages for regressions'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-focus', title: 'U2 · Restore visible focus rings', status: 'backlog',
+        outcome: 'Keyboard users can always see what is focused, on every input and the vault graph.',
+        nextAction: 'site.css currently sets outline:none on all input/textarea/select focus (border-color only); add a real focus-visible ring back, and give .vg-node:focus (also outline:none) its own visible ring.',
+        milestones: ['Inputs/selects/textareas', 'Vault graph nodes', 'Tab through every page once'],
+        dependencies: [], relatedLink: '#projects', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-skiplink', title: 'U3 · Add a skip-to-content link', status: 'backlog',
+        outcome: 'Screen-reader and keyboard users can jump past the nav on every page.',
+        nextAction: 'None of the five pages has one today. Add a visually-hidden-until-focused "Skip to content" link right after <body> on each.',
+        milestones: ['Shared markup/CSS', 'Home/Experience/Notes', 'Tracker + Island'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-favicon', title: 'U4 · Ship the favicon', status: 'backlog',
+        outcome: 'A dark-ground "PN" mark in the browser tab, as BLUEPRINT.md always called for.',
+        nextAction: 'Confirmed: zero pages currently declare a favicon. Design the mark, export sizes, link it from every <head>.',
+        milestones: ['Design the mark', 'Export favicon set', 'Link from all five pages'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-og', title: 'U5 · Complete Open Graph + og:image', status: 'backlog',
+        outcome: 'Sharing the site anywhere shows a real preview card instead of a blank one.',
+        nextAction: 'Home has og:title/description but no og:image anywhere on the site; produce one share image and wire it into Home + Experience.',
+        milestones: ['Design a 1200×630 share image', 'Add og:image + twitter:image', 'Validate with a link-preview tool'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-mobilenav', title: 'U6 · Mobile nav menu', status: 'backlog',
+        outcome: 'The nav reads cleanly on a phone instead of wrapping into a ragged multi-line stack.',
+        nextAction: 'Six links plus ·pin/·soon tags now share one flex-wrap row; design a hamburger/drawer for narrow widths.',
+        milestones: ['Menu button + drawer', 'Apply across all five pages', 'Test at 360px'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-icons', title: 'U7 · One real icon set', status: 'backlog',
+        outcome: 'Lock, chart, note, and island cues look like one visual language instead of ad hoc emoji.',
+        nextAction: 'Today it is a mix: 🏝 in nav, 🐚⭐🦀 on the island, plain "·pin" text elsewhere. Design a small inline-SVG icon set and swap them in.',
+        milestones: ['Pick 6-8 icons needed', 'Draw as inline SVG', 'Replace emoji site-wide'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-homefeed', title: 'U8 · Wire the home feed to updates.js', status: 'backlog',
+        outcome: 'The "Recent" list on the homepage can never silently go stale again.',
+        nextAction: 'Home’s feed is hand-typed static HTML; point it at the same assets/js/updates.js entries the tracker’s Updates tab already reads.',
+        milestones: ['Home reads updates.js', 'Cap to latest N entries', 'Delete the hard-coded list'],
+        dependencies: [], relatedLink: '#updates', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-freshness-badge', title: 'U9 · Site-wide "last updated" stamp', status: 'backlog',
+        outcome: 'Every visitor (and future us) can see at a glance how current the public pages are.',
+        nextAction: 'Add a small footer/header stamp sourced from the newest updates.js entry, on Home and Experience at minimum.',
+        milestones: ['Pick the placement', 'Source from updates.js', 'Add to Home + Experience'],
+        dependencies: ['U8'], relatedLink: '#updates', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-stickycol', title: 'U10 · Sticky first column on wide tables', status: 'backlog',
+        outcome: 'The Holding name stays visible while scrolling a position row sideways on mobile.',
+        nextAction: 'Platform tables now run 8 columns (Holding/Amount/Unit/Price/Value/Notes/Include/Details); make the first column position:sticky inside .tscroll.',
+        milestones: ['Sticky CSS on td:first-child', 'Verify with real horizontal scroll', 'Check it in both light content states'],
+        dependencies: [], relatedLink: '#positions', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-keyeye', title: 'U11 · Show/hide toggle on the API key field', status: 'backlog',
+        outcome: 'Pasting a market-data key lets you actually verify it before saving.',
+        nextAction: 'The Price-source key input is a plain type=password with no reveal option; add an eye-icon toggle.',
+        milestones: ['Eye-icon button', 'Toggle type password/text', 'Keep it keyboard-operable'],
+        dependencies: [], relatedLink: '#charts', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-calendar-mobile', title: 'U12 · Compact agenda view for the calendar on mobile', status: 'backlog',
+        outcome: 'Checking dividend dates on a phone no longer means scrolling a full month grid sideways.',
+        nextAction: 'cal-board forces a 680px-min horizontal scroll on every screen; add a list/agenda layout under ~600px instead.',
+        milestones: ['Design the agenda list', 'Swap in under a breakpoint', 'Keep the desktop grid untouched'],
+        dependencies: [], relatedLink: '#calendar', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-skeletons', title: 'U13 · Loading skeletons instead of "Loading…" text', status: 'backlog',
+        outcome: 'Charts and tables feel like they are actively working, not stalled, while data resolves.',
+        nextAction: 'Replace plain loading copy in the Charts and Positions panels with a shimmering placeholder block.',
+        milestones: ['One reusable skeleton component', 'Charts tab', 'Positions tab'],
+        dependencies: [], relatedLink: '#charts', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-chartcontrols', title: 'U14 · Group the Charts tab’s control rows', status: 'backlog',
+        outcome: 'Ticker chips, range buttons, and EMA toggles read as three clear groups, not one dense stack.',
+        nextAction: 'Add small section labels/spacing so the eye can separate "which stock" from "which range" from "which EMAs."',
+        milestones: ['Label each row', 'Tighten spacing rules', 'Re-check on mobile'],
+        dependencies: [], relatedLink: '#charts', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-emptystates', title: 'U15 · Friendlier empty states', status: 'backlog',
+        outcome: 'A brand-new vault, calendar, or board greets you with something warmer than plain text.',
+        nextAction: 'Add a small icon + one-line prompt for the Obsidian tab, Calendar, and Projects board before any content exists.',
+        milestones: ['Obsidian tab', 'Calendar', 'Projects board'],
+        dependencies: [], relatedLink: '#stocknotes', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-rowhover', title: 'U16 · Row-hover highlight on tracker tables', status: 'backlog',
+        outcome: 'Easier to track a row across many columns on a wide screen.',
+        nextAction: 'Add a subtle background change on tr:hover across all tracker tables (positions, dividends).',
+        milestones: ['One shared rule in site.css', 'Verify contrast still passes'],
+        dependencies: [], relatedLink: '#positions', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-componentdrift', title: 'U17 · Consolidate duplicated component CSS', status: 'backlog',
+        outcome: 'Cards, tiles, and buttons stop drifting apart as more pages get added.',
+        nextAction: '.tile/card/button patterns are redefined slightly differently per page; pull the shared shape into site.css once and reference it everywhere.',
+        milestones: ['Audit every page’s card/button CSS', 'Merge into site.css', 'Delete the per-page duplicates'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-entrance', title: 'U18 · Subtle entrance animation on first load', status: 'backlog',
+        outcome: 'Home’s console tiles and the Experience timeline feel a touch more premium on arrival.',
+        nextAction: 'Add a short fade/stagger-in on first paint, fully respecting prefers-reduced-motion (already the site’s pattern elsewhere).',
+        milestones: ['Home console tiles', 'Experience timeline cards'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-404', title: 'U19 · Build the 404 page', status: 'backlog',
+        outcome: 'A broken or old link lands somewhere on-brand instead of GitHub Pages’ default 404.',
+        nextAction: 'BLUEPRINT.md calls for a dark, terse 404 with a link home; it does not exist yet.',
+        milestones: ['Design + copy', 'Drop in 404.html at repo root'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-themecolor', title: 'U20 · theme-color meta tag', status: 'backlog',
+        outcome: 'Mobile browser chrome (the address-bar area) matches the site’s dark background instead of default white.',
+        nextAction: 'Add <meta name="theme-color" content="#0e1116"> to every page’s head.',
+        milestones: ['Add to all five pages', 'Spot-check on an actual phone'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-radiustoken', title: 'U21 · One radius/shadow scale', status: 'backlog',
+        outcome: 'Corner rounding and shadow depth stop varying page to page for no reason.',
+        nextAction: '--r (10px) and --r-lg (14px) exist in site.css, but notes.css/island.css/tracker inline styles each pick their own extra radii; consolidate onto the two tokens.',
+        milestones: ['Audit every border-radius value in the repo', 'Replace with the two tokens', 'Add a third token only if truly needed'],
+        dependencies: [], relatedLink: '', created: now, updated: now
+      },
+      {
+        id: 'goal-ui-islandpolish', title: 'U22 · Tie the Island page’s look back to the brand', status: 'backlog',
+        outcome: 'The island still feels like piersonnorris.com wearing a costume, not a separate site.',
+        nextAction: 'Add a bit of depth (sand texture/shadow under the board) and make sure its type pairing (Kalam + mono) still reads as a deliberate extension of the site’s Archivo/Plex system, not a break from it.',
+        milestones: ['Texture/shadow pass', 'Typography consistency check'],
+        dependencies: [], relatedLink: '', created: now, updated: now
       }
     ]);
   }

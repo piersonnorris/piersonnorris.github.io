@@ -101,7 +101,7 @@ A full pass over the live site (Home, Experience, Notes, Tracker, Island), verif
 
 ## 5. PN Tasks — Pierce's queue
 
-A dedicated inbox for anything that specifically needs Pierce: an open question Claude or ChatGPT can't resolve alone, or a feature idea that needs his call before anyone starts building. Standing rule (also in §4): **log it here as soon as it comes up — don't just ask in chat and let the answer evaporate.** Mirrors `TASKS.md` and the taskboard seed (`assets/js/taskboard.js`) like everything else in this file.
+A dedicated inbox for anything that specifically needs Pierce: an open question Claude or ChatGPT can't resolve alone, or a feature idea that needs his call before anyone starts building. Standing rule (also in §4): **log it here as soon as it comes up — don't just ask in chat and let the answer evaporate.** Every entry — question or idea — carries a **Source** line (who raised it, where, when) so it's traceable later instead of a bare, unattributed bullet. Mirrors `TASKS.md` and the taskboard seed (`assets/js/taskboard.js`) like everything else in this file.
 
 ### Open questions for Pierce
 
@@ -109,4 +109,5 @@ A dedicated inbox for anything that specifically needs Pierce: an open question 
 
 ### Idea backlog — needs Pierce's decision before anyone builds it
 
-- **Ship-in-a-bottle Easter egg** (raised 2026-09-06). A bottle-and-ship graphic somewhere on the site — click the bottle and the cork pops, pull the ship free; click the ship and it opens an embedded Obsidian-vault viewer with a genuinely polished UI, not just an iframe dump. Directly overlaps **R10 (Obsidian visual style)** — the viewer's look *is* that open design question, so picking one direction answers both. Pierce also wants something similarly small-footprint-but-high-impact on the home page itself. **Owner: Pierce.** Needs a design direction first — single-note view vs. graph view, colors/typography carried over from R10's pick, where the bottle actually lives (home vs. `/notes/`) — before Claude or ChatGPT should build any of it.
+- **Ship-in-a-bottle Easter egg.** A bottle-and-ship graphic somewhere on the site — click the bottle and the cork pops, pull the ship free; click the ship and it opens an embedded Obsidian-vault viewer with a genuinely polished UI, not just an iframe dump. Directly overlaps **R10 (Obsidian visual style)** — the viewer's look *is* that open design question, so picking one direction answers both. Pierce also wants something similarly small-footprint-but-high-impact on the home page itself. **Owner: Pierce.** Needs a design direction first — single-note view vs. graph view, colors/typography carried over from R10's pick, where the bottle actually lives (home vs. `/notes/`) — before Claude or ChatGPT should build any of it.
+  **Source:** Pierce, Cowork chat with Claude, 2026-09-06 — his own words: "reaching a visual obsidian with some [Easter] eggs on the website like a shipping [bottle] ... in addition to something like that on the home site too that looks small, but has impact."

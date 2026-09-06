@@ -333,7 +333,7 @@
          docs/ROADMAP.md §5. ---- */
       {
         id: 'goal-pn-easter-egg', title: 'PN Tasks · Ship-in-a-bottle Obsidian Easter egg', status: 'backlog',
-        outcome: 'A bottle-and-ship graphic (home and/or /notes/) pops its cork and frees the ship on click; clicking the ship opens a genuinely polished embedded Obsidian-vault viewer -- plus a similarly small-footprint, high-impact touch on the home page.',
+        outcome: 'A bottle-and-ship graphic (home and/or /notes/) pops its cork and frees the ship on click; clicking the ship opens a genuinely polished embedded Obsidian-vault viewer -- plus a similarly small-footprint, high-impact touch on the home page. Source: Pierce, Cowork chat with Claude, 2026-09-06.',
         nextAction: "Pierce picks a design direction (this overlaps R10 -- the viewer's look answers both) before Claude or ChatGPT builds anything.",
         milestones: ['Design direction chosen (ties to R10)', 'Bottle/cork/ship click interaction', 'Embedded Obsidian viewer UI', 'Matching home-page touch'],
         dependencies: ['R10 · Obsidian visual style', 'Pierce design direction'], relatedLink: '#projects', created: now, updated: now

@@ -13,11 +13,17 @@ This site is under construction (scaffold live 2026-08-23; full launch to follow
 
 ## Pages
 
+Live now:
 - /: profile and elevator pitch
-- /about/: full story
 - /experience/: timeline 2023–now (newest first, starting at 2026) + skills
+- /island/: public project roadmap and open-source-style to-do board, presented as a deserted island
+
+Not for crawling (password-gated, noindex): /notes/, /tools/tracker/
+
+Planned, not yet live (pending final content decisions — see docs/ROADMAP.md R4/R7):
+- /about/: full story
 - /projects/: True North digital infrastructure, portfolio tracker, Screencastify tooling, this site
-- /tools/: tools hub (tracker is password-gated; not for crawling)
+- /tools/: tools hub
 - /contact/: email + LinkedIn
 
 ## Contact

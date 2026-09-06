@@ -3,7 +3,6 @@
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
-const { google } = require('googleapis');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const TEMPLATE = path.join(__dirname, 'index.template.html');
@@ -62,7 +61,32 @@ function seal(data, password) {
   return { salt: salt.toString('base64'), iv: iv.toString('base64'), ct: ciphertext.toString('base64'), iter: 600000 };
 }
 
+function render(payload) {
+  const source = fs.readFileSync(TEMPLATE, 'utf8');
+  const next = source.replace(
+    /var PAYLOAD = \/\*__PAYLOAD__\*\/null\/\*__END__\*\//,
+    `var PAYLOAD = /*__PAYLOAD__*/${JSON.stringify(payload)}/*__END__*/`
+  );
+  if (next === source) fail('Tracker template payload marker was not found.');
+  fs.writeFileSync(OUTPUT, next);
+}
+
+function reuseEncryptedPayload() {
+  if (!fs.existsSync(OUTPUT)) fail('Existing encrypted tracker output was not found.');
+  const existing = fs.readFileSync(OUTPUT, 'utf8');
+  const match = existing.match(/var PAYLOAD = (?:\/\*__PAYLOAD__\*\/)?(\{[^\r\n]+\})(?:\/\*__END__\*\/)?;/);
+  if (!match) fail('Existing encrypted tracker payload was not found.');
+  let payload;
+  try { payload = JSON.parse(match[1]); }
+  catch { fail('Existing encrypted tracker payload is invalid.'); }
+  if (!payload || !payload.salt || !payload.iv || !payload.ct || !payload.iter) {
+    fail('Existing tracker payload is not a supported encrypted payload.');
+  }
+  render(payload);
+}
+
 async function fetchMonths() {
+  const { google } = require('googleapis');
   if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON || !process.env.SHEET_ID) fail('Missing Google Sheets tracker secrets.');
   let credentials;
   try { credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON); }
@@ -80,15 +104,16 @@ async function fetchMonths() {
 }
 
 async function main() {
+  if (process.argv.includes('--reuse-payload')) {
+    reuseEncryptedPayload();
+    return;
+  }
   const password = process.env.TRACKER_PASSWORD;
   if (!password) fail('TRACKER_PASSWORD is required.');
   const months = await fetchMonths();
   if (!months.length) fail('No month-named tabs were found.');
   const payload = seal({ generatedAt: new Date().toISOString(), months, quotes: {}, dividendCalendar: loadCalendar() }, password);
-  const source = fs.readFileSync(TEMPLATE, 'utf8');
-  const next = source.replace(/var PAYLOAD = \/\*__PAYLOAD__\*\/null\/\*__END__\*\//, `var PAYLOAD = /*__PAYLOAD__*/${JSON.stringify(payload)}/*__END__*/`);
-  if (next === source) fail('Tracker template payload marker was not found.');
-  fs.writeFileSync(OUTPUT, next);
+  render(payload);
 }
 
 main().catch((error) => { console.error('Tracker build failed:', error.message); process.exitCode = 1; });

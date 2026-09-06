@@ -5,150 +5,1261 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
   <title>Portfolio Tracker — Pierson Norris</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=IBM+Plex+Sans:wght@400;450;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/notes.css">
   <style>
-    :root{
-      --bg:#0e1116; --panel:#151b23; --line:#232d39; --line2:#2e3947;
-      --ink:#e9edf3; --mut:#8b95a5; --dim:#5c6675;
-      --acc:#5FAE5A; --acc-hi:#8ED18A; --bad:#e5534b;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);
-      font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
-      font-size:16px;line-height:1.6;font-weight:450;min-height:100svh;padding:0 0 64px}
-    ::selection{background:var(--acc);color:#0e1116}
-    a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
-    .wrap{max-width:880px;margin:0 auto;padding:0 20px}
-    header{border-bottom:1px solid var(--line)}
-    nav{display:flex;align-items:center;gap:22px;padding:16px 0;
-      font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px}
-    .brand{font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:15px;color:var(--ink);text-decoration:none;margin-right:auto}
-    nav a{color:var(--mut);text-decoration:none}
-    nav a:hover{color:var(--acc)}
-    nav a[aria-current="page"]{color:var(--acc);border-bottom:1px solid var(--acc);padding-bottom:2px}
+    main{padding:0 0 80px}
 
-    /* lock screen */
-    #lock{display:grid;place-items:center;min-height:70svh;padding:40px 0}
-    .card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);
-      border-radius:16px;padding:36px 32px;text-align:center}
-    .glyph{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px;letter-spacing:.3em;
-      color:var(--acc);border:1px solid var(--line2);border-radius:999px;display:inline-block;
-      padding:6px 16px 6px 19px;margin-bottom:20px}
-    .card h1{font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:28px;
-      letter-spacing:-.02em;margin:0 0 8px}
-    .card p{color:var(--mut);font-size:14px;margin:0 0 24px;line-height:1.65}
+    /* lock */
+    #lock{display:grid;place-items:center;min-height:66svh;padding:40px 0}
+    .lockcard{
+      width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line);
+      border-radius:16px;padding:36px 32px;text-align:center;
+    }
+    .glyph{
+      font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--acc);
+      border:1px solid var(--line2);border-radius:999px;display:inline-block;
+      padding:6px 15px 6px 18px;margin-bottom:20px;
+    }
+    .lockcard h1{font-size:28px;margin:0 0 8px}
+    .lockcard p{color:var(--mut);font-size:14px;margin:0 0 24px;line-height:1.65}
     .pinrow{display:flex;gap:10px}
-    #pin{flex:1;background:var(--bg);border:1px solid var(--line2);border-radius:10px;color:var(--ink);
-      font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:20px;letter-spacing:.4em;
-      text-align:center;padding:12px 8px 12px 14px}
-    #pin::placeholder{letter-spacing:.15em;font-size:13px;color:var(--dim)}
-    #go{background:var(--acc);color:#0e1116;border:0;border-radius:10px;cursor:pointer;
-      font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:14px;font-weight:500;padding:12px 20px}
-    #go:hover{background:var(--acc-hi)}
-    #go:disabled{opacity:.55;cursor:wait}
-    #msg{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;min-height:20px;margin:14px 0 0;color:var(--dim)}
+    #pin{
+      flex:1;font-family:var(--mono);font-size:20px;letter-spacing:.4em;
+      text-align:center;padding:12px 8px 12px 14px;
+    }
+    #pin::placeholder{letter-spacing:.15em;font-size:13px}
+    #msg{font-family:var(--mono);font-size:12.5px;min-height:20px;margin:14px 0 0;color:var(--dim)}
     #msg.err{color:var(--bad)}
     .shake{animation:shake .35s}
     @keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
-    @media (prefers-reduced-motion: reduce){.shake{animation:none}}
-    .finelock{margin-top:22px;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11.5px;color:var(--dim);line-height:1.7}
+    @media (prefers-reduced-motion:reduce){.shake{animation:none}}
 
-    /* unlocked content */
+    /* vault */
     #vault{display:none}
-    .bar{display:flex;align-items:center;gap:14px;margin:32px 0 20px}
-    .bar h1{font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:clamp(26px,5vw,38px);letter-spacing:-.02em;margin:0}
-    #relock{margin-left:auto;background:var(--panel);color:var(--mut);border:1px solid var(--line2);
-      border-radius:8px;cursor:pointer;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;padding:8px 14px}
-    #relock:hover{color:var(--acc);border-color:var(--acc)}
-    .meta{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:var(--dim);margin:0 0 22px}
-    .meta b{color:var(--mut);font-weight:500}
-    .platform{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px 8px;margin:0 0 18px}
-    .platform h2{font-family:'Archivo',system-ui,sans-serif;font-weight:700;font-size:18px;letter-spacing:-.01em;margin:0 0 4px;display:flex;align-items:center;gap:9px}
-    .pdot{width:9px;height:9px;border-radius:50%;flex:none}
-    .pcount{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12px;color:var(--dim);font-weight:400;margin-left:auto}
-    .tscroll{overflow-x:auto}
-    table{width:100%;border-collapse:collapse;font-size:14px}
-    th{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);font-weight:500;text-align:left;padding:10px 10px 8px;border-bottom:1px solid var(--line2)}
-    td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
-    tr:last-child td{border-bottom:0}
-    td.label{font-weight:600;white-space:nowrap}
-    td.amt{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
-    td.unit{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:12.5px;color:var(--dim);white-space:nowrap}
-    td.notes{color:var(--mut);font-size:13.5px;min-width:180px}
-    th.r{text-align:right}
+    .bar{display:flex;align-items:center;gap:14px;margin:34px 0 6px;flex-wrap:wrap}
+    .bar h1{font-size:clamp(26px,5vw,38px);margin:0}
+    .bar .spacer{margin-left:auto}
+    .metaline{font-family:var(--mono);font-size:12px;color:var(--dim);margin:0 0 20px}
+    .metaline b{color:var(--mut);font-weight:500}
+
+    .months{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 22px}
+
+    /* headline numbers */
+    .headline{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:0 0 20px;
+    }
+    .hcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+    .hcard .k{
+      font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+      color:var(--dim);margin:0 0 7px;
+    }
+    .hcard .v{
+      font-family:var(--display);font-weight:800;font-size:27px;letter-spacing:-.02em;
+      color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.05;margin:0;
+    }
+    .hcard .v.acc{color:var(--acc-hi)}
+    .hcard .s{font-family:var(--mono);font-size:11px;color:var(--mut);margin:5px 0 0}
+
+    .scopebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 20px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+    .scopebar p{font-family:var(--mono);font-size:11px;color:var(--mut);margin:0}
+    .scopebar b{color:var(--acc-hi);font-weight:500}
+    .scopebar .btn{margin-left:auto;padding:7px 11px;font-size:11px}
+
+    /* prices panel */
+    .prices{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 22px}
+    .prices > summary{
+      cursor:pointer;list-style:none;padding:14px 18px;display:flex;align-items:center;gap:10px;
+      font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);
+    }
+    .prices > summary::-webkit-details-marker{display:none}
+    .prices > summary::after{content:"+";margin-left:auto;font-size:14px}
+    .prices[open] > summary::after{content:"\2013"}
+    .prices .body{padding:0 18px 18px;border-top:1px solid var(--line)}
+    .prices .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:16px}
+    .manualgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+    .manualgrid label > span{text-transform:none;letter-spacing:.04em;color:var(--acc)}
+    .pricenote{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:14px 0 0;line-height:1.7}
+
+    /* platform cards */
+    .platform{
+      background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+      padding:16px 18px 6px;margin:0 0 16px;
+    }
+    .platform h3{
+      font-size:17px;margin:0 0 8px;display:flex;align-items:center;gap:9px;
+    }
+    .platform .pcount{
+      font-family:var(--mono);font-size:11.5px;color:var(--dim);font-weight:400;margin-left:auto;
+    }
+    .notebtn{
+      font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--dim);cursor:pointer;
+      background:transparent;border:1px solid var(--line2);border-radius:5px;padding:2px 7px;
+      transition:color .15s,border-color .15s;
+    }
+    .notebtn:hover{color:var(--acc);border-color:var(--acc)}
+    .nopr{color:var(--dim)}
+    .rowtoggle{appearance:none;width:17px;height:17px;margin:0;vertical-align:middle;accent-color:var(--acc);cursor:pointer}
+    tr.is-excluded{opacity:.46}
+    tr.is-excluded td.label{text-decoration:line-through}
+    .rowdetailbtn{display:grid;place-items:center;width:32px;height:32px;margin-left:auto;padding:0;color:var(--mut);background:transparent;border:1px solid transparent;border-radius:7px;cursor:pointer;transition:color .15s,background .15s,border-color .15s}
+    .rowdetailbtn:hover{color:var(--acc-hi);background:var(--bg);border-color:var(--line2)}
+    .rowdetailbtn .chevron{font:400 24px/1 var(--display);transition:transform .16s ease;transform-origin:center}
+    .rowdetailbtn[aria-expanded="true"]{color:var(--acc-hi);background:var(--bg);border-color:var(--acc)}
+    .rowdetailbtn[aria-expanded="true"] .chevron{transform:rotate(90deg)}
+    .position-detail td{padding:0!important;background:#111820;border-bottom:1px solid var(--line2)}
+    .purchase-journal{padding:18px;border-left:2px solid var(--acc);animation:panel-in .18s ease-out}
+    .pj-top{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px}.pj-top h4{font-size:16px;margin:0 0 2px}.pj-top p{font:11px/1.45 var(--mono);color:var(--dim);margin:0}.pj-top .pj-badge{margin-left:auto;font:10px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--acc-hi);border:1px solid rgba(142,209,138,.3);border-radius:999px;padding:6px 9px}
+    .pj-metrics{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:8px;margin-bottom:14px}.pj-metric{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px}.pj-metric span{display:block;font:9px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}.pj-metric b{font:600 13px/1.2 var(--mono);font-variant-numeric:tabular-nums}.pj-metric b.up{color:var(--good)}.pj-metric b.down{color:var(--bad)}
+    .pj-entry{display:grid;grid-template-columns:minmax(132px,.8fr) minmax(110px,.65fr) minmax(120px,.7fr) auto;gap:8px;align-items:end;padding:12px;background:rgba(10,14,19,.58);border:1px solid var(--line);border-radius:9px}.pj-entry .fld span,.pj-note .fld span{font-size:10px}.pj-entry .btn{height:40px;white-space:nowrap}
+    .pj-lots{display:grid;gap:6px;margin:10px 0 14px}.pj-lot{display:grid;grid-template-columns:1fr .8fr .8fr .8fr auto;gap:10px;align-items:center;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:7px;font:11px/1.3 var(--mono);color:var(--mut)}.pj-lot b{color:var(--ink);font-weight:500}.pj-lot button{appearance:none;border:0;background:transparent;color:var(--dim);font:16px/1 var(--mono);cursor:pointer;padding:5px}.pj-lot button:hover{color:var(--bad)}
+    .pj-empty{font:11px/1.5 var(--mono);color:var(--dim);margin:10px 0 14px;padding:10px 12px;border:1px dashed var(--line2);border-radius:8px}.pj-note textarea{min-height:100px;resize:vertical}.pj-notefoot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}.pj-save{font:11px/1.4 var(--mono);color:var(--dim);margin:0}.pj-notefoot .btn{margin-left:auto}.pj-locked{padding:18px;border:1px dashed var(--line2);border-radius:9px;color:var(--mut);font-size:13px}.pj-locked b{display:block;color:var(--ink);margin-bottom:3px}
+
+    .sectionhead{margin:44px 0 16px}
+    .sectionhead h2{margin:6px 0 4px}
+    .sectionhead p{color:var(--mut);margin:0;font-size:14px;max-width:66ch}
+
+    .banner{
+      background:rgba(232,163,61,.09);border:1px solid rgba(232,163,61,.35);border-radius:var(--r);
+      padding:13px 16px;margin:0 0 22px;font-size:13.5px;color:var(--mut);
+    }
+    .banner b{color:var(--warn)}
+
+    .dividends{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:0 0 24px}
+    .dividends h2{font-size:19px;margin:0 0 4px}
+    .dividends > p{font-size:13.5px;color:var(--mut);margin:0 0 14px}
+    .dividend-summary{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}
+    .dividend-metric{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 11px;min-width:140px}
+    .dividend-metric b{display:block;font-family:var(--display);color:var(--acc-hi);font-size:18px;line-height:1.1}
+    .dividend-metric span{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+    .dividend-input{width:92px!important;min-width:92px;padding:7px 8px!important;font-family:var(--mono)!important;font-size:12px!important;text-align:right}
+    .dividend-date{width:124px!important;padding:7px 8px!important;font-family:var(--mono)!important;font-size:12px!important}
+    .dividend-calendar{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
+    .calendar-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}.calendar-top h3{font-size:16px;margin:0}.calendar-top p{font-size:12px;color:var(--dim);margin:0}.calendar-top .btn{margin-left:auto}
+    .calendar-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}.calendar-event{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px 11px}.calendar-event .date{font-family:var(--mono);font-size:11px;color:var(--acc-hi);letter-spacing:.04em}.calendar-event b{display:block;margin:4px 0 2px;font-size:13px}.calendar-event p{margin:0;color:var(--mut);font-size:12px}
+    .portfolio-calendar{background:linear-gradient(150deg,#171e28,var(--panel) 64%);border:1px solid var(--line2);border-radius:14px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.16)}
+    .cal-head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}.cal-head h2{font-size:22px;margin:0 0 3px}.cal-head p{font-size:13px;color:var(--mut);margin:0}.cal-private{margin-left:auto;display:flex;align-items:center;gap:7px;font:10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--acc-hi);border:1px solid rgba(142,209,138,.32);border-radius:999px;padding:7px 10px}.cal-private::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 4px rgba(95,174,90,.12)}
+    .cal-summary{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:8px;margin-bottom:14px}.cal-stat{background:rgba(10,14,19,.52);border:1px solid var(--line);border-radius:9px;padding:11px 12px}.cal-stat b{display:block;font:700 19px/1.15 var(--display);color:var(--ink)}.cal-stat span{font:9px/1.25 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+    .cal-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}.cal-nav{display:flex;align-items:center;gap:5px}.cal-nav .btn{min-width:38px;justify-content:center}.cal-monthtitle{font:700 17px/1.2 var(--display);min-width:165px;text-align:center}.cal-filters{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}.cal-filter{appearance:none;border:1px solid var(--line2);border-radius:999px;background:var(--bg);color:var(--dim);font:10px/1 var(--mono);padding:7px 9px;cursor:pointer}.cal-filter[aria-pressed="true"]{color:var(--ink);border-color:var(--cal-color,var(--acc));box-shadow:inset 0 0 0 1px var(--cal-color,var(--acc))}.cal-filter[data-kind="ex-dividend"]{--cal-color:#4cc9f0}.cal-filter[data-kind="payment"]{--cal-color:#5fae5a}.cal-filter[data-kind="earnings"]{--cal-color:#e8a33d}.cal-filter[data-kind="private"]{--cal-color:#c084fc}
+    .cal-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}.cal-scroll{overflow-x:auto}.cal-board{min-width:680px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}.cal-weekdays,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}.cal-weekdays span{padding:8px 6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font:9px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:center;color:var(--dim)}.cal-weekdays span:last-child{border-right:0}.cal-cell{appearance:none;position:relative;min-height:102px;padding:8px;text-align:left;color:var(--ink);background:transparent;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;overflow:hidden}.cal-cell:nth-child(7n){border-right:0}.cal-cell:nth-last-child(-n+7){border-bottom:0}.cal-cell:hover{background:rgba(255,255,255,.025)}.cal-cell.outside{color:var(--dim);background:rgba(9,12,16,.34)}.cal-cell.selected{box-shadow:inset 0 0 0 2px var(--acc);z-index:1}.cal-cell.today .cal-daynum{background:var(--acc);color:#0e1116}.cal-daynum{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font:500 11px/1 var(--mono);margin-bottom:5px}.cal-pill{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-left:2px solid var(--pill,var(--mut));border-radius:3px;background:rgba(255,255,255,.04);padding:3px 5px;margin-top:3px;font:9.5px/1.25 var(--mono);color:var(--mut)}.cal-pill.ex-dividend{--pill:#4cc9f0}.cal-pill.payment{--pill:#5fae5a}.cal-pill.earnings{--pill:#e8a33d}.cal-pill.reminder,.cal-pill.review,.cal-pill.tax{--pill:#c084fc}.cal-more{display:block;font:9px/1.2 var(--mono);color:var(--dim);margin:5px 0 0 7px}
+    .cal-side{background:rgba(10,14,19,.48);border:1px solid var(--line);border-radius:10px;padding:14px}.cal-side h3{font-size:16px;margin:0 0 3px}.cal-side>.muted{font-size:12px;margin:0 0 12px}.cal-dayevents{display:grid;gap:7px;margin-bottom:14px}.cal-dayevent{border:1px solid var(--line);border-left:3px solid var(--event,var(--mut));border-radius:8px;background:var(--panel);padding:9px 10px}.cal-dayevent.ex-dividend{--event:#4cc9f0}.cal-dayevent.payment{--event:#5fae5a}.cal-dayevent.earnings{--event:#e8a33d}.cal-dayevent.reminder,.cal-dayevent.review,.cal-dayevent.tax{--event:#c084fc}.cal-dayevent b{display:block;font-size:13px}.cal-dayevent p{font-size:11px;color:var(--mut);margin:2px 0 7px}.cal-eventactions{display:flex;gap:6px;align-items:center}.cal-eventactions a,.cal-eventactions button{appearance:none;background:transparent;border:0;padding:0;color:var(--dim);font:10px/1.2 var(--mono);cursor:pointer;text-decoration:none}.cal-eventactions a:hover,.cal-eventactions button:hover{color:var(--acc-hi)}.cal-form{border-top:1px solid var(--line);padding-top:13px}.cal-form h4{font-size:14px;margin:0 0 9px}.cal-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cal-formgrid .wide{grid-column:1/-1}.cal-form .fld span{font-size:9px}.cal-form textarea{min-height:76px;resize:vertical}.cal-formactions{display:flex;align-items:center;gap:7px;margin-top:8px}.cal-formactions .btn{justify-content:center}.cal-formstatus{font:10px/1.35 var(--mono);color:var(--dim);margin:8px 0 0;min-height:14px}
+    .cal-eventactions span{font:10px/1.2 var(--mono);color:var(--dim)}.cal-form fieldset{border:0;padding:0;margin:0;min-width:0}.cal-form fieldset:disabled{opacity:.52}
+    .cal-agenda{margin-top:14px;border-top:1px solid var(--line);padding-top:14px}.cal-agendahead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:9px}.cal-agendahead h3{font-size:16px;margin:0}.cal-agendahead p{font:10px var(--mono);color:var(--dim);margin:0}.cal-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}.cal-agendalist{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px}.cal-agendaitem{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:center;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 10px}.cal-agendadate{text-align:center;font:10px/1.1 var(--mono);color:var(--dim)}.cal-agendadate b{display:block;font:700 19px/1 var(--display);color:var(--ink);margin:2px 0}.cal-agendaitem>div:last-child b{display:block;font-size:12.5px}.cal-agendaitem>div:last-child span{display:block;font:10px/1.35 var(--mono);color:var(--mut);margin-top:2px}.cal-empty{font-size:13px;color:var(--mut);padding:12px;border:1px dashed var(--line2);border-radius:8px}
+    .stockchart{position:relative;overflow:hidden;background:linear-gradient(145deg,#171e28 0%,var(--panel) 62%);border:1px solid var(--line2);border-radius:14px;padding:20px;margin:0 0 22px;box-shadow:0 24px 60px rgba(0,0,0,.18)}
+    .stockchart::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(142,209,138,.7),transparent)}
+    .stockchart h2{font-size:19px;margin:0}.stockchart .chart-copy{font-size:13px;color:var(--mut);margin:4px 0 0}
+    .market-head{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:18px}.market-title{min-width:210px}.market-symbol{display:flex;align-items:center;gap:9px}.market-symbol b{font:800 27px/1 var(--display);letter-spacing:-.025em}.market-symbol span{font:10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--acc-hi);border:1px solid rgba(142,209,138,.32);border-radius:999px;padding:5px 7px}
+    .market-quote{margin-left:auto;text-align:right}.market-quote strong{display:block;font:800 28px/1 var(--display);font-variant-numeric:tabular-nums}.market-quote span{font:500 12px/1.3 var(--mono)}.market-quote .up{color:#75d477}.market-quote .down{color:#f0726b}.market-quote .flat{color:var(--mut)}
+    .market-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}.tickerbar{display:flex;gap:6px;flex:1;min-width:220px;overflow-x:auto;padding-bottom:2px}.tickerbar .chip{padding:7px 10px;font-size:11px;white-space:nowrap}.rangebar{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}.rangebtn{appearance:none;border:0;background:transparent;color:var(--dim);font:500 10px/1 var(--mono);padding:7px 8px;border-radius:5px;cursor:pointer}.rangebtn:hover{color:var(--ink)}.rangebtn[aria-pressed="true"]{background:var(--line2);color:var(--acc-hi)}
+    .market-chart-shell{position:relative;min-height:300px}.market-frame{position:relative}.pnchart-market{min-height:260px}.pnchart-market:focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}.market-tooltip{position:absolute;z-index:3;min-width:156px;transform:translate(-50%,-110%);pointer-events:none;background:rgba(10,14,19,.96);border:1px solid var(--line2);border-radius:8px;padding:9px 10px;box-shadow:0 12px 30px rgba(0,0,0,.35);font:10.5px/1.45 var(--mono);color:var(--mut)}.market-tooltip b,.market-tooltip span{display:block}.market-tooltip b{color:var(--ink);margin-bottom:3px}.market-tooltip span:first-of-type{color:var(--acc-hi)}
+    .market-kpis{display:grid;grid-template-columns:repeat(5,minmax(90px,1fr));gap:8px;margin-top:12px}.market-kpi{background:rgba(10,14,19,.5);border:1px solid var(--line);border-radius:8px;padding:9px 10px}.market-kpi span{display:block;font:9px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}.market-kpi b{font:600 13px/1.2 var(--mono);font-variant-numeric:tabular-nums}.market-kpi b.up{color:#75d477}.market-kpi b.down{color:#f0726b}
+    .stockchart-status{font-family:var(--mono);font-size:11px;color:var(--dim);margin:12px 0 0}.market-setup{display:grid;place-items:center;min-height:285px;border:1px dashed var(--line2);border-radius:10px;background:rgba(9,12,16,.3);text-align:center;padding:28px}.market-setup b{display:block;font:700 17px var(--display);color:var(--ink);margin-bottom:6px}.market-setup p{max-width:52ch;margin:0;color:var(--mut);font-size:13px}
+    .tracker-tabs{display:flex;gap:4px;padding:5px;margin:18px 0 22px;background:var(--panel);border:1px solid var(--line);border-radius:11px;overflow-x:auto}
+    .tracker-tab{appearance:none;border:0;background:transparent;color:var(--mut);font:500 12px/1 var(--mono);letter-spacing:.04em;padding:11px 14px;border-radius:7px;cursor:pointer;white-space:nowrap}
+    .tracker-tab:hover{color:var(--ink);background:rgba(255,255,255,.035)}.tracker-tab[aria-selected="true"]{background:var(--acc);color:#0e1116}
+    .tracker-panel[hidden]{display:none}.tracker-panel{animation:panel-in .18s ease-out}@keyframes panel-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .dividend-chart{margin:18px 0 0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:15px}.dividend-chart h3{font-size:16px;margin:0 0 2px}.dividend-chart .sub{font:11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px}
+    .obsidian-sync{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.obsidian-sync .sync-status{font:12px var(--mono);color:var(--dim);margin:0}
+    @media (max-width:900px){.cal-layout{grid-template-columns:1fr}.cal-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cal-filters{margin-left:0}.cal-side{padding:14px}}
+    @media (max-width:700px){.market-quote{margin-left:0;text-align:left}.market-controls{align-items:stretch}.tickerbar{flex-basis:100%}.rangebar{width:max-content}.market-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.market-kpi:last-child{grid-column:1/-1}.stockchart{padding:16px}.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}.pj-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pj-entry{grid-template-columns:1fr 1fr}.pj-entry .btn{grid-column:1/-1}.pj-lot{grid-template-columns:1fr 1fr}.pj-lot span:nth-child(4){display:none}.pj-lot button{grid-column:2;grid-row:1;text-align:right}.purchase-journal{padding:14px}.portfolio-calendar{padding:15px}.cal-private{margin-left:0}.cal-toolbar{align-items:flex-start}.cal-monthtitle{min-width:145px}.cal-formgrid{grid-template-columns:1fr}.cal-formgrid .wide{grid-column:auto}}
   </style>
 </head>
 <body>
-  <header><div class="wrap"><nav>
-    <a class="brand" href="/">Pierson Norris</a>
-    <a href="/">Home</a>
-    <a href="/experience/">Experience</a>
-    <a href="/tools/tracker/" aria-current="page">Tracker</a>
-  </nav></div></header>
-
-  <div class="wrap">
-    <section id="lock">
-      <form class="card" id="lockcard">
-        <span class="glyph">ENCRYPTED</span>
-        <h1>Portfolio Tracker</h1>
-        <p>Holdings are sealed into this page with AES-256 encryption. Enter the PIN to unlock — decryption happens in your browser, nothing is sent anywhere.</p>
-        <div class="pinrow">
-          <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN">
-          <button id="go" type="submit">Unlock</button>
+  <header class="sitehead">
+    <div class="wrap">
+      <nav class="sitenav" aria-label="Primary">
+        <a class="brand" href="/">Pierson Norris</a>
+        <div class="navlinks">
+          <a href="/">Home</a>
+          <a href="/experience/">Experience</a>
+          <a href="/notes/">Notes <span class="lockicon">·pin</span></a>
+          <a href="/tools/tracker/" aria-current="page">Tracker</a>
         </div>
-        <p id="msg" aria-live="polite"></p>
-        <p class="finelock">No cookies · no storage · locks again when the tab closes</p>
-      </form>
-    </section>
+      </nav>
+    </div>
+  </header>
 
-    <section id="vault">
-      <div class="bar"><h1>Portfolio Tracker</h1><button id="relock" type="button">Lock</button></div>
-      <div id="content"></div>
-    </section>
-  </div>
+  <main>
+    <div class="wrap-wide">
 
+      <section id="lock">
+        <form class="lockcard" id="lockcard">
+          <span class="glyph" id="glyph">ENCRYPTED</span>
+          <h1>Portfolio Tracker</h1>
+          <p>Holdings are sealed into this page with AES-256-GCM. Enter the PIN to unlock — decryption happens in your browser, nothing is sent anywhere.</p>
+          <div class="pinrow">
+            <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN">
+            <button id="go" class="btn primary" type="submit">Unlock</button>
+          </div>
+          <p id="msg" aria-live="polite"></p>
+          <p class="finetext">The same PIN opens the stock-notes vault below.</p>
+        </form>
+      </section>
+
+      <section id="vault">
+        <div class="bar">
+          <h1>Portfolio Tracker</h1>
+          <span class="spacer"></span>
+          <button id="relock" class="btn" type="button">Lock</button>
+        </div>
+        <p class="metaline" id="metaline"></p>
+
+        <div id="samplebanner"></div>
+        <div class="months" id="months" role="group" aria-label="Choose month"></div>
+        <div class="headline" id="headline"></div>
+        <div class="scopebar" id="scopebar"></div>
+
+        <details class="prices" id="pricespanel">
+          <summary>Price source</summary>
+          <div class="body">
+            <p class="pricenote" style="margin-top:14px">
+              The sheet stores share and coin <b>counts</b>, not dollar values — so every chart below needs a price per symbol.
+              Your key is stored in this browser only and is never committed to the repo. It is a read-only quote key: it cannot
+              see or move anything in an account.
+            </p>
+            <div class="grid">
+              <label class="fld"><span>Provider</span>
+                <select id="provider">
+                  <option value="twelvedata">Twelve Data — stocks + crypto</option>
+                  <option value="finnhub">Finnhub — stocks only</option>
+                  <option value="manual">Manual only</option>
+                </select>
+              </label>
+              <label class="fld"><span>API key</span>
+                <input type="password" id="apikey" placeholder="paste your key" autocomplete="off">
+              </label>
+              <label class="fld"><span>&nbsp;</span>
+                <button type="button" class="btn primary" id="refresh" style="width:100%;justify-content:center">Refresh prices</button>
+              </label>
+              <label class="fld"><span>&nbsp;</span>
+                <button type="button" class="btn danger" id="forgetkey" style="width:100%;justify-content:center">Forget key</button>
+              </label>
+            </div>
+            <p class="pricenote" id="pricestatus"></p>
+            <div id="manualwrap" hidden>
+              <p class="pricenote" style="margin-bottom:2px"><b>Prices still missing</b> — type them in and they will be used and remembered:</p>
+              <div class="manualgrid" id="manualgrid"></div>
+            </div>
+          </div>
+        </details>
+
+        <div class="tracker-tabs" role="tablist" aria-label="Portfolio views">
+          <button class="tracker-tab" type="button" role="tab" id="tab-positions" data-panel="positions" aria-controls="panel-positions" aria-selected="true">Positions</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-dividends" data-panel="dividends" aria-controls="panel-dividends" aria-selected="false">Dividends</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-calendar" data-panel="calendar" aria-controls="panel-calendar" aria-selected="false">Calendar</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-charts" data-panel="charts" aria-controls="panel-charts" aria-selected="false">Charts</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-obsidian" data-panel="obsidian" aria-controls="panel-obsidian" aria-selected="false">Obsidian</button>
+        </div>
+
+        <section class="tracker-panel" id="panel-positions" role="tabpanel" aria-labelledby="tab-positions">
+          <div class="sectionhead">
+            <p class="eyebrow">Positions</p>
+            <h2>Holdings by platform</h2>
+            <p>Counts come straight from the sheet. Value appears once a price resolves for that symbol — rows that can't be priced say so rather than counting as zero.</p>
+          </div>
+          <div id="platforms"></div>
+        </section>
+
+        <section class="tracker-panel" id="panel-dividends" role="tabpanel" aria-labelledby="tab-dividends" hidden>
+          <div class="dividends" id="dividends"></div>
+        </section>
+
+        <section class="tracker-panel" id="panel-calendar" role="tabpanel" aria-labelledby="tab-calendar" hidden>
+          <section class="portfolio-calendar" id="portfolio-calendar"></section>
+        </section>
+
+        <section class="tracker-panel" id="panel-charts" role="tabpanel" aria-labelledby="tab-charts" hidden>
+          <section class="stockchart" id="stockchart"></section>
+          <div class="chartgrid" id="charts"></div>
+        </section>
+
+        <section class="tracker-panel" id="panel-obsidian" role="tabpanel" aria-labelledby="tab-obsidian" hidden>
+          <div class="sectionhead" id="stocknotes">
+            <p class="eyebrow">Obsidian — stock desk</p>
+            <h2>Ticker notes &amp; outlooks</h2>
+            <p>A separate vault from <a href="/notes/" style="color:var(--acc)">general notes</a>. Dividend-paying positions and the calendar can be synchronized here as encrypted Markdown, then exported straight into Obsidian.</p>
+          </div>
+          <div id="stockvault"></div>
+        </section>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <footer class="sitefoot">
+        <address>
+          <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a><br>
+          Built by hand — plain HTML, no framework.
+        </address>
+      </footer>
+    </div>
+  </main>
+
+  <script src="/assets/js/charts.js"></script>
+  <script src="/assets/js/prices.js"></script>
+  <script src="/assets/js/calendar.js"></script>
+  <script src="/assets/js/vault.js"></script>
+  <script src="/assets/js/notes-ui.js"></script>
   <script>
-    var PAYLOAD = {"salt":"Y8h6YBBflkUQYbXDAbZMSg==","iv":"+bCVHpUeTw3HpGKa","ct":"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","iter":600000};
+  (function () {
+    'use strict';
 
-    function b64(s){var bin=atob(s),a=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+    /* The build script (tools/tracker/build.js) replaces the next line
+       with the AES-GCM payload of the real holdings. Until it does,
+       PAYLOAD stays null and every stock surface remains locked. SAMPLE
+       is a fabricated fixture only; it is never displayed by this source. */
+    var PAYLOAD = /*__PAYLOAD__*/{"salt":"Y8h6YBBflkUQYbXDAbZMSg==","iv":"+bCVHpUeTw3HpGKa","ct":"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","iter":600000}/*__END__*/;
 
-    var form=document.getElementById('lockcard'), pinEl=document.getElementById('pin'),
-        go=document.getElementById('go'), msg=document.getElementById('msg');
+    var SAMPLE = {
+      generatedAt: '2026-08-23T11:00:00Z',
+      sample: true,
+      months: [{
+        tab: 'August 2026', month: 'August', year: 2026,
+        note: 'Sample data — fabricated, safe for a public repo.',
+        fetchedAt: '2026-08-23T11:00:00Z',
+        holdings: [
+          { platform: 'Sofi', label: 'AAPL', amount: 4.2, unit: 'Shares', notes: '' },
+          { platform: 'Sofi', label: 'VTI', amount: 10, unit: 'Shares', notes: '' },
+          { platform: 'Sofi', label: 'Robo (auto-invest)', amount: 250.0, unit: 'USD', notes: 'robo sub-account' },
+          { platform: 'Sofi', label: 'SOL (crypto)', amount: 0.8, unit: 'Units', notes: '' },
+          { platform: 'Webull', label: 'Cash', amount: 120.0, unit: 'USD', notes: 'no open positions' },
+          { platform: 'Robinhood', label: 'SPY $500 Call (option)', amount: 95.0, unit: 'USD', notes: 'contract value' },
+          { platform: 'Robinhood', label: 'VDE', amount: 2.1, unit: 'Shares', notes: '' },
+          { platform: 'Gemini', label: 'ETH', amount: 0.05, unit: 'Units', notes: '' },
+          { platform: 'Gemini', label: 'SOL', amount: 1.4, unit: 'Units', notes: '' },
+          { platform: 'GoMining', label: 'Total value', amount: 15.0, unit: 'USD', notes: '' }
+        ]
+      }],
+      quotes: { AAPL: 214.5, VTI: 292.1, VDE: 128.4, 'SOL/USD': 186.2, 'ETH/USD': 3120.0 }
+    };
 
-    async function unlock(pin){
-      var enc=new TextEncoder();
-      var base=await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveKey']);
-      var key=await crypto.subtle.deriveKey(
-        {name:'PBKDF2', salt:b64(PAYLOAD.salt), iterations:PAYLOAD.iter, hash:'SHA-256'},
-        base, {name:'AES-GCM', length:256}, false, ['decrypt']);
-      var pt=await crypto.subtle.decrypt({name:'AES-GCM', iv:b64(PAYLOAD.iv)}, key, b64(PAYLOAD.ct));
-      return new TextDecoder().decode(pt);
+    var PLATFORM_ORDER = ['Sofi', 'Webull', 'Robinhood', 'Gemini', 'GoMining'];
+    var PLATFORM_CLASS = {
+      Sofi: 'p-sofi', Webull: 'p-webull', Robinhood: 'p-robinhood',
+      Gemini: 'p-gemini', GoMining: 'p-gomining'
+    };
+    var PLATFORM_COLOR = {
+      Sofi: '#00A2C7', Webull: '#3d6ea8', Robinhood: '#00C805',
+      Gemini: '#F5A623', GoMining: '#7C3AED'
+    };
+
+    var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, activeChartRange = '3M', expandedPositionKey = null, positionNoteSaveTimer = null, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
+    var calendarAnchor = window.PNCalendar.anchorKey(new Date()), calendarSelectedDate = window.PNCalendar.dateKey(new Date()), calendarEditingId = null, privateCalendarEvents = [];
+    var calendarFilters = { 'ex-dividend': true, payment: true, earnings: true, private: true };
+
+    // ------------------------------------------------------ helpers
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+    function $(id) { return document.getElementById(id); }
+    function money(n) { return window.PNCharts.money(n); }
+    function positionKey(r) { return String(r.platform || '') + '\u241f' + String(r.label || ''); }
+    function exclusionMap() {
+      try { return JSON.parse(localStorage.getItem('pn.tracker.exclusions') || '{}') || {}; }
+      catch (e) { return {}; }
+    }
+    function isIncluded(r) { return !exclusionMap()[positionKey(r)]; }
+    function setIncluded(r, included) {
+      var map = exclusionMap();
+      if (included) delete map[positionKey(r)]; else map[positionKey(r)] = true;
+      try { localStorage.setItem('pn.tracker.exclusions', JSON.stringify(map)); } catch (e) {}
+    }
+    function dividendMap() {
+      var merged = {}, key;
+      for (key in dividendDefaults) if (Object.prototype.hasOwnProperty.call(dividendDefaults, key)) merged[key] = Object.assign({}, dividendDefaults[key]);
+      for (key in dividendEdits) if (Object.prototype.hasOwnProperty.call(dividendEdits, key)) merged[key] = Object.assign({}, merged[key] || {}, dividendEdits[key]);
+      return merged;
+    }
+    function saveDividendMap(map) {
+      dividendEdits = map;
+      if (stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked()) {
+        stockNotes.saveCalendarData(privateCalendarEvents, dividendEdits);
+      }
     }
 
-    form.addEventListener('submit', function(e){
+    function activateTrackerPanel(name, focusTab) {
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.tracker-tab'));
+      if (!tabs.some(function (tab) { return tab.dataset.panel === name; })) name = 'positions';
+      tabs.forEach(function (tab) {
+        var active = tab.dataset.panel === name;
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        tab.tabIndex = active ? 0 : -1;
+        var panel = $('panel-' + tab.dataset.panel);
+        if (panel) panel.hidden = !active;
+        if (active && focusTab) tab.focus();
+      });
+    }
+
+    function setupTrackerTabs() {
+      if ($('tab-positions').dataset.ready) return;
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.tracker-tab'));
+      tabs.forEach(function (tab, index) {
+        tab.addEventListener('click', function () { activateTrackerPanel(tab.dataset.panel, false); });
+        tab.addEventListener('keydown', function (event) {
+          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' && event.key !== 'Home' && event.key !== 'End') return;
+          event.preventDefault();
+          var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+          activateTrackerPanel(tabs[next].dataset.panel, true);
+        });
+      });
+      $('tab-positions').dataset.ready = '1';
+    }
+
+    function b64(s) {
+      var bin = atob(s), a = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
+      return a;
+    }
+
+    async function decrypt(pin) {
+      var enc = new TextEncoder();
+      var base = await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveKey']);
+      var key = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: b64(PAYLOAD.salt), iterations: PAYLOAD.iter, hash: 'SHA-256' },
+        base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+      var pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(PAYLOAD.iv) }, key, b64(PAYLOAD.ct));
+      return JSON.parse(new TextDecoder().decode(pt));
+    }
+
+    // ------------------------------------------------------ unlock flow
+
+    var form = $('lockcard'), pinEl = $('pin'), goEl = $('go'), msgEl = $('msg');
+
+    if (!PAYLOAD) {
+      /* The committed build source never opens a stock surface. Only the
+         generated encrypted index can unlock. */
+      $('glyph').textContent = 'BUILD SOURCE';
+      pinEl.disabled = true;
+      goEl.disabled = true;
+      goEl.textContent = 'Unavailable';
+      msgEl.textContent = 'Open /tools/tracker/ to use the password-protected tracker.';
+    }
+
+    form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var pin=pinEl.value.trim();
-      if(!pin){pinEl.focus();return;}
-      go.disabled=true; msg.className=''; msg.textContent='verifying…';
-      unlock(pin).then(function(html){
-        document.getElementById('content').innerHTML=html;
-        document.getElementById('lock').style.display='none';
-        document.getElementById('vault').style.display='block';
-        pinEl.value='';
-        go.disabled=false; msg.textContent='';
-      }).catch(function(){
-        go.disabled=false; msg.className='err'; msg.textContent='Wrong PIN.';
-        pinEl.value=''; pinEl.focus();
+      if (!PAYLOAD) return;
+      var pin = pinEl.value.trim();
+      if (!pin) { pinEl.focus(); return; }
+      goEl.disabled = true; msgEl.className = ''; msgEl.textContent = 'decrypting…';
+      decrypt(pin).then(function (data) {
+        pinEl.value = '';
+        goEl.disabled = false; msgEl.textContent = '';
+        $('lock').style.display = 'none';
+        $('vault').style.display = 'block';
+        boot(data, pin);
+      }).catch(function () {
+        goEl.disabled = false;
+        msgEl.className = 'err'; msgEl.textContent = 'Wrong PIN.';
+        pinEl.value = ''; pinEl.focus();
         form.classList.remove('shake'); void form.offsetWidth; form.classList.add('shake');
       });
     });
 
-    document.getElementById('relock').addEventListener('click', function(){
-      document.getElementById('content').innerHTML='';
-      document.getElementById('vault').style.display='none';
-      document.getElementById('lock').style.display='grid';
+    $('relock').addEventListener('click', function () {
+      DATA = null; valued = []; sessionPin = null; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null;
+      if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
+      $('vault').style.display = 'none';
+      $('lock').style.display = 'grid';
+      $('charts').innerHTML = '';
+      $('platforms').innerHTML = '';
       pinEl.focus();
     });
+
+    // ------------------------------------------------------ boot
+
+    function boot(data, pin) {
+      DATA = data;
+      /* The private encrypted build may provide dividendCalendar as
+         {SYMBOL:{annual,exDate,payDate,frequency}}. It is never placed in
+         this public template; browser edits stay only in this unlocked session. */
+      dividendDefaults = data.dividendCalendar || {};
+      sessionPin = pin;
+      activeMonth = 0;
+      dividendSyncDone = false;
+      setupTrackerTabs();
+      activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#calendar' ? 'calendar' : location.hash === '#dividends' ? 'dividends' : 'positions', false);
+
+      if (data.sample) {
+        $('samplebanner').innerHTML =
+          '<div class="banner"><b>Sample data.</b> This is the unbuilt template — every number below is fabricated. ' +
+          'The scheduled secure build bakes in real encrypted holdings; this preview remains fabricated.</div>';
+      }
+
+      renderMonths();
+      restorePriceCfg();
+      mountStockNotes(pin);
+      refresh(false);
+    }
+
+    function month() { return DATA.months[activeMonth] || { holdings: [] }; }
+
+    function renderMonths() {
+      var wrap = $('months');
+      if (!DATA.months || DATA.months.length < 2) { wrap.innerHTML = ''; return; }
+      wrap.innerHTML = DATA.months.map(function (m, i) {
+        return '<button type="button" class="chip" data-i="' + i + '" aria-pressed="' +
+          (i === activeMonth) + '">' + esc(m.tab) + '</button>';
+      }).join('');
+      Array.prototype.forEach.call(wrap.querySelectorAll('.chip'), function (c) {
+        c.addEventListener('click', function () {
+          activeMonth = +c.dataset.i;
+          renderMonths();
+          refresh(false);
+        });
+      });
+    }
+
+    // ------------------------------------------------------ prices
+
+    function restorePriceCfg() {
+      var cfg = window.PNPrices.loadCfg();
+      if (cfg.provider) $('provider').value = cfg.provider;
+      if (cfg.apikey) $('apikey').value = cfg.apikey;
+    }
+
+    $('refresh').addEventListener('click', function () {
+      var cfg = window.PNPrices.loadCfg();
+      cfg.provider = $('provider').value;
+      cfg.apikey = $('apikey').value.trim();
+      window.PNPrices.saveCfg(cfg);
+      refresh(true);
+    });
+
+    $('forgetkey').addEventListener('click', function () {
+      window.PNPrices.clearCfg();
+      $('apikey').value = '';
+      $('pricestatus').textContent = 'Key and cached quotes cleared from this browser.';
+      refresh(false);
+    });
+
+    function refresh(force) {
+      var holdings = month().holdings || [];
+      var status = $('pricestatus');
+      status.textContent = force ? 'fetching quotes…' : '';
+
+      window.PNPrices.resolve(holdings, { baked: DATA.quotes, force: force })
+        .then(function (res) {
+          allValued = window.PNPrices.valuate(holdings, res.quotes);
+          valued = allValued.filter(isIncluded);
+          renderStatus(res);
+          renderManual(res);
+          renderHeadline(res);
+          renderScope();
+          renderCharts();
+          renderStockChart();
+          renderPlatforms();
+          renderDividends();
+          renderCalendar();
+        })
+        .catch(function (err) {
+          status.textContent = 'Could not fetch quotes — ' + (err && err.message ? err.message : 'request failed') +
+            '. Counts below are still accurate; values are not.';
+          allValued = window.PNPrices.valuate(holdings, (DATA.quotes || {}));
+          valued = allValued.filter(isIncluded);
+          renderHeadline({ source: 'error', missing: [], needed: [] });
+          renderScope();
+          renderCharts();
+          renderStockChart();
+          renderPlatforms();
+          renderDividends();
+          renderCalendar();
+        });
+    }
+
+    function renderStatus(res) {
+      var labels = {
+        baked: 'prices baked into the payload at build time',
+        cache: 'cached quotes (under 15 min old)',
+        manual: 'manually entered prices',
+        twelvedata: 'live from Twelve Data',
+        finnhub: 'live from Finnhub',
+        none: 'no price source configured yet'
+      };
+      var s = labels[res.source] || res.source;
+      var miss = res.missing.length
+        ? ' · ' + res.missing.length + ' symbol' + (res.missing.length === 1 ? '' : 's') + ' still unpriced'
+        : ' · all ' + res.needed.length + ' symbols priced';
+      $('pricestatus').textContent = 'Source: ' + s + (res.needed.length ? miss : '');
+    }
+
+    function renderManual(res) {
+      var wrap = $('manualwrap'), grid = $('manualgrid');
+      if (!res.missing.length) { wrap.hidden = true; return; }
+      wrap.hidden = false;
+      var cfg = window.PNPrices.loadCfg();
+      var manual = cfg.manual || {};
+      grid.innerHTML = res.missing.map(function (sym) {
+        return '<label class="fld"><span>' + esc(sym) + '</span>' +
+          '<input type="text" inputmode="decimal" data-sym="' + esc(sym) + '" value="' +
+          (isFinite(manual[sym]) ? manual[sym] : '') + '" placeholder="0.00"></label>';
+      }).join('');
+      Array.prototype.forEach.call(grid.querySelectorAll('input'), function (i) {
+        i.addEventListener('change', function () {
+          var c = window.PNPrices.loadCfg();
+          c.manual = c.manual || {};
+          var v = parseFloat(i.value);
+          if (isFinite(v) && v > 0) c.manual[i.dataset.sym] = v;
+          else delete c.manual[i.dataset.sym];
+          window.PNPrices.saveCfg(c);
+          refresh(false);
+        });
+      });
+    }
+
+    // ------------------------------------------------------ render
+
+    function renderScope() {
+      var excluded = allValued.length - valued.length;
+      $('scopebar').innerHTML =
+        '<p>Calculation scope: <b>' + valued.length + ' included</b>' +
+        (excluded ? ' · ' + excluded + ' excluded' : ' · all positions included') +
+        '</p><button type="button" class="btn" id="includeall">Include all positions</button>';
+      $('includeall').addEventListener('click', function () {
+        try { localStorage.removeItem('pn.tracker.exclusions'); } catch (e) {}
+        refresh(false);
+      });
+    }
+
+    function currentQuoteSummary() {
+      var needed = window.PNPrices.symbolsNeeded(month().holdings || []), priced = {};
+      allValued.forEach(function (row) { if (row.symbol && isFinite(row.price)) priced[row.symbol] = true; });
+      return { needed: needed, missing: needed.filter(function (symbol) { return !priced[symbol]; }) };
+    }
+
+    function renderHeadline(res) {
+      var m = month();
+      $('metaline').innerHTML =
+        'Tab <b>' + esc(m.tab || '—') + '</b> · fetched <b>' +
+        esc(m.fetchedAt ? new Date(m.fetchedAt).toLocaleString('en-US') : '—') + '</b>' +
+        (m.note ? ' · ' + esc(m.note) : '');
+
+      var total = window.PNPrices.total(valued);
+      var unpriced = window.PNPrices.unpricedCount(valued);
+      var positions = valued.length;
+      var dividends = dividendSummary();
+      var platforms = {};
+      valued.forEach(function (r) { platforms[r.platform] = true; });
+
+      $('headline').innerHTML =
+        '<div class="hcard"><p class="k">Total value</p><p class="v acc">' +
+          (total > 0 ? esc(money(total)) : '—') + '</p><p class="s">' +
+          (unpriced ? unpriced + ' row' + (unpriced === 1 ? '' : 's') + ' unpriced' : 'every row priced') + '</p></div>' +
+        '<div class="hcard"><p class="k">Positions</p><p class="v">' + positions + '</p>' +
+          '<p class="s">across ' + Object.keys(platforms).length + ' platforms</p></div>' +
+        '<div class="hcard"><p class="k">Symbols needing a quote</p><p class="v">' +
+          (res.needed ? res.needed.length : 0) + '</p><p class="s">' +
+          (res.missing && res.missing.length ? esc(res.missing.slice(0, 4).join(', ')) : 'all resolved') + '</p></div>' +
+        '<div class="hcard"><p class="k">Month</p><p class="v" style="font-size:21px">' +
+          esc(m.month || '—') + '</p><p class="s">' + esc(String(m.year || '')) + '</p></div>' +
+        '<div class="hcard"><p class="k">Est. annual dividends</p><p class="v acc">' +
+          (dividends.annual ? esc(money(dividends.annual)) : '—') + '</p><p class="s">' +
+          (dividends.covered ? dividends.covered + ' dividend position' + (dividends.covered === 1 ? '' : 's') : 'add payouts below') + '</p></div>';
+    }
+
+    function dividendSummary() {
+      var map = dividendMap(), grouped = {};
+      valued.forEach(function (r) {
+        if (r.kind !== 'Equity' || !r.symbol) return;
+        var g = grouped[r.symbol] || (grouped[r.symbol] = { shares: 0, value: 0 });
+        g.shares += r.amount || 0;
+        g.value += isFinite(r.value) ? r.value : 0;
+      });
+      var annual = 0, covered = 0, marketValue = 0;
+      Object.keys(grouped).forEach(function (symbol) {
+        var payout = Number(map[symbol] && map[symbol].annual);
+        if (isFinite(payout) && payout > 0) { annual += grouped[symbol].shares * payout; covered++; marketValue += grouped[symbol].value; }
+      });
+      return { annual: annual, covered: covered, marketValue: marketValue, yield: marketValue ? annual / marketValue : 0, grouped: grouped };
+    }
+
+    function renderCharts() {
+      var host = $('charts');
+      var total = window.PNPrices.total(valued);
+
+      if (!total) {
+        host.innerHTML =
+          '<div class="chartcard" style="grid-column:1/-1">' +
+          '<h3>Charts need prices</h3><p class="sub">nothing to plot yet</p>' +
+          '<p class="muted" style="font-size:14px;margin:0">Your holdings are share and coin counts. ' +
+          'Open <b>Price source</b> above, choose a provider and paste a free API key — or type prices in by hand — ' +
+          'and the allocation, mix and ranking charts below will fill in.</p></div>';
+        return;
+      }
+
+      host.innerHTML =
+        '<div class="chartcard"><h3>Allocation by platform</h3><p class="sub">share of total value</p><div id="c-plat"></div></div>' +
+        '<div class="chartcard"><h3>Asset mix</h3><p class="sub">equity · crypto · cash · options</p><div id="c-kind"></div></div>' +
+        '<div class="chartcard" style="grid-column:1/-1"><h3>Largest positions</h3><p class="sub">top 12 by value</p><div id="c-top"></div></div>' +
+        '<div class="chartcard" style="grid-column:1/-1"><h3>Value over time</h3><p class="sub">month by month</p><div id="c-time"></div></div>';
+
+      var byPlatform = window.PNPrices.sumBy(valued, 'platform').map(function (r) {
+        return { label: r.label, value: r.value, color: PLATFORM_COLOR[r.label] };
+      });
+      window.PNCharts.donut($('c-plat'), byPlatform, {
+        valueKind: 'money', title: 'Allocation by platform', centerSub: 'total'
+      });
+
+      window.PNCharts.stack($('c-kind'), window.PNPrices.sumBy(valued, 'kind'), {
+        valueKind: 'money', title: 'Asset mix'
+      });
+
+      var top = valued
+        .filter(function (r) { return isFinite(r.value) && r.value > 0; })
+        .map(function (r) {
+          return { label: r.label.replace(/\([^)]*\)/g, '').trim().slice(0, 16) || r.label,
+                   value: r.value, color: PLATFORM_COLOR[r.platform] };
+        });
+      window.PNCharts.bars($('c-top'), top, { valueKind: 'money', limit: 12, title: 'Largest positions' });
+
+      /* history across every month we have, valued with the same quotes */
+      var cfg = window.PNPrices.loadCfg();
+      window.PNPrices.resolve(month().holdings, { baked: DATA.quotes }).then(function (res) {
+        var series = (DATA.months || []).map(function (m) {
+          var rows = window.PNPrices.valuate(m.holdings || [], res.quotes);
+          return { label: (m.month || '').slice(0, 3) + ' ' + String(m.year || '').slice(2),
+                   value: window.PNPrices.total(rows) };
+        }).reverse();
+        window.PNCharts.line($('c-time'), series, {
+          valueKind: 'money', title: 'Portfolio value by month',
+          emptyMessage: 'Only one month in the sheet so far — this fills in from the second month on.'
+        });
+      });
+    }
+
+    function renderStockChart() {
+      var symbols = {};
+      valued.forEach(function (r) { if (r.kind === 'Equity' && r.symbol) symbols[r.symbol] = true; });
+      var list = Object.keys(symbols).sort();
+      if (!list.length) {
+        $('stockchart').innerHTML = '<h2>Stock chart</h2><p class="chart-copy">No included stock positions are available for charting in this month.</p>';
+        return;
+      }
+      if (list.indexOf(activeChartSymbol) === -1) {
+        var largestEquity = valued.filter(function (row) { return row.kind === 'Equity' && row.symbol && isFinite(row.value); })
+          .sort(function (a, b) { return b.value - a.value; })[0];
+        activeChartSymbol = largestEquity ? largestEquity.symbol : list[0];
+      }
+      var holding = valued.filter(function (row) { return row.kind === 'Equity' && row.symbol === activeChartSymbol; })
+        .reduce(function (out, row) {
+          out.shares += Number(row.amount) || 0;
+          if (isFinite(row.value)) out.value += row.value;
+          if (isFinite(row.price)) out.price = row.price;
+          return out;
+        }, { shares: 0, value: 0, price: null });
+      $('stockchart').innerHTML =
+        '<div class="market-head"><div class="market-title"><div class="market-symbol"><b>' + esc(activeChartSymbol) + '</b><span>owned</span></div><p class="chart-copy">Price, volume, and position context</p></div>' +
+        '<div class="market-quote" id="marketquote"><strong>' + (isFinite(holding.price) ? esc(money(holding.price)) : '—') + '</strong><span class="flat">Waiting for history</span></div></div>' +
+        '<div class="market-controls"><div class="tickerbar" aria-label="Choose an owned stock">' + list.map(function (symbol) {
+          return '<button type="button" class="chip" data-symbol="' + esc(symbol) + '" aria-pressed="' + (symbol === activeChartSymbol) + '">' + esc(symbol.replace('/USD', '')) + '</button>';
+        }).join('') + '</div><div class="rangebar" aria-label="Chart range">' + ['1M', '3M', '6M', '1Y'].map(function (range) {
+          return '<button type="button" class="rangebtn" data-range="' + range + '" aria-pressed="' + (range === activeChartRange) + '">' + range + '</button>';
+        }).join('') + '</div></div><div class="market-chart-shell" id="c-stock"></div><div class="market-kpis" id="marketkpis">' +
+        '<div class="market-kpi"><span>Range return</span><b>—</b></div><div class="market-kpi"><span>Range high</span><b>—</b></div><div class="market-kpi"><span>Range low</span><b>—</b></div><div class="market-kpi"><span>Average close</span><b>—</b></div><div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' shares</b></div>' +
+        '</div><p class="stockchart-status" id="stockchartstatus"></p>';
+      Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-symbol]'), function (button) {
+        button.addEventListener('click', function () { activeChartSymbol = button.dataset.symbol; renderStockChart(); });
+      });
+      Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-range]'), function (button) {
+        button.addEventListener('click', function () { activeChartRange = button.dataset.range; renderStockChart(); });
+      });
+      var cfg = window.PNPrices.loadCfg();
+      if (!cfg.apikey || cfg.provider === 'manual') {
+        $('c-stock').innerHTML = '<div class="market-setup"><div><b>Connect a read-only market source</b><p>Open Price source above, choose Twelve Data or Finnhub, and add an API key. The chart requests history only after the tracker is unlocked.</p></div></div>';
+        $('stockchartstatus').textContent = 'No symbol leaves this browser until you configure a live source.';
+        return;
+      }
+      $('c-stock').innerHTML = '<div class="market-setup"><div><b>Loading ' + esc(activeChartSymbol) + '</b><p>Fetching ' + esc(activeChartRange) + ' of daily price and volume history…</p></div></div>';
+      $('stockchartstatus').textContent = 'Loading from ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + '…';
+      var requestedSymbol = activeChartSymbol, requestedRange = activeChartRange;
+      window.PNPrices.history(requestedSymbol, { cfg: cfg, range: requestedRange }).then(function (series) {
+        if (activeChartSymbol !== requestedSymbol || activeChartRange !== requestedRange) return;
+        if (!Array.isArray(series) || series.length < 2) throw new Error('Not enough daily history was returned for this range.');
+        var first = series[0].value, latest = series[series.length - 1].value;
+        var change = latest - first, changePct = first ? change / first * 100 : 0;
+        var high = Math.max.apply(null, series.map(function (point) { return isFinite(point.high) ? point.high : point.value; }));
+        var low = Math.min.apply(null, series.map(function (point) { return isFinite(point.low) ? point.low : point.value; }));
+        var average = series.reduce(function (sum, point) { return sum + point.value; }, 0) / series.length;
+        var direction = change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
+        $('marketquote').innerHTML = '<strong>' + esc(money(latest)) + '</strong><span class="' + direction + '">' + (change >= 0 ? '+' : '−') + esc(money(Math.abs(change))) + ' · ' + (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%</span>';
+        $('marketkpis').innerHTML =
+          '<div class="market-kpi"><span>' + esc(requestedRange) + ' return</span><b class="' + direction + '">' + (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%</b></div>' +
+          '<div class="market-kpi"><span>Range high</span><b>' + esc(money(high)) + '</b></div>' +
+          '<div class="market-kpi"><span>Range low</span><b>' + esc(money(low)) + '</b></div>' +
+          '<div class="market-kpi"><span>Average close</span><b>' + esc(money(average)) + '</b></div>' +
+          '<div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' sh · ' + (holding.value ? esc(money(holding.value)) : 'unpriced') + '</b></div>';
+        window.PNCharts.market($('c-stock'), series, {
+          title: requestedSymbol + ' ' + requestedRange + ' price and volume',
+          emptyMessage: 'Not enough price history returned for this symbol.'
+        });
+        $('stockchartstatus').textContent = series.length + ' sessions · ' + requestedSymbol + ' · ' + requestedRange + ' · ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + ' · cached for 15 minutes.';
+      }).catch(function (err) {
+        if (activeChartSymbol !== requestedSymbol || activeChartRange !== requestedRange) return;
+        $('c-stock').innerHTML = '<div class="market-setup"><div><b>Chart unavailable</b><p>Could not load ' + esc(requestedSymbol) + ' history from the selected provider.</p></div></div>';
+        $('stockchartstatus').textContent = err && err.message ? err.message : 'Price history request failed.';
+      });
+    }
+
+    function renderDividends() {
+      var summary = dividendSummary(), map = dividendMap(), symbols = Object.keys(summary.grouped).sort();
+      if (!symbols.length) {
+        $('dividends').innerHTML = '<h2>Dividend tracker</h2><p>No included equity positions to track in this month.</p>';
+        return;
+      }
+      var payerSymbols = symbols.filter(function (symbol) {
+        var item = map[symbol] || {};
+        return item.status === 'payer' || Number(item.annual) > 0 || item.frequency || item.exDate || item.payDate;
+      });
+      var displaySymbols = payerSymbols.length ? payerSymbols : symbols;
+      $('dividends').innerHTML =
+        '<h2>Dividend tracker</h2><p>' + (payerSymbols.length ? payerSymbols.length + ' included holding' + (payerSymbols.length === 1 ? '' : 's') + ' currently pay distributions. ' : '') + 'Confirmed research is delivered through the encrypted build; dates should still be rechecked with the issuer before investing around them.</p>' +
+        '<div class="dividend-summary">' +
+          '<div class="dividend-metric"><b>' + (summary.annual ? esc(money(summary.annual)) : '—') + '</b><span>est. annual income</span></div>' +
+          '<div class="dividend-metric"><b>' + (summary.annual ? esc(money(summary.annual / 12)) : '—') + '</b><span>monthly average</span></div>' +
+          '<div class="dividend-metric"><b>' + (summary.yield ? (summary.yield * 100).toFixed(2) + '%' : '—') + '</b><span>yield on tracked positions</span></div>' +
+        '</div><div class="tscroll"><table><thead><tr><th>Symbol</th><th class="r">Included shares</th><th class="r">Annual / share</th><th class="r">Est. annual income</th><th>Ex-date</th><th>Payment date</th></tr></thead><tbody>' +
+        displaySymbols.map(function (symbol) {
+          var row = summary.grouped[symbol], saved = map[symbol] || {}, payout = Number(saved.annual) || 0;
+          return '<tr><td class="label">' + esc(symbol) + '</td><td class="num">' + esc(row.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) +
+            '</td><td class="num"><input class="dividend-input" data-symbol="' + esc(symbol) + '" data-field="annual" inputmode="decimal" value="' + (payout || '') + '" placeholder="0.00" aria-label="Annual dividend per share for ' + esc(symbol) + '"></td>' +
+            '<td class="num">' + (payout ? esc(money(row.shares * payout)) : '—') + '</td><td><input class="dividend-date" data-symbol="' + esc(symbol) + '" data-field="exDate" type="date" value="' + esc(saved.exDate || '') + '" aria-label="Next ex-dividend date for ' + esc(symbol) + '"></td><td><input class="dividend-date" data-symbol="' + esc(symbol) + '" data-field="payDate" type="date" value="' + esc(saved.payDate || '') + '" aria-label="Dividend payment date for ' + esc(symbol) + '"></td></tr>';
+        }).join('') + '</tbody></table></div>' +
+        '<div class="dividend-chart"><h3>Estimated dividend income</h3><p class="sub">annual income by holding</p><div id="c-dividend"></div></div>' +
+        '<div class="dividend-calendar" id="dividendcalendar"></div>' +
+        '<div class="obsidian-sync"><button class="btn primary" type="button" id="syncdividends">Sync dividends to Obsidian</button><p class="sync-status" id="syncstatus">Creates encrypted ticker notes and a dividend calendar note.</p></div>';
+      Array.prototype.forEach.call($('dividends').querySelectorAll('input'), function (input) {
+        input.addEventListener('change', function () {
+          var next = dividendMap(), symbol = input.dataset.symbol;
+          next[symbol] = next[symbol] || {};
+          if (input.dataset.field === 'annual') next[symbol].annual = parseFloat(input.value) || 0;
+          else next[symbol][input.dataset.field] = input.value || '';
+          saveDividendMap(next);
+          renderHeadline(currentQuoteSummary()); renderDividends();
+        });
+      });
+      renderDividendChart(summary, map);
+      renderDividendCalendar(map, displaySymbols);
+      $('syncdividends').addEventListener('click', function () { syncDividendsToObsidian(summary, map, displaySymbols); });
+      if (sessionPin && stockNotes && stockNotes.ready && !dividendSyncDone) {
+        stockNotes.ready.then(function (unlocked) {
+          if (!unlocked || dividendSyncDone) return;
+          dividendSyncDone = true;
+          syncDividendsToObsidian(summary, map, displaySymbols);
+        });
+      }
+    }
+
+    function renderDividendChart(summary, map) {
+      var rows = Object.keys(summary.grouped).map(function (symbol) {
+        var payout = Number(map[symbol] && map[symbol].annual) || 0;
+        return { label: symbol, value: summary.grouped[symbol].shares * payout };
+      }).filter(function (row) { return row.value > 0; });
+      window.PNCharts.bars($('c-dividend'), rows, {
+        valueKind: 'money', limit: 12, title: 'Estimated annual dividend income',
+        emptyMessage: 'Dividend-paying holdings appear here after confirmed payouts are added.'
+      });
+    }
+
+    function syncDividendsToObsidian(summary, map, symbols) {
+      var status = $('syncstatus');
+      if (!stockNotes || !stockNotes.vault.isUnlocked()) {
+        status.textContent = 'Open the Obsidian tab and unlock the stock vault first.';
+        activateTrackerPanel('obsidian', false);
+        return;
+      }
+      var payerSymbols = symbols.filter(function (symbol) {
+        var item = map[symbol] || {};
+        return item.status === 'payer' || Number(item.annual) > 0 || item.frequency || item.exDate || item.payDate;
+      });
+      if (!payerSymbols.length) {
+        status.textContent = 'No confirmed dividend-paying holdings are ready to sync.';
+        return;
+      }
+      var events = calendarEvents(map, payerSymbols);
+      var jobs = payerSymbols.map(function (symbol) {
+        var item = map[symbol] || {}, holding = summary.grouped[symbol];
+        var annual = Number(item.annual) || 0;
+        var body = '# ' + symbol + ' dividend profile\n\n' +
+          '- Included shares: ' + holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 }) + '\n' +
+          '- Annual payout per share: ' + (annual ? money(annual) : 'Not entered') + '\n' +
+          '- Estimated annual income: ' + (annual ? money(holding.shares * annual) : 'Not calculated') + '\n' +
+          '- Frequency: ' + (item.frequency || 'Confirm with issuer') + '\n' +
+          '- Next ex-dividend date: ' + (item.exDate || 'Not announced') + '\n' +
+          '- Payment date: ' + (item.payDate || 'Not announced') + '\n' +
+          (item.source ? '- Source: [Issuer dividend information](' + item.source + ')\n' : '') + '\n' +
+          'Linked calendar: [[Dividend calendar]]\n\n#dividend #portfolio';
+        return stockNotes.upsertNote({ title: symbol + ' dividend', ticker: symbol, body: body, tags: ['dividend', 'portfolio'] });
+      });
+      var calendarBody = '# Dividend calendar\n\n' +
+        (events.length ? '| Date | Holding | Event |\n|---|---|---|\n' + events.map(function (event) {
+          return '| ' + event.date + ' | [[' + event.symbol + ' dividend]] | ' + event.type + ' |';
+        }).join('\n') : 'No announced dates yet.') +
+        '\n\nGenerated from the encrypted portfolio tracker. Recheck dates with the issuer before relying on them.\n\n#dividend #calendar #portfolio';
+      jobs.push(stockNotes.upsertNote({ title: 'Dividend calendar', body: calendarBody, tags: ['dividend', 'calendar', 'portfolio'] }));
+      Promise.all(jobs).then(function () {
+        status.textContent = payerSymbols.length + ' dividend holding' + (payerSymbols.length === 1 ? '' : 's') + ' and the calendar are now in the encrypted Obsidian vault.';
+      }).catch(function () { status.textContent = 'The Obsidian sync did not finish. Try again while the vault is unlocked.'; });
+    }
+
+    function calendarEvents(map, symbols) {
+      var events = [];
+      symbols.forEach(function (symbol) {
+        var item = map[symbol] || {};
+        if (item.exDate) events.push({ id: 'dividend-ex-' + symbol + '-' + item.exDate, date: item.exDate, title: symbol + ' ex-dividend', symbol: symbol, kind: 'ex-dividend', type: 'Ex-dividend', amount: item.annual ? 'annual payout $' + Number(item.annual).toFixed(4) + ' / share' : '', notes: item.annual ? 'Annual payout $' + Number(item.annual).toFixed(4) + ' per share. Recheck with issuer.' : 'Recheck with issuer.', source: 'dividend', readonly: true });
+        if (item.payDate) events.push({ id: 'dividend-pay-' + symbol + '-' + item.payDate, date: item.payDate, title: symbol + ' dividend payment', symbol: symbol, kind: 'payment', type: 'Payment expected', amount: item.payment ? '$' + Number(item.payment).toFixed(4) + ' / share' : (item.frequency || ''), notes: item.payment ? '$' + Number(item.payment).toFixed(4) + ' per share expected.' : (item.frequency || 'Payment date from confirmed research.'), source: 'dividend', readonly: true });
+      });
+      return events.sort(function (a, b) { return a.date.localeCompare(b.date); });
+    }
+
+    function downloadCalendar(events, filename) {
+      if (!events.length) return;
+      var ics = window.PNCalendar.toIcs(events, 'Private portfolio calendar');
+      var url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+      var link = document.createElement('a'); link.href = url; link.download = filename || 'portfolio-calendar.ics'; link.click();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    function renderDividendCalendar(map, symbols) {
+      var events = calendarEvents(map, symbols), host = $('dividendcalendar');
+      if (!host) return;
+      host.innerHTML = '<div class="calendar-top"><div><h3>Dividend calendar</h3><p>Only appears after this tracker is unlocked. Export the confirmed events as a private Google Calendar import.</p></div>' +
+        '<button class="btn" type="button" id="exportcalendar"' + (events.length ? '' : ' disabled') + '>Download .ics</button></div>' +
+        (events.length ? '<div class="calendar-list">' + events.map(function (event) {
+          return '<article class="calendar-event"><span class="date">' + esc(new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })) + '</span><b>' + esc(event.symbol) + ' · ' + esc(event.type) + '</b><p>' + esc(event.amount || 'Date confirmed; amount not entered yet.') + '</p></article>';
+        }).join('') + '</div>' : '<p class="muted" style="font-size:13px;margin:0">Add confirmed ex-dividend and payment dates above to build the private calendar.</p>');
+      var exportButton = $('exportcalendar');
+      if (exportButton) exportButton.addEventListener('click', function () { downloadCalendar(events, 'dividend-calendar.ics'); });
+    }
+
+    function calendarFilterKind(event) {
+      if (event.kind === 'ex-dividend' || event.kind === 'payment' || event.kind === 'earnings') return event.kind;
+      return 'private';
+    }
+
+    function calendarKindLabel(kind) {
+      return ({ 'ex-dividend': 'Ex-dividend', payment: 'Dividend payment', earnings: 'Earnings', reminder: 'Reminder', review: 'Portfolio review', tax: 'Tax deadline' })[kind] || 'Private event';
+    }
+
+    function calendarKindClass(kind) {
+      return ['ex-dividend', 'payment', 'earnings', 'reminder', 'review', 'tax'].indexOf(kind) !== -1 ? kind : 'reminder';
+    }
+
+    function portfolioCalendarEvents() {
+      var summary = dividendSummary();
+      var derived = calendarEvents(dividendMap(), Object.keys(summary.grouped));
+      return window.PNCalendar.normalize(derived.concat(privateCalendarEvents));
+    }
+
+    function savePrivateCalendar() {
+      if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) return Promise.resolve(false);
+      privateCalendarEvents = window.PNCalendar.normalize(privateCalendarEvents).map(function (event) {
+        event.readonly = false; event.source = 'private'; return event;
+      });
+      return stockNotes.saveCalendarData(privateCalendarEvents, dividendEdits);
+    }
+
+    function calendarDateLabel(key, options) {
+      return new Date(key + 'T12:00:00').toLocaleDateString('en-US', options || { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    }
+
+    function renderCalendar() {
+      var host = $('portfolio-calendar');
+      if (!host || !DATA) return;
+      var allEvents = portfolioCalendarEvents();
+      var visible = allEvents.filter(function (event) { return calendarFilters[calendarFilterKind(event)] !== false; });
+      var cells = window.PNCalendar.monthCells(calendarAnchor);
+      var monthPrefix = calendarAnchor.slice(0, 7);
+      var monthEvents = visible.filter(function (event) { return event.date.slice(0, 7) === monthPrefix; });
+      var next30 = window.PNCalendar.upcoming(visible, new Date(), 30);
+      var next90 = window.PNCalendar.upcoming(visible, new Date(), 90);
+      var dividendDates = next90.filter(function (event) { return event.kind === 'ex-dividend' || event.kind === 'payment'; }).length;
+      var privateDates = next90.filter(function (event) { return event.source === 'private'; }).length;
+      var selectedEvents = visible.filter(function (event) { return event.date === calendarSelectedDate; });
+      var editing = calendarEditingId ? privateCalendarEvents.filter(function (event) { return event.id === calendarEditingId; })[0] : null;
+      var vaultReady = !!(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked());
+      var eventMap = {};
+      visible.forEach(function (event) { (eventMap[event.date] = eventMap[event.date] || []).push(event); });
+
+      var cellHtml = cells.map(function (cell) {
+        var events = eventMap[cell.key] || [];
+        var label = calendarDateLabel(cell.key, { month: 'long', day: 'numeric', year: 'numeric' }) + (events.length ? ', ' + events.length + ' event' + (events.length === 1 ? '' : 's') : ', no events');
+        return '<button type="button" class="cal-cell' + (cell.inMonth ? '' : ' outside') + (cell.isToday ? ' today' : '') + (cell.key === calendarSelectedDate ? ' selected' : '') + '" data-date="' + cell.key + '" aria-label="' + esc(label) + '"><span class="cal-daynum">' + cell.day + '</span>' +
+          events.slice(0, 3).map(function (event) { return '<span class="cal-pill ' + calendarKindClass(event.kind) + '">' + esc(event.title) + '</span>'; }).join('') +
+          (events.length > 3 ? '<span class="cal-more">+' + (events.length - 3) + ' more</span>' : '') + '</button>';
+      }).join('');
+
+      var dayHtml = selectedEvents.length ? selectedEvents.map(function (event) {
+        return '<article class="cal-dayevent ' + calendarKindClass(event.kind) + '"><b>' + esc(event.title) + '</b><p>' + esc(event.notes || calendarKindLabel(event.kind)) + '</p><div class="cal-eventactions">' +
+          '<a href="' + esc(window.PNCalendar.googleUrl(event)) + '" target="_blank" rel="noopener noreferrer">Add to Google</a>' +
+          (event.source === 'private' ? '<button type="button" class="cal-edit" data-id="' + esc(event.id) + '">Edit</button><button type="button" class="cal-delete" data-id="' + esc(event.id) + '">Delete</button>' : '<span>' + esc(calendarKindLabel(event.kind)) + '</span>') +
+          '</div></article>';
+      }).join('') : '<p class="cal-empty">Nothing scheduled for this day.</p>';
+
+      var agendaHtml = next90.length ? next90.slice(0, 12).map(function (event) {
+        var date = new Date(event.date + 'T12:00:00');
+        return '<article class="cal-agendaitem"><div class="cal-agendadate">' + esc(date.toLocaleDateString('en-US', { month: 'short' })) + '<b>' + date.getDate() + '</b>' + esc(date.toLocaleDateString('en-US', { weekday: 'short' })) + '</div><div><b>' + esc(event.title) + '</b><span>' + esc(calendarKindLabel(event.kind)) + (event.symbol ? ' · ' + esc(event.symbol) : '') + '</span></div></article>';
+      }).join('') : '<p class="cal-empty">No filtered events in the next 90 days.</p>';
+
+      host.innerHTML = '<div class="cal-head"><div><h2>Portfolio calendar</h2><p>Dividend dates and encrypted personal planning in one view.</p></div><span class="cal-private">password gated</span></div>' +
+        '<div class="cal-summary"><div class="cal-stat"><b>' + monthEvents.length + '</b><span>events this month</span></div><div class="cal-stat"><b>' + next30.length + '</b><span>next 30 days</span></div><div class="cal-stat"><b>' + dividendDates + '</b><span>dividend dates · 90d</span></div><div class="cal-stat"><b>' + privateDates + '</b><span>private plans · 90d</span></div></div>' +
+        '<div class="cal-toolbar"><div class="cal-nav"><button type="button" class="btn" id="calprev" aria-label="Previous month">←</button><span class="cal-monthtitle">' + esc(window.PNCalendar.monthTitle(calendarAnchor)) + '</span><button type="button" class="btn" id="calnext" aria-label="Next month">→</button><button type="button" class="btn" id="caltoday">Today</button></div>' +
+        '<div class="cal-filters" aria-label="Calendar filters">' + [
+          ['ex-dividend', 'Ex-dates'], ['payment', 'Payments'], ['earnings', 'Earnings'], ['private', 'Private plans']
+        ].map(function (filter) { return '<button type="button" class="cal-filter" data-kind="' + filter[0] + '" aria-pressed="' + (calendarFilters[filter[0]] !== false) + '">' + filter[1] + '</button>'; }).join('') + '</div></div>' +
+        '<div class="cal-layout"><div class="cal-scroll"><div class="cal-board"><div class="cal-weekdays"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div class="cal-grid">' + cellHtml + '</div></div></div>' +
+        '<aside class="cal-side"><h3>' + esc(calendarDateLabel(calendarSelectedDate)) + '</h3><p class="muted">' + selectedEvents.length + ' scheduled</p><div class="cal-dayevents">' + dayHtml + '</div>' +
+        '<form class="cal-form" id="calform"><h4>' + (editing ? 'Edit private event' : 'Add private event') + '</h4><fieldset' + (vaultReady ? '' : ' disabled') + '><div class="cal-formgrid">' +
+        '<label class="fld"><span>Date</span><input type="date" name="date" value="' + esc(editing ? editing.date : calendarSelectedDate) + '" required></label><label class="fld"><span>Type</span><select name="kind"><option value="reminder"' + (editing && editing.kind === 'reminder' ? ' selected' : '') + '>Reminder</option><option value="earnings"' + (editing && editing.kind === 'earnings' ? ' selected' : '') + '>Earnings</option><option value="review"' + (editing && editing.kind === 'review' ? ' selected' : '') + '>Portfolio review</option><option value="tax"' + (editing && editing.kind === 'tax' ? ' selected' : '') + '>Tax deadline</option></select></label>' +
+        '<label class="fld wide"><span>Title</span><input type="text" name="title" value="' + esc(editing ? editing.title : '') + '" placeholder="Review allocation" required maxlength="100"></label><label class="fld"><span>Ticker · optional</span><input type="text" name="symbol" value="' + esc(editing ? editing.symbol : '') + '" placeholder="AAPL" maxlength="15"></label>' +
+        '<label class="fld wide"><span>Private notes</span><textarea name="notes" placeholder="What needs your attention?">' + esc(editing ? editing.notes : '') + '</textarea></label></div><div class="cal-formactions"><button class="btn primary" type="submit">' + (editing ? 'Update event' : 'Save event') + '</button>' + (editing ? '<button class="btn" type="button" id="calcancel">Cancel</button>' : '') + '</div></fieldset><p class="cal-formstatus" id="calformstatus">' + (vaultReady ? 'Encrypted in the stock vault on this device.' : 'Unlock the stock vault in Obsidian to save private events.') + '</p></form></aside></div>' +
+        '<div class="cal-agenda"><div class="cal-agendahead"><div><h3>Next 90 days</h3><p>First 12 filtered events</p></div><div class="cal-actions"><button type="button" class="btn" id="calexport"' + (visible.length ? '' : ' disabled') + '>Download .ics</button><a class="btn" href="https://calendar.google.com/calendar/u/0/r" target="_blank" rel="noopener noreferrer">Open Google Calendar</a></div></div><div class="cal-agendalist">' + agendaHtml + '</div></div>';
+
+      $('calprev').addEventListener('click', function () { calendarAnchor = window.PNCalendar.moveMonth(calendarAnchor, -1); renderCalendar(); });
+      $('calnext').addEventListener('click', function () { calendarAnchor = window.PNCalendar.moveMonth(calendarAnchor, 1); renderCalendar(); });
+      $('caltoday').addEventListener('click', function () { calendarSelectedDate = window.PNCalendar.dateKey(new Date()); calendarAnchor = window.PNCalendar.anchorKey(calendarSelectedDate); calendarEditingId = null; renderCalendar(); });
+      Array.prototype.forEach.call(host.querySelectorAll('.cal-filter'), function (button) {
+        button.addEventListener('click', function () { calendarFilters[button.dataset.kind] = button.getAttribute('aria-pressed') !== 'true'; renderCalendar(); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.cal-cell'), function (button) {
+        button.addEventListener('click', function () { calendarSelectedDate = button.dataset.date; calendarAnchor = window.PNCalendar.anchorKey(calendarSelectedDate); calendarEditingId = null; renderCalendar(); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.cal-edit'), function (button) {
+        button.addEventListener('click', function () { calendarEditingId = button.dataset.id; var event = privateCalendarEvents.filter(function (item) { return item.id === calendarEditingId; })[0]; if (event) { calendarSelectedDate = event.date; calendarAnchor = window.PNCalendar.anchorKey(event.date); } renderCalendar(); var title = $('calform') && $('calform').elements.title; if (title) { title.focus(); title.select(); } });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.cal-delete'), function (button) {
+        button.addEventListener('click', function () {
+          var event = privateCalendarEvents.filter(function (item) { return item.id === button.dataset.id; })[0];
+          if (!event || !confirm('Delete “' + event.title + '” from the private calendar?')) return;
+          privateCalendarEvents = privateCalendarEvents.filter(function (item) { return item.id !== button.dataset.id; });
+          if (calendarEditingId === button.dataset.id) calendarEditingId = null;
+          savePrivateCalendar().then(renderCalendar);
+        });
+      });
+      $('calform').addEventListener('submit', function (event) {
+        event.preventDefault();
+        if (!vaultReady) return;
+        var form = event.currentTarget, fields = form.elements;
+        var next = { id: calendarEditingId || ('calendar-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)), date: fields.date.value, title: fields.title.value.trim(), kind: fields.kind.value, symbol: fields.symbol.value.trim().toUpperCase(), notes: fields.notes.value.trim(), source: 'private', readonly: false };
+        if (!next.date || !next.title) return;
+        if (calendarEditingId) privateCalendarEvents = privateCalendarEvents.map(function (item) { return item.id === calendarEditingId ? next : item; });
+        else privateCalendarEvents.push(next);
+        calendarSelectedDate = next.date; calendarAnchor = window.PNCalendar.anchorKey(next.date);
+        $('calformstatus').textContent = 'saving encrypted event…';
+        savePrivateCalendar().then(function (saved) { calendarEditingId = null; renderCalendar(); if (!saved && $('calformstatus')) $('calformstatus').textContent = 'Could not save while the stock vault is locked.'; });
+      });
+      if ($('calcancel')) $('calcancel').addEventListener('click', function () { calendarEditingId = null; renderCalendar(); });
+      $('calexport').addEventListener('click', function () { downloadCalendar(visible, 'private-portfolio-calendar.ics'); });
+    }
+
+    function journalFor(row) {
+      if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) return null;
+      return stockNotes.getPositionJournal(positionKey(row));
+    }
+
+    function purchaseJournalMarkup(row, detailId) {
+      var key = positionKey(row), ticker = row.symbol ? row.symbol.split('/')[0] : row.label;
+      if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) {
+        return '<tr class="position-detail" id="' + detailId + '"><td colspan="8"><div class="purchase-journal"><div class="pj-locked"><b>Purchase journal is locked</b>Open the Obsidian tab and unlock the stock desk to add buy prices or private notes.</div></div></td></tr>';
+      }
+      var journal = journalFor(row);
+      var purchases = journal && Array.isArray(journal.purchases) ? journal.purchases.filter(function (purchase) {
+        return isFinite(Number(purchase.shares)) && Number(purchase.shares) > 0 && isFinite(Number(purchase.price)) && Number(purchase.price) > 0;
+      }) : [];
+      var trackedShares = purchases.reduce(function (sum, purchase) { return sum + Number(purchase.shares); }, 0);
+      var cost = purchases.reduce(function (sum, purchase) { return sum + Number(purchase.shares) * Number(purchase.price); }, 0);
+      var average = trackedShares ? cost / trackedShares : null;
+      var trackedValue = trackedShares && isFinite(row.price) ? trackedShares * row.price : null;
+      var gain = isFinite(trackedValue) ? trackedValue - cost : null;
+      var gainPct = cost && isFinite(gain) ? gain / cost * 100 : null;
+      var direction = gain > 0 ? 'up' : gain < 0 ? 'down' : '';
+      var lotRows = purchases.length ? '<div class="pj-lots">' + purchases.slice().sort(function (a, b) {
+        return String(b.date || '').localeCompare(String(a.date || ''));
+      }).map(function (purchase) {
+        var shares = Number(purchase.shares), price = Number(purchase.price);
+        return '<div class="pj-lot"><b>' + esc(purchase.date ? new Date(purchase.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Undated') + '</b>' +
+          '<span>' + esc(shares.toLocaleString('en-US', { maximumFractionDigits: 6 })) + ' shares</span><span>' + esc(money(price)) + ' buy</span><span>' + esc(money(shares * price)) + ' cost</span>' +
+          '<button type="button" class="pj-delete" data-key="' + esc(key) + '" data-lot-index="' + purchases.indexOf(purchase) + '" aria-label="Delete ' + esc(ticker) + ' buy from ' + esc(purchase.date || 'undated entry') + '">×</button></div>';
+      }).join('') + '</div>' : '<p class="pj-empty">No buy prices tracked yet. Add the first purchase below.</p>';
+
+      return '<tr class="position-detail" id="' + detailId + '"><td colspan="8"><section class="purchase-journal" aria-label="' + esc(ticker) + ' purchase journal">' +
+        '<div class="pj-top"><div><h4>' + esc(ticker) + ' purchase journal</h4><p>' + esc(row.platform) + ' · saved inside your encrypted stock vault</p></div><span class="pj-badge">private · this device</span></div>' +
+        '<div class="pj-metrics"><div class="pj-metric"><span>Tracked shares</span><b>' + (trackedShares ? esc(trackedShares.toLocaleString('en-US', { maximumFractionDigits: 6 })) : '—') + '</b></div>' +
+        '<div class="pj-metric"><span>Average buy</span><b>' + (isFinite(average) ? esc(money(average)) : '—') + '</b></div><div class="pj-metric"><span>Tracked cost</span><b>' + (cost ? esc(money(cost)) : '—') + '</b></div>' +
+        '<div class="pj-metric"><span>Tracked P/L</span><b class="' + direction + '">' + (isFinite(gain) ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (isFinite(gainPct) ? ' · ' + (gainPct >= 0 ? '+' : '') + gainPct.toFixed(1) + '%' : '') : '—') + '</b></div></div>' +
+        lotRows + '<form class="pj-entry" data-key="' + esc(key) + '"><label class="fld"><span>Buy date</span><input type="date" name="date"></label>' +
+        '<label class="fld"><span>Shares bought</span><input type="number" name="shares" inputmode="decimal" min="0" step="any" placeholder="0.00" required></label>' +
+        '<label class="fld"><span>Buy price</span><input type="number" name="price" inputmode="decimal" min="0" step="any" placeholder="$0.00" required></label><button class="btn primary" type="submit">Add buy</button></form>' +
+        '<div class="pj-note"><label class="fld"><span>Internal note</span><textarea class="pj-noteinput" data-key="' + esc(key) + '" placeholder="Why you bought it, what changed, or what you want to watch…">' + esc(journal ? journal.body : '') + '</textarea></label>' +
+        '<div class="pj-notefoot"><p class="pj-save" data-save-key="' + esc(key) + '">' + (journal ? 'Saved in encrypted storage.' : 'Start typing to create this private note.') + '</p><button type="button" class="btn pj-open-note" data-key="' + esc(key) + '" data-ticker="' + esc(ticker) + '">Open full note</button></div></div>' +
+        '</section></td></tr>';
+    }
+
+    function saveJournal(row, purchases, body) {
+      return stockNotes.savePositionJournal({
+        positionKey: positionKey(row), ticker: row.symbol ? row.symbol.split('/')[0] : row.label,
+        title: row.platform,
+        purchases: purchases, body: body
+      });
+    }
+
+    function renderPlatforms() {
+      var groups = {};
+      allValued.forEach(function (r) {
+        (groups[r.platform] = groups[r.platform] || []).push(r);
+      });
+
+      var order = PLATFORM_ORDER.filter(function (p) { return groups[p]; })
+        .concat(Object.keys(groups).filter(function (p) { return PLATFORM_ORDER.indexOf(p) === -1; }));
+
+      $('platforms').innerHTML = order.map(function (p, platformIndex) {
+        var rows = groups[p];
+        var subtotal = window.PNPrices.total(rows.filter(isIncluded));
+        return '<div class="platform">' +
+          '<h3><span class="pdot ' + (PLATFORM_CLASS[p] || '') + '"></span>' + esc(p) +
+          '<span class="pcount">' + rows.length + ' line item' + (rows.length === 1 ? '' : 's') +
+          (subtotal > 0 ? ' · ' + esc(money(subtotal)) : '') + '</span></h3>' +
+          '<div class="tscroll"><table><thead><tr>' +
+            '<th>Holding</th><th class="r">Amount</th><th>Unit</th><th class="r">Price</th><th class="r">Value</th><th>Notes</th><th>Include</th><th class="r">Details</th>' +
+          '</tr></thead><tbody>' +
+          rows.map(function (r, rowIndex) {
+            var included = isIncluded(r), key = positionKey(r), isStock = r.kind === 'Equity' && r.symbol;
+            var expanded = isStock && expandedPositionKey === key;
+            var detailId = 'position-detail-' + platformIndex + '-' + rowIndex;
+            var rowHtml = '<tr class="' + (included ? '' : 'is-excluded') + '">' +
+              '<td class="label">' + esc(r.label) + '</td>' +
+              '<td class="num">' + r.amount.toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td>' +
+              '<td class="unit">' + esc(r.unit) + '</td>' +
+              '<td class="num">' + (isFinite(r.price) && r.price ? esc(money(r.price)) : '<span class="nopr">—</span>') + '</td>' +
+              '<td class="num">' + (isFinite(r.value) ? esc(money(r.value)) : '<span class="nopr">unpriced</span>') + '</td>' +
+              '<td class="notes">' + esc(r.notes) + '</td>' +
+              '<td><input class="rowtoggle" type="checkbox" data-key="' + esc(key) + '" ' + (included ? 'checked' : '') + ' aria-label="Include ' + esc(r.label) + ' in calculations"></td>' +
+              '<td>' + (isStock
+                ? '<button type="button" class="rowdetailbtn" data-key="' + esc(key) + '" aria-expanded="' + expanded + '" aria-controls="' + detailId + '" aria-label="' + (expanded ? 'Close' : 'Open') + ' buy prices and notes for ' + esc(r.label) + '"><span class="chevron" aria-hidden="true">›</span></button>'
+                : r.symbol ? '<button type="button" class="notebtn" data-ticker="' + esc(r.symbol.split('/')[0]) + '">note</button>' : '') + '</td>' +
+            '</tr>';
+            return rowHtml + (expanded ? purchaseJournalMarkup(r, detailId) : '');
+          }).join('') +
+          '</tbody></table></div></div>';
+      }).join('');
+
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.rowdetailbtn'), function (button) {
+        button.addEventListener('click', function () {
+          expandedPositionKey = button.getAttribute('aria-expanded') === 'true' ? null : button.dataset.key;
+          renderPlatforms();
+          var next = Array.prototype.filter.call($('platforms').querySelectorAll('.rowdetailbtn'), function (candidate) { return candidate.dataset.key === button.dataset.key; })[0];
+          if (next) next.focus();
+        });
+      });
+
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.notebtn'), function (b) {
+        b.addEventListener('click', function () {
+          if (!stockNotes) return;
+          var ok = stockNotes.openTicker(b.dataset.ticker);
+          if (ok === false) {
+            alert('Unlock the stock-notes vault below first.');
+          }
+          document.getElementById('stocknotes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.rowtoggle'), function (toggle) {
+        toggle.addEventListener('change', function () {
+          var row = allValued.filter(function (r) { return positionKey(r) === toggle.dataset.key; })[0];
+          if (row) { setIncluded(row, toggle.checked); refresh(false); }
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.pj-entry'), function (form) {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          var row = allValued.filter(function (r) { return positionKey(r) === form.dataset.key; })[0];
+          if (!row || !stockNotes || !stockNotes.vault.isUnlocked()) return;
+          var shares = parseFloat(form.elements.shares.value), price = parseFloat(form.elements.price.value);
+          if (!(shares > 0) || !(price > 0)) return;
+          var journal = journalFor(row), purchases = journal && Array.isArray(journal.purchases) ? journal.purchases.slice() : [];
+          purchases.push({ id: 'buy-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), date: form.elements.date.value || '', shares: shares, price: price });
+          var noteInput = form.closest('.purchase-journal').querySelector('.pj-noteinput');
+          saveJournal(row, purchases, noteInput ? noteInput.value : '').then(function () { renderPlatforms(); });
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.pj-delete'), function (button) {
+        button.addEventListener('click', function () {
+          var row = allValued.filter(function (r) { return positionKey(r) === button.dataset.key; })[0];
+          var journal = row ? journalFor(row) : null;
+          if (!row || !journal || !confirm('Delete this buy-price entry?')) return;
+          var purchases = Array.isArray(journal.purchases) ? journal.purchases.slice() : [];
+          purchases.splice(Number(button.dataset.lotIndex), 1);
+          saveJournal(row, purchases, journal.body || '').then(function () { renderPlatforms(); });
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.pj-noteinput'), function (input) {
+        input.addEventListener('input', function () {
+          clearTimeout(positionNoteSaveTimer);
+          var row = allValued.filter(function (r) { return positionKey(r) === input.dataset.key; })[0];
+          var saveNode = Array.prototype.filter.call($('platforms').querySelectorAll('[data-save-key]'), function (candidate) { return candidate.dataset.saveKey === input.dataset.key; })[0];
+          if (saveNode) saveNode.textContent = 'saving…';
+          positionNoteSaveTimer = setTimeout(function () {
+            if (!row || !stockNotes || !stockNotes.vault.isUnlocked()) return;
+            var journal = journalFor(row), purchases = journal && Array.isArray(journal.purchases) ? journal.purchases.slice() : [];
+            saveJournal(row, purchases, input.value).then(function () {
+              if (saveNode && saveNode.isConnected) saveNode.textContent = 'saved ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            }).catch(function () { if (saveNode && saveNode.isConnected) saveNode.textContent = 'Could not save.'; });
+          }, 450);
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.pj-open-note'), function (button) {
+        button.addEventListener('click', function () {
+          var row = allValued.filter(function (r) { return positionKey(r) === button.dataset.key; })[0];
+          var ok = row && stockNotes && stockNotes.openPositionJournal({
+            positionKey: button.dataset.key, ticker: button.dataset.ticker,
+            title: row.platform
+          });
+          if (ok === false) { alert('Unlock the stock-notes vault first.'); return; }
+          activateTrackerPanel('obsidian', false);
+          document.getElementById('stocknotes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    }
+
+    // ------------------------------------------------------ stock notes
+
+    function mountStockNotes(pin) {
+      if (stockNotes) { stockNotes.refresh(); return; }
+      var tickers = {};
+      (DATA.months || []).forEach(function (m) {
+        (m.holdings || []).forEach(function (h) {
+          var c = window.PNPrices.classify(h);
+          if (c.symbol) tickers[c.symbol.split('/')[0]] = true;
+        });
+      });
+
+      stockNotes = window.PNNotes.mount({
+        el: $('stockvault'),
+        scope: 'stocks',
+        mode: 'stocks',
+        tickers: Object.keys(tickers).sort(),
+        pin: pin || null,
+        lockCopy: {
+          title: 'Stock desk',
+          blurb: 'Per-ticker notes and outlooks. Separate vault from general notes — same PIN by default.'
+        }
+      });
+      if (stockNotes && stockNotes.ready) {
+        stockNotes.ready.then(function (unlocked) {
+          if (!DATA) return;
+          if (unlocked) {
+            var savedCalendar = stockNotes.getCalendarData();
+            privateCalendarEvents = savedCalendar && Array.isArray(savedCalendar.events) ? savedCalendar.events : [];
+            dividendEdits = Object.assign({}, savedCalendar && savedCalendar.dividendOverrides || {}, dividendEdits);
+          }
+          renderPlatforms();
+          renderHeadline(currentQuoteSummary());
+          renderDividends();
+          renderCalendar();
+        });
+      }
+    }
+  })();
   </script>
 </body>
 </html>

@@ -123,7 +123,76 @@ function main() {
     assert.equal(macd([1, 2, 3], 12, 26, 9).macd.every((v) => v === null), true, 'too little history yields all nulls');
   }
 
+  markup();
   console.log('Chart indicator tests: OK');
+}
+
+/* The Charts panel is built by string concatenation with two optional
+   wrappers (the underwater theme's treasure block and hoard panel), and
+   an unbalanced <div> there silently breaks the whole tab's layout with
+   nothing to catch it. So: pull the real assignment expression out of
+   the template, evaluate it with stubs for both themes, and walk the
+   div depth. This reads the shipped source, not a copy of it. */
+function markup() {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const src = fs.readFileSync(path.join(__dirname, 'index.template.html'), 'utf8');
+
+  const head = "$('stockchart').innerHTML =";
+  const tail = "(underwater ? bubblesMarkup() : '')";
+  const start = src.indexOf(head + '\n');
+  assert.ok(start >= 0, 'renderStockChart markup assignment not found — did the template move?');
+  const end = src.indexOf(tail + ';', start);
+  assert.ok(end >= 0, 'markup assignment end not found — did the theme wrapper change?');
+  const expr = src.slice(start + head.length, end + tail.length);
+
+  const grab = (name) => {
+    const i = src.indexOf('function ' + name + '(');
+    assert.ok(i >= 0, `${name}() not found in the template`);
+    return src.slice(i, src.indexOf('\n    }', i) + 6);
+  };
+
+  const build = new Function(`
+    ${grab('treasureChestSvg')}
+    ${grab('bubblesMarkup')}
+    var esc = function (s) { return String(s); };
+    var money = function (n) { return '$' + Number(n).toFixed(2); };
+    var activeChartSymbol = 'VDE', activeChartRange = '3M';
+    var CHART_RANGES = ['1M','3M','6M','1Y'];
+    var EMA_PERIODS = [10,20,50,200];
+    var EMA_COLORS = {10:'#1',20:'#2',50:'#3',200:'#4'};
+    var loadEmaState = function () { return {10:true,20:false,50:false,200:false}; };
+    var holding = { shares: 12.5, value: 900, price: 72 };
+    var prefs, underwater, loadChartPrefs;
+    return function (theme) {
+      prefs = { type:'candle', rsi:true, macd:true, sort:'alpha', range:'3M', theme:theme };
+      loadChartPrefs = function () { return prefs; };
+      underwater = theme === 'underwater';
+      return (${expr});
+    };
+  `)();
+
+  for (const theme of ['deep', 'underwater']) {
+    const html = build(theme);
+    let depth = 0, min = 0;
+    for (const m of html.matchAll(/<div\b|<\/div>/g)) {
+      depth += m[0] === '</div>' ? -1 : 1;
+      if (depth < min) min = depth;
+    }
+    assert.equal(depth, 0, `${theme}: every <div> must close (net ${depth})`);
+    assert.equal(min, 0, `${theme}: closes a <div> it never opened`);
+
+    /* The render pipeline writes into these by id afterwards, so losing
+       one means a silently blank chart rather than an error. */
+    for (const id of ['stocksidelist', 'c-stock', 'marketkpis', 'stockchartstatus']) {
+      assert.ok(html.includes('id="' + id + '"'), `${theme}: missing #${id}`);
+    }
+
+    const themed = theme === 'underwater';
+    assert.equal(html.includes('id="hoardpanel"'), themed, 'hoard panel belongs to the underwater theme only');
+    assert.equal(html.includes('treasure-chest'), themed, 'chest belongs to the underwater theme only');
+    assert.equal(html.includes('uw-bubbles'), themed, 'bubbles belong to the underwater theme only');
+  }
 }
 
 main();

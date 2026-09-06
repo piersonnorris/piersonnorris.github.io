@@ -347,9 +347,9 @@
       },
       {
         id: 'goal-chart-v2-customization', title: 'R14 · Chart V2 -- candles, RSI/MACD, sort, remembered prefs', status: 'complete',
-        outcome: 'Candlestick chart type (falling back to the line when a provider returns closes only), RSI 14 and MACD 12/26/9 sub-panels stacked under the volume strip, an A-Z / Value sidebar sort, remembered display prefs per browser, and note markers on tickers that already have an outlook written.',
+        outcome: 'Candlestick chart type (falling back to the line when a provider returns closes only), RSI 14 and MACD 12/26/9 sub-panels stacked under the volume strip, an A-Z / Value sidebar sort, remembered display prefs per browser, note markers on tickers that already have an outlook written, and an opt-in underwater theme: an open treasure chest presiding over the KPI row with a gold-backed hoard panel of extra data below it.',
         nextAction: 'Pierce click-tests it: candles at each range, both oscillators on at once, and the sidebar under 760px. Verified so far by tests and code review only.',
-        milestones: ['PNPrices.rsi/macd + charts.test.js', 'Candle rendering with OHLC fallback', 'RSI/MACD sub-panels + tooltip readout', 'Sort, prefs persistence, note markers'],
+        milestones: ['PNPrices.rsi/macd + charts.test.js', 'Candle rendering with OHLC fallback', 'RSI/MACD sub-panels + tooltip readout', 'Sort, prefs persistence, note markers', 'Underwater theme: chest over the KPIs, gold-backed hoard panel'],
         dependencies: [], relatedLink: '#charts', created: now, updated: now
       },
       {

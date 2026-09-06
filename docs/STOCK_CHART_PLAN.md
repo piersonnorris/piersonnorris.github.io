@@ -89,6 +89,8 @@ Pierce asked to start defining what "the chart should be customizable" means, th
 - **Remembered display prefs** — chart type, oscillator toggles, sort mode, and selected range persist per browser in `pn.chart.prefs`, so a re-lock doesn't reset the view. Display choices only; nothing about holdings leaves the encrypted payload.
 - **Sidebar note markers** — a ticker that already has a saved outlook note shows a small dot on its row (with a screen-reader equivalent), so you can see at a glance which stocks you've written about without opening each one.
 
+- **Underwater theme** — an opt-in skin for the Charts panel (Theme: Deep / Underwater). Ocean gradient ground with drifting caustic light and slow-rising bubbles; an open **treasure chest** presides over the KPI row, so the range figures read as what spilled out of it; and below it a **hoard panel** carries scattered gold at 17% opacity behind semi-translucent cells of the numbers the KPI row has no room for — shares held, position value, last close, average close, range high/low, which platforms hold it, and (when the vault is unlocked) tracked buys, average buy, and tracked P/L summed across that symbol's purchase journals. All CSS and inline SVG, drawn in the template, because the encrypted tracker ships as one self-contained file. Motion respects `prefers-reduced-motion`. It repaints; it never changes a number, and a figure with no source renders as an em dash rather than a guess.
+
 **Still open, deliberately**
 
 - **Manual drag-to-reorder** the sidebar — A–Z and Value cover the real need; drag ordering needs persisted per-symbol positions and touch/keyboard equivalents, which is its own scope rather than a bolt-on.

@@ -26,6 +26,7 @@
 !/tools/tracker/index.html
 !/tools/tracker/index.template.html
 !/tools/tracker/build.js
+!/tools/tracker/calendar.test.js
 !/.github/
 !/.github/workflows/
 !/.github/workflows/refresh-tracker.yml

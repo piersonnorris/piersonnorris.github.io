@@ -182,6 +182,9 @@
       outlook: (fields && fields.outlook) || null,
       positionKey: (fields && fields.positionKey) || null,
       purchases: (fields && fields.purchases) || [],
+      noteType: (fields && fields.noteType) || null,
+      calendarEvents: (fields && fields.calendarEvents) || [],
+      dividendOverrides: (fields && fields.dividendOverrides) || {},
       created: now,
       updated: now
     };
@@ -259,6 +262,13 @@
     if (note.purchases && note.purchases.length) {
       fm.push('purchases_json: ' + yamlStr(JSON.stringify(note.purchases)));
     }
+    if (note.noteType) fm.push('note_type: ' + yamlStr(note.noteType));
+    if (note.calendarEvents && note.calendarEvents.length) {
+      fm.push('calendar_events_json: ' + yamlStr(JSON.stringify(note.calendarEvents)));
+    }
+    if (note.dividendOverrides && Object.keys(note.dividendOverrides).length) {
+      fm.push('dividend_overrides_json: ' + yamlStr(JSON.stringify(note.dividendOverrides)));
+    }
     if (note.tags && note.tags.length) {
       fm.push('tags: [' + note.tags.map(yamlStr).join(', ') + ']');
     }
@@ -295,6 +305,15 @@
       });
       body += '\n<!-- pn-purchases:end -->\n\n';
     }
+    if (note.calendarEvents && note.calendarEvents.length) {
+      var mdCell = function (value) { return String(value || '').replace(/\|/g, '\\|').replace(/\r?\n/g, ' '); };
+      body += '<!-- pn-calendar:start -->\n## Private calendar events\n\n';
+      body += '| Date | Event | Type | Notes |\n|---|---|---|---|\n';
+      note.calendarEvents.slice().sort(function (a, b) { return String(a.date || '').localeCompare(String(b.date || '')); }).forEach(function (event) {
+        body += '| ' + mdCell(event.date) + ' | ' + mdCell(event.title) + ' | ' + mdCell(event.kind) + ' | ' + mdCell(event.notes) + ' |\n';
+      });
+      body += '\n<!-- pn-calendar:end -->\n\n';
+    }
     body += note.body || '';
 
     return fm.join('\n') + body + '\n';
@@ -310,7 +329,7 @@
     var note = {
       title: fallbackTitle || 'Imported note',
       body: text || '',
-      tags: [], ticker: null, outlook: null, positionKey: null, purchases: [],
+      tags: [], ticker: null, outlook: null, positionKey: null, purchases: [], noteType: null, calendarEvents: [], dividendOverrides: {},
       created: new Date().toISOString(),
       updated: new Date().toISOString()
     };
@@ -339,6 +358,19 @@
             note.purchases = Array.isArray(purchases) ? purchases : [];
           } catch (e) { note.purchases = []; }
         }
+        else if (k === 'note_type') note.noteType = unq(v) || null;
+        else if (k === 'calendar_events_json') {
+          try {
+            var calendarEvents = JSON.parse(unq(v));
+            note.calendarEvents = Array.isArray(calendarEvents) ? calendarEvents : [];
+          } catch (e) { note.calendarEvents = []; }
+        }
+        else if (k === 'dividend_overrides_json') {
+          try {
+            var dividendOverrides = JSON.parse(unq(v));
+            note.dividendOverrides = dividendOverrides && typeof dividendOverrides === 'object' && !Array.isArray(dividendOverrides) ? dividendOverrides : {};
+          } catch (e) { note.dividendOverrides = {}; }
+        }
         else if (k === 'tags') {
           var inner = v.replace(/^\[|\]$/g, '');
           note.tags = inner ? inner.split(',').map(function (t) { return unq(t); }).filter(Boolean) : [];
@@ -357,6 +389,7 @@
        export; remove it from the editable note body when importing so
        repeated Obsidian round trips never duplicate the table. */
     note.body = String(note.body || '').replace(/<!-- pn-purchases:start -->[\s\S]*?<!-- pn-purchases:end -->\s*/g, '');
+    note.body = note.body.replace(/<!-- pn-calendar:start -->[\s\S]*?<!-- pn-calendar:end -->\s*/g, '');
 
     /* Inline #tags in the body get folded into the tag list too. */
     var inlineTags = (note.body.match(/(^|\s)#([a-z0-9][\w/-]*)/gi) || [])

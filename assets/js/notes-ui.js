@@ -525,6 +525,27 @@
           return true;
         });
       },
+      getCalendarData: function () {
+        if (!vault.isUnlocked()) return null;
+        var hit = vault.list().filter(function (n) { return n.noteType === 'portfolio-calendar'; })[0];
+        return hit ? {
+          id: hit.id,
+          events: Array.isArray(hit.calendarEvents) ? hit.calendarEvents.slice() : [],
+          dividendOverrides: hit.dividendOverrides && typeof hit.dividendOverrides === 'object' ? hit.dividendOverrides : {}
+        } : { id: null, events: [], dividendOverrides: {} };
+      },
+      saveCalendarData: function (events, dividendOverrides) {
+        if (!vault.isUnlocked()) return Promise.resolve(false);
+        var hit = vault.list().filter(function (n) { return n.noteType === 'portfolio-calendar'; })[0];
+        var patch = {
+          title: 'Portfolio calendar', noteType: 'portfolio-calendar',
+          calendarEvents: Array.isArray(events) ? events : [],
+          dividendOverrides: dividendOverrides && typeof dividendOverrides === 'object' ? dividendOverrides : {},
+          tags: ['portfolio', 'calendar'], body: hit ? hit.body || '' : ''
+        };
+        var write = hit ? vault.update(hit.id, patch) : vault.create_note(patch);
+        return write.then(function (note) { renderAll(); return note; });
+      },
       /* used by the tracker page to jump straight into a ticker's note */
       openTicker: function (ticker) {
         if (!vault.isUnlocked()) return false;

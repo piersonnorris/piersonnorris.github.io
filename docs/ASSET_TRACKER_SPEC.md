@@ -170,3 +170,7 @@ jobs:
 ## 8. Stock chart roadmap
 
 The chart experience, provider boundary, accessibility requirements, phased enhancements, and validation criteria are maintained in [STOCK_CHART_PLAN.md](STOCK_CHART_PLAN.md).
+
+## 9. Private portfolio calendar
+
+The calendar data model, privacy boundary, accuracy rules, Google Calendar handoff, and deferred task-board/data-connection phases are maintained in [PORTFOLIO_CALENDAR_PLAN.md](PORTFOLIO_CALENDAR_PLAN.md).

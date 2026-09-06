@@ -77,18 +77,24 @@ Two pieces shipped, price-only, with no invented data:
 
 The stock switcher moved from a horizontal chip row to a left-hand vertical list (Pierce: "an area to click right of a stock's name on the left with notes to add"). Each row now carries a notes icon that inline-expands a private per-ticker outlook note — same note `openTicker()` already reaches from the Positions tab, just one more way in. See ROADMAP R13.
 
-### Version 2 — customization (draft, 2026-09-06 — needs Pierce's picks before building)
+### Version 2 — customization — built 2026-09-06
 
-Pierce asked to start defining what "the chart should be customizable" means. This is a first pass at the menu, not a commitment to build all of it — prune or reorder freely:
+Pierce asked to start defining what "the chart should be customizable" means, then to implement it. Four of the six drafted options shipped; two are still open on purpose (below).
 
-- **Chart type per stock** — line (today) vs. candlestick (OHLC), remembered per symbol or set once for all.
-- **Indicator picks beyond EMA** — RSI and/or MACD as an optional sub-panel under the price chart (this is what R12 calls "chart indicators v2").
-- **Sidebar order** — alphabetical (today) vs. by position value vs. a manual drag-to-reorder, so the stocks you actually watch sit at the top.
-- **Color per stock** — an assignable accent color per ticker, carried into both the single-stock chart and comparison mode's legend.
-- **Default range + default indicator set** — remembered per browser instead of resetting to 3M/no-EMA every unlock.
-- **Sidebar note visibility** — whether a ticker with a saved note gets a persistent marker (so you can tell at a glance which stocks have an outlook written down) without opening it.
+**Shipped**
 
-None of this is built yet. Once Pierce says which of these (if any) he wants, they get their own scope the way dividend markers and comparison mode did.
+- **Chart type** — Line (the existing close-price area) or **Candles** (OHLC bodies + wicks). Candles only engage when at least 60% of the returned points actually carry open/high/low; below that the chart falls back to the line rather than drawing a row of one-tick bodies, because some providers return closes only. In candle mode the axis widens to the highs and lows so wicks can't clip.
+- **Oscillator sub-panels** — **RSI 14** (0–100 scale with 30/50/70 guides) and **MACD 12/26/9** (histogram + MACD and signal lines around a zero line), each rendered as its own panel stacked under the volume strip. The SVG grows downward instead of squeezing the price plot; with neither enabled the geometry is exactly what it was. Both read out in the hover/keyboard tooltip alongside the EMAs. This is what R12 called "chart indicators v2."
+- **Sidebar order** — an A–Z / Value toggle at the top of the stock list. Value sorts by current position value, falling back to alphabetical on ties and unpriced rows so the list never reshuffles at random.
+- **Remembered display prefs** — chart type, oscillator toggles, sort mode, and selected range persist per browser in `pn.chart.prefs`, so a re-lock doesn't reset the view. Display choices only; nothing about holdings leaves the encrypted payload.
+- **Sidebar note markers** — a ticker that already has a saved outlook note shows a small dot on its row (with a screen-reader equivalent), so you can see at a glance which stocks you've written about without opening each one.
+
+**Still open, deliberately**
+
+- **Manual drag-to-reorder** the sidebar — A–Z and Value cover the real need; drag ordering needs persisted per-symbol positions and touch/keyboard equivalents, which is its own scope rather than a bolt-on.
+- **Per-stock accent color** — the weakest of the six: comparison mode already assigns distinguishable colors automatically, so a manual override mostly risks two stocks ending up the same shade. Worth doing only if the auto-assignment actually annoys.
+
+**Indicator maths** live in `assets/js/prices.js` (`ema`, `rsi`, `macd`) and are covered by `tools/tracker/charts.test.js` — alignment (warm-up slots stay null, arrays stay input-aligned), the RSI 0–100 bound, MACD's `hist === macd − signal` identity, and sign behaviour on rising/falling/flat series. `charts.js` stays a pure renderer: the caller computes the series and passes aligned arrays in, exactly as EMA overlays already worked.
 
 Deliberately **not** built yet, because they need data this session doesn't have honestly:
 - **Portfolio aggregate line** and the **Price return / Total return toggle** — both require the dated transaction ledger below. Building either off "today's shares, applied to the whole range" would misrepresent performance, which this plan already flags as a risk.

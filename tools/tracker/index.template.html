@@ -218,7 +218,7 @@
     .market-layout{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}
     .stock-sidelist{display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:7px;max-height:440px;overflow-y:auto}
     .sidelist-row{display:flex;align-items:center;gap:5px}
-    .sidelist-item{flex:1;min-width:0;text-align:left;appearance:none;border:1px solid transparent;background:transparent;color:var(--mut);font:600 12px/1.3 var(--mono);padding:8px 9px;border-radius:7px;cursor:pointer;transition:color .15s,background .15s,border-color .15s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .sidelist-item{position:relative;flex:1;min-width:0;text-align:left;appearance:none;border:1px solid transparent;background:transparent;color:var(--mut);font:600 12px/1.3 var(--mono);padding:8px 9px;border-radius:7px;cursor:pointer;transition:color .15s,background .15s,border-color .15s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .sidelist-item:hover{color:var(--ink);background:rgba(255,255,255,.035)}
     .sidelist-item[aria-pressed="true"]{color:#0e1116;background:var(--acc);border-color:var(--acc)}
     .sidelist-notebtn{flex:0 0 auto;display:grid;place-items:center;width:26px;height:26px;padding:0;color:var(--dim);background:transparent;border:1px solid var(--line2);border-radius:6px;cursor:pointer;transition:color .15s,border-color .15s}
@@ -227,6 +227,12 @@
     .sidelist-noteinline{padding:7px 2px 9px;animation:panel-in .15s ease-out}
     .sidelist-noteinline textarea{width:100%;min-height:64px;resize:vertical;background:var(--panel2);border:1px solid var(--line2);border-radius:7px;color:var(--ink);font:12px/1.5 var(--mono);padding:8px}
     .sidelist-notestatus{font:9.5px/1.3 var(--mono);color:var(--dim);margin:5px 0 0}
+    .sidelist-sort{display:flex;gap:3px;padding:2px 2px 7px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+    .sidelist-sortbtn{flex:1;appearance:none;border:1px solid var(--line);background:var(--panel);color:var(--dim);font:500 9.5px/1 var(--mono);letter-spacing:.06em;padding:6px 4px;border-radius:5px;cursor:pointer}
+    .sidelist-sortbtn:hover{color:var(--ink)}
+    .sidelist-sortbtn[aria-pressed="true"]{background:var(--line2);color:var(--acc-hi);border-color:var(--acc)}
+    .sidelist-dot{position:absolute;top:8px;right:7px;width:5px;height:5px;border-radius:50%;background:var(--acc-hi)}
+    .sidelist-item[aria-pressed="true"] .sidelist-dot{background:#0e1116}
     @media (max-width:760px){.market-layout{grid-template-columns:1fr}.stock-sidelist{max-height:220px}}
     .rangebtn{appearance:none;border:0;background:transparent;color:var(--dim);font:500 10px/1 var(--mono);padding:7px 8px;border-radius:5px;cursor:pointer}.rangebtn:hover{color:var(--ink)}.rangebtn[aria-pressed="true"]{background:var(--line2);color:var(--acc-hi)}
     .market-chart-shell{position:relative;min-height:300px}.market-frame{position:relative}.pnchart-market{min-height:260px}.pnchart-market:focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}.market-tooltip{position:absolute;z-index:3;min-width:156px;transform:translate(-50%,-110%);pointer-events:none;background:rgba(10,14,19,.96);border:1px solid var(--line2);border-radius:8px;padding:9px 10px;box-shadow:0 12px 30px rgba(0,0,0,.35);font:10.5px/1.45 var(--mono);color:var(--mut)}.market-tooltip b,.market-tooltip span{display:block}.market-tooltip b{color:var(--ink);margin-bottom:3px}.market-tooltip span:first-of-type{color:var(--acc-hi)}
@@ -472,7 +478,7 @@
       Gemini: '#F5A623', GoMining: '#7C3AED'
     };
 
-    var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, activeChartRange = '3M', expandedPositionKey = null, positionNoteSaveTimer = null, expandedChartNoteSymbol = null, chartNoteSaveTimer = null, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
+    var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, activeChartRange = null, expandedPositionKey = null, positionNoteSaveTimer = null, expandedChartNoteSymbol = null, chartNoteSaveTimer = null, chartValueBySymbol = {}, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
     var calendarAnchor = window.PNCalendar.anchorKey(new Date()), calendarSelectedDate = window.PNCalendar.dateKey(new Date()), calendarEditingId = null, privateCalendarEvents = [];
     var calendarFilters = { 'ex-dividend': true, payment: true, earnings: true, private: true };
     var projectGoals = [], projectEditingId = null, projectBoardReady = false;
@@ -603,7 +609,7 @@
     });
 
     $('relock').addEventListener('click', function () {
-      DATA = null; valued = []; sessionPin = null; demoMode = false; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); expandedChartNoteSymbol = null; clearTimeout(chartNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
+      DATA = null; valued = []; sessionPin = null; demoMode = false; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); expandedChartNoteSymbol = null; clearTimeout(chartNoteSaveTimer); activeChartRange = null; dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
       if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
       $('vault').style.display = 'none';
       $('lock').style.display = 'grid';
@@ -920,6 +926,63 @@
       try { localStorage.setItem('pn.chart.ema', JSON.stringify(state)); } catch (e) { /* ignore */ }
     }
 
+    /* V2 customization prefs. Per-browser, not in the encrypted payload:
+       these are display choices, not portfolio data, and they should
+       survive a re-lock the same way the EMA toggles already do. */
+    var CHART_RANGES = ['1M', '3M', '6M', '1Y'];
+    function loadChartPrefs() {
+      var def = { type: 'line', rsi: false, macd: false, sort: 'alpha', range: '3M' };
+      try {
+        var saved = JSON.parse(localStorage.getItem('pn.chart.prefs') || '{}') || {};
+        if (saved.type === 'candle' || saved.type === 'line') def.type = saved.type;
+        if (typeof saved.rsi === 'boolean') def.rsi = saved.rsi;
+        if (typeof saved.macd === 'boolean') def.macd = saved.macd;
+        if (saved.sort === 'alpha' || saved.sort === 'value') def.sort = saved.sort;
+        if (CHART_RANGES.indexOf(saved.range) !== -1) def.range = saved.range;
+      } catch (e) { /* defaults */ }
+      return def;
+    }
+
+    function saveChartPrefs(patch) {
+      var next = loadChartPrefs(), key;
+      for (key in patch) if (Object.prototype.hasOwnProperty.call(patch, key)) next[key] = patch[key];
+      try { localStorage.setItem('pn.chart.prefs', JSON.stringify(next)); } catch (e) { /* ignore */ }
+      return next;
+    }
+
+    /* Sidebar order: A-Z, or biggest position first. Ties and unpriced
+       positions fall back to alphabetical so the list never reshuffles
+       randomly between renders. */
+    function sortedChartSymbols(list) {
+      var mode = loadChartPrefs().sort;
+      var out = list.slice().sort(function (a, b) { return a.localeCompare(b); });
+      if (mode !== 'value') return out;
+      return out.sort(function (a, b) {
+        var av = chartValueBySymbol[a] || 0, bv = chartValueBySymbol[b] || 0;
+        return bv - av || a.localeCompare(b);
+      });
+    }
+
+    /* RSI / MACD sub-panel series for the market chart, honouring the
+       toggles. Both need more history than they have warm-up for, so a
+       too-short range reports itself instead of drawing a stub. */
+    function indicatorPanels(series) {
+      var closes = series.map(function (p) { return p.value; });
+      var prefs = loadChartPrefs(), out = [], skipped = [];
+      if (prefs.rsi) {
+        if (closes.length <= 15) skipped.push('RSI 14');
+        else out.push({ key: 'rsi', label: 'RSI 14', values: window.PNPrices.rsi(closes, 14) });
+      }
+      if (prefs.macd) {
+        if (closes.length < 35) skipped.push('MACD 12/26/9');
+        else {
+          var m = window.PNPrices.macd(closes, 12, 26, 9);
+          out.push({ key: 'macd', label: 'MACD 12/26/9', macd: m.macd, signal: m.signal, hist: m.hist });
+        }
+      }
+      return { panels: out, skipped: skipped };
+    }
+
     /* Build EMA overlay series for the market chart, honouring the
        toggles. Periods longer than the loaded history are skipped and
        reported so the status line can say why. */
@@ -986,12 +1049,20 @@
       var host = $('stocksidelist');
       if (!host) return;
       var unlocked = !!(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked());
-      host.innerHTML = list.map(function (symbol) {
+      var prefs = loadChartPrefs();
+      host.innerHTML = '<div class="sidelist-sort" role="group" aria-label="Sort stocks">' +
+        [['alpha', 'A-Z'], ['value', 'Value']].map(function (pair) {
+          return '<button type="button" class="sidelist-sortbtn" data-sort="' + pair[0] +
+            '" aria-pressed="' + (prefs.sort === pair[0]) + '">' + pair[1] + '</button>';
+        }).join('') + '</div>' +
+        sortedChartSymbols(list).map(function (symbol) {
         var ticker = symbol.split('/')[0];
         var expanded = expandedChartNoteSymbol === symbol;
         var note = unlocked ? stockNotes.getTickerNote(ticker) : null;
+        var hasNote = !!(note && String(note.body || '').trim());
         return '<div class="sidelist-row"><button type="button" class="sidelist-item" data-symbol="' + esc(symbol) +
-          '" aria-pressed="' + (symbol === activeChartSymbol) + '">' + esc(ticker) + '</button>' +
+          '" aria-pressed="' + (symbol === activeChartSymbol) + '">' + esc(ticker) +
+          (hasNote ? '<i class="sidelist-dot" aria-hidden="true"></i><span class="visually-hidden"> — has a note</span>' : '') + '</button>' +
           '<button type="button" class="sidelist-notebtn" data-symbol="' + esc(symbol) + '" data-ticker="' + esc(ticker) +
           '" aria-expanded="' + expanded + '" aria-label="' + (expanded ? 'Close' : 'Add') + ' notes for ' + esc(ticker) + '">✎</button></div>' +
           (expanded ? '<div class="sidelist-noteinline"><textarea class="sidelist-noteinput" data-ticker="' + esc(ticker) +
@@ -1000,6 +1071,12 @@
       }).join('');
       Array.prototype.forEach.call(host.querySelectorAll('[data-symbol].sidelist-item'), function (button) {
         button.addEventListener('click', function () { activeChartSymbol = button.dataset.symbol; renderStockChart(); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.sidelist-sortbtn'), function (button) {
+        button.addEventListener('click', function () {
+          saveChartPrefs({ sort: button.dataset.sort });
+          renderChartSidebar(list);
+        });
       });
       Array.prototype.forEach.call(host.querySelectorAll('.sidelist-notebtn'), function (button) {
         button.addEventListener('click', function () {
@@ -1035,6 +1112,16 @@
         $('stockchart').innerHTML = '<h2>Stock chart</h2><p class="chart-copy">No included stock positions are available for charting in this month.</p>';
         return;
       }
+      /* Resolved on first render, not at declaration: this file's var
+         block runs before CHART_RANGES exists, so reading prefs up
+         there silently fell back to the default every time. */
+      if (!activeChartRange) activeChartRange = loadChartPrefs().range;
+      chartValueBySymbol = {};
+      valued.forEach(function (r) {
+        if (r.kind === 'Equity' && r.symbol && isFinite(r.value)) {
+          chartValueBySymbol[r.symbol] = (chartValueBySymbol[r.symbol] || 0) + r.value;
+        }
+      });
       if (list.indexOf(activeChartSymbol) === -1) {
         var largestEquity = valued.filter(function (row) { return row.kind === 'Equity' && row.symbol && isFinite(row.value); })
           .sort(function (a, b) { return b.value - a.value; })[0];
@@ -1052,19 +1139,46 @@
         '<div class="market-head"><div class="market-title"><div class="market-symbol"><b>' + esc(activeChartSymbol) + '</b><span>owned</span></div><p class="chart-copy">Price, volume, and position context</p></div>' +
         '<div class="market-quote" id="marketquote"><strong>' + (isFinite(holding.price) ? esc(money(holding.price)) : '—') + '</strong><span class="flat">Waiting for history</span></div></div>' +
         '<div class="market-controls">' +
-        '<div class="ctrl-group"><span class="ctrl-label">Range</span><div class="rangebar" aria-label="Chart range">' + ['1M', '3M', '6M', '1Y'].map(function (range) {
+        '<div class="ctrl-group"><span class="ctrl-label">Range</span><div class="rangebar" aria-label="Chart range">' + CHART_RANGES.map(function (range) {
           return '<button type="button" class="rangebtn" data-range="' + range + '" aria-pressed="' + (range === activeChartRange) + '">' + range + '</button>';
+        }).join('') + '</div></div>' +
+        '<div class="ctrl-group"><span class="ctrl-label">Type</span><div class="rangebar" aria-label="Chart type">' +
+        [['line', 'Line'], ['candle', 'Candles']].map(function (pair) {
+          return '<button type="button" class="rangebtn" data-charttype="' + pair[0] + '" aria-pressed="' + (loadChartPrefs().type === pair[0]) + '">' + pair[1] + '</button>';
         }).join('') + '</div></div>' +
         '<div class="ctrl-group"><span class="ctrl-label">Indicators</span><div class="emabar" role="group" aria-label="Moving-average overlays">' +
         EMA_PERIODS.map(function (period) {
           return '<button type="button" class="emabtn" data-ema="' + period + '" style="--ema:' + EMA_COLORS[period] +
             '" aria-pressed="' + !!loadEmaState()[period] + '">' + period + '</button>';
-        }).join('') + '<button type="button" class="emabtn off" data-ema="off">Turn off</button></div></div></div><div class="market-chart-shell" id="c-stock"></div><div class="market-kpis" id="marketkpis">' +
+        }).join('') + '<button type="button" class="emabtn off" data-ema="off">Turn off</button></div></div>' +
+        '<div class="ctrl-group"><span class="ctrl-label">Oscillators</span><div class="emabar" role="group" aria-label="Indicator sub-panels">' +
+        [['rsi', 'RSI 14', '#c084fc'], ['macd', 'MACD', '#4CC9F0']].map(function (item) {
+          return '<button type="button" class="emabtn" data-panel="' + item[0] + '" style="--ema:' + item[2] +
+            '" aria-pressed="' + !!loadChartPrefs()[item[0]] + '">' + item[1] + '</button>';
+        }).join('') + '</div></div></div><div class="market-chart-shell" id="c-stock"></div><div class="market-kpis" id="marketkpis">' +
         '<div class="market-kpi"><span>Range return</span><b>—</b></div><div class="market-kpi"><span>Range high</span><b>—</b></div><div class="market-kpi"><span>Range low</span><b>—</b></div><div class="market-kpi"><span>Average close</span><b>—</b></div><div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' shares</b></div>' +
         '</div><p class="stockchart-status" id="stockchartstatus"></p></div></div>';
       renderChartSidebar(list);
       Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-range]'), function (button) {
-        button.addEventListener('click', function () { activeChartRange = button.dataset.range; renderStockChart(); });
+        button.addEventListener('click', function () {
+          activeChartRange = button.dataset.range;
+          saveChartPrefs({ range: activeChartRange });
+          renderStockChart();
+        });
+      });
+      Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-charttype]'), function (button) {
+        button.addEventListener('click', function () {
+          saveChartPrefs({ type: button.dataset.charttype });
+          renderStockChart();
+        });
+      });
+      Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-panel]'), function (button) {
+        button.addEventListener('click', function () {
+          var key = button.dataset.panel, patch = {};
+          patch[key] = !loadChartPrefs()[key];
+          saveChartPrefs(patch);
+          renderStockChart();
+        });
       });
       Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-ema]'), function (button) {
         button.addEventListener('click', function () {
@@ -1099,18 +1213,24 @@
           '<div class="market-kpi"><span>Average close</span><b>' + esc(money(average)) + '</b></div>' +
           '<div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' sh · ' + (holding.value ? esc(money(holding.value)) : 'unpriced') + '</b></div>';
         var indicators = emaOverlays(series);
+        var oscillators = indicatorPanels(series);
         var divEvents = dividendChartEvents(requestedSymbol, series);
         window.PNCharts.market($('c-stock'), series, {
           title: requestedSymbol + ' ' + requestedRange + ' price and volume',
+          type: loadChartPrefs().type,
           overlays: indicators.overlays,
+          panels: oscillators.panels,
           events: divEvents,
           emptyMessage: 'Not enough price history returned for this symbol.'
         });
         var emaNote = indicators.skipped.length
           ? ' · EMA ' + indicators.skipped.join('/') + ' needs a longer range than ' + requestedRange + '.'
           : '';
+        var oscNote = oscillators.skipped.length
+          ? ' · ' + oscillators.skipped.join(' and ') + ' needs a longer range than ' + requestedRange + '.'
+          : '';
         var divNote = divEvents.length ? ' · ' + divEvents.length + ' dividend event' + (divEvents.length === 1 ? '' : 's') + ' marked' : '';
-        $('stockchartstatus').textContent = series.length + ' sessions · ' + requestedSymbol + ' · ' + requestedRange + ' · ' + sourceLabel + emaNote + divNote;
+        $('stockchartstatus').textContent = series.length + ' sessions · ' + requestedSymbol + ' · ' + requestedRange + ' · ' + sourceLabel + emaNote + oscNote + divNote;
       }
 
       if (demoMode) {

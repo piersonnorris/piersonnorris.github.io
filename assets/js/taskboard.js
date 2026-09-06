@@ -339,11 +339,18 @@
         dependencies: ['R10 · Obsidian visual style', 'Pierce design direction'], relatedLink: '#projects', created: now, updated: now
       },
       {
-        id: 'goal-pn-chart-v2-picks', title: 'PN Tasks · Chart V2 customization -- pick from the draft menu', status: 'backlog',
-        outcome: 'docs/STOCK_CHART_PLAN.md "Version 2 -- customization" lists candidates: chart type per stock (line vs. candlestick), RSI/MACD sub-panel, sidebar reordering, per-stock color, remembered default range/indicators, a note-marker on the sidebar. Source: Pierce, Cowork chat with Claude, 2026-09-06.',
-        nextAction: 'Pierce says which of the listed options he actually wants before any of it gets scoped and built.',
-        milestones: ['Pierce reviews the draft menu', 'Picks confirmed', 'Each pick gets its own scope, same as dividend markers/comparison mode'],
+        id: 'goal-pn-chart-v2-picks', title: 'PN Tasks · Chart V2 -- the two options left on the table', status: 'backlog',
+        outcome: 'Four of the six drafted V2 customizations shipped (R14). Still Pierce\'s call: manual drag-to-reorder the sidebar (A-Z and Value may already cover it) and per-stock accent colors (comparison mode already auto-assigns distinguishable ones). Source: Pierce, Cowork chat with Claude, 2026-09-06.',
+        nextAction: 'Neither gets built unless Pierce says the current behaviour actually annoys him. Also: click-test the shipped V2 -- nobody has looked at it in a browser yet.',
+        milestones: ['Pierce click-tests candles/RSI/MACD/sort', 'Decide on drag-reorder', 'Decide on per-stock colors'],
         dependencies: ['Pierce picks'], relatedLink: '#charts', created: now, updated: now
+      },
+      {
+        id: 'goal-chart-v2-customization', title: 'R14 · Chart V2 -- candles, RSI/MACD, sort, remembered prefs', status: 'complete',
+        outcome: 'Candlestick chart type (falling back to the line when a provider returns closes only), RSI 14 and MACD 12/26/9 sub-panels stacked under the volume strip, an A-Z / Value sidebar sort, remembered display prefs per browser, and note markers on tickers that already have an outlook written.',
+        nextAction: 'Pierce click-tests it: candles at each range, both oscillators on at once, and the sidebar under 760px. Verified so far by tests and code review only.',
+        milestones: ['PNPrices.rsi/macd + charts.test.js', 'Candle rendering with OHLC fallback', 'RSI/MACD sub-panels + tooltip readout', 'Sort, prefs persistence, note markers'],
+        dependencies: [], relatedLink: '#charts', created: now, updated: now
       },
       {
         id: 'goal-chart-sidebar-notes', title: 'R13 · Chart-tab stock sidebar + inline outlook notes', status: 'complete',

@@ -324,9 +324,24 @@
     var pts = (series || []).filter(function (p) { return p && isFinite(p.value); });
     if (pts.length < 2) return empty(el, opts.emptyMessage || 'Price history is not available yet.');
 
-    var w = 820, h = 352, padL = 66, padR = 24, padT = 20, priceBottom = 248,
+    var w = 820, padL = 66, padR = 24, padT = 20, priceBottom = 248,
         volumeTop = 276, volumeBottom = 322, plotW = w - padL - padR, plotH = priceBottom - padT;
     var vals = pts.map(function (p) { return Number(p.value); });
+    /* V2 customization: optional indicator sub-panels (RSI, MACD) stack
+       under the volume strip, so the SVG grows downward instead of
+       squeezing the price plot. With no panels enabled the geometry is
+       byte-for-byte what it always was. */
+    var panels = (opts.panels || []).filter(function (p) { return p && p.key; });
+    var panelH = 76, panelGap = 26, panelsTop = volumeBottom + 34;
+    var h = panels.length ? panelsTop + panels.length * (panelH + panelGap) : 352;
+    var labelY = panels.length ? h - 8 : 346;
+    var crossBottom = panels.length ? panelsTop + (panels.length - 1) * (panelH + panelGap) + panelH : volumeBottom;
+    /* Candles need real OHLC. If most points don't carry it (some
+       providers return closes only) fall back to the line chart rather
+       than drawing a row of degenerate one-tick bodies. */
+    var candleMode = opts.type === 'candle' && pts.filter(function (p) {
+      return isFinite(p.open) && isFinite(p.high) && isFinite(p.low);
+    }).length >= Math.max(2, Math.round(pts.length * 0.6));
     /* Overlay series (e.g. EMAs) share the price scale, so their finite
        values must widen the axis or a long-period average would clip. */
     var overlays = (opts.overlays || []).filter(function (o) {
@@ -337,6 +352,11 @@
       /* Number.isFinite, not isFinite — warm-up slots are null and
          isFinite(null) is true, which would drag the scale to zero. */
       o.values.forEach(function (v) { if (Number.isFinite(v)) scaleVals.push(v); });
+    });
+    /* Wicks run past the close, so they set the axis in candle mode. */
+    if (candleMode) pts.forEach(function (p) {
+      if (isFinite(p.high)) scaleVals.push(Number(p.high));
+      if (isFinite(p.low)) scaleVals.push(Number(p.low));
     });
     var rawMin = Math.min.apply(null, scaleVals), rawMax = Math.max.apply(null, scaleVals);
     var breathing = Math.max((rawMax - rawMin) * 0.1, rawMax * 0.012, 0.01);
@@ -372,7 +392,79 @@
     var markCount = Math.min(5, pts.length), marks = [];
     for (var m = 0; m < markCount; m++) marks.push(Math.round(m * (pts.length - 1) / Math.max(1, markCount - 1)));
     var xLabels = marks.map(function (i) {
-      return '<text x="' + px(i).toFixed(1) + '" y="346" text-anchor="middle" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="10">' + esc(pts[i].label) + '</text>';
+      return '<text x="' + px(i).toFixed(1) + '" y="' + labelY + '" text-anchor="middle" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="10">' + esc(pts[i].label) + '</text>';
+    }).join('');
+
+    /* Candle bodies + wicks. Body is open→close, wick is low→high; a
+       doji (open === close) still gets a 1px body so the session is
+       visible rather than vanishing. */
+    var candleW = Math.max(1.6, Math.min(11, plotW / pts.length * 0.62));
+    var candleSvg = !candleMode ? '' : pts.map(function (p, i) {
+      var close = Number(p.value);
+      var open = isFinite(p.open) ? Number(p.open) : close;
+      var hi = isFinite(p.high) ? Number(p.high) : Math.max(open, close);
+      var lo = isFinite(p.low) ? Number(p.low) : Math.min(open, close);
+      var up = close >= open, color = up ? '#5FAE5A' : '#e5534b';
+      var top = py(Math.max(open, close)), bodyH = Math.max(1, py(Math.min(open, close)) - top);
+      var x = px(i);
+      return '<line x1="' + x.toFixed(1) + '" y1="' + py(hi).toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + py(lo).toFixed(1) +
+        '" stroke="' + color + '" stroke-width="1" opacity=".85"/>' +
+        '<rect x="' + (x - candleW / 2).toFixed(1) + '" y="' + top.toFixed(1) + '" width="' + candleW.toFixed(1) +
+        '" height="' + bodyH.toFixed(1) + '" fill="' + color + '" stroke="' + color + '" stroke-width="1"/>';
+    }).join('');
+
+    /* Indicator sub-panels. charts.js stays a renderer: the caller
+       computes the series (PNPrices.rsi / PNPrices.macd) and passes the
+       aligned arrays in, exactly like EMA overlays already work. */
+    var PANEL_COLOR = { rsi: '#c084fc', macd: '#4CC9F0', signal: '#E8A33D' };
+    var panelSvg = panels.map(function (panel, pi) {
+      var top = panelsTop + pi * (panelH + panelGap), bottom = top + panelH;
+      var head = '<line x1="' + padL + '" y1="' + (top - 16) + '" x2="' + (w - padR) + '" y2="' + (top - 16) + '" stroke="' + LINE2 + '"/>' +
+        '<text x="' + padL + '" y="' + (top - 5) + '" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="9" letter-spacing="1.2">' +
+        esc(String(panel.label || panel.key).toUpperCase()) + '</text>';
+      var pathOf = function (arr, y, color, width) {
+        var d = '', pen = false;
+        (arr || []).forEach(function (v, i) {
+          if (i >= pts.length || !Number.isFinite(v)) { pen = false; return; }
+          d += (pen ? 'L' : 'M') + px(i).toFixed(1) + ' ' + y(v).toFixed(1);
+          pen = true;
+        });
+        return d ? '<path d="' + d + '" fill="none" stroke="' + color + '" stroke-width="' + width +
+          '" stroke-linejoin="round" stroke-linecap="round"/>' : '';
+      };
+      if (panel.key === 'rsi') {
+        var ry = function (v) { return bottom - (Math.max(0, Math.min(100, v)) / 100) * panelH; };
+        var guides = [30, 50, 70].map(function (level) {
+          return '<line x1="' + padL + '" y1="' + ry(level).toFixed(1) + '" x2="' + (w - padR) + '" y2="' + ry(level).toFixed(1) +
+            '" stroke="' + LINE + '" stroke-width="1"' + (level === 50 ? ' stroke-dasharray="2 5"' : '') + '/>' +
+            '<text x="' + (padL - 9) + '" y="' + (ry(level) + 3).toFixed(1) + '" text-anchor="end" fill="' + DIM +
+            '" font-family="IBM Plex Mono,monospace" font-size="9">' + level + '</text>';
+        }).join('');
+        return head + guides + pathOf(panel.values, ry, PANEL_COLOR.rsi, '1.7');
+      }
+      if (panel.key === 'macd') {
+        var span2 = [];
+        (panel.macd || []).concat(panel.signal || []).concat(panel.hist || []).forEach(function (v) {
+          if (Number.isFinite(v)) span2.push(v);
+        });
+        if (!span2.length) return head;
+        var lo2 = Math.min.apply(null, span2), hi2 = Math.max.apply(null, span2);
+        var breath = Math.max((hi2 - lo2) * 0.14, Math.abs(hi2) * 0.02, 0.0001);
+        lo2 -= breath; hi2 += breath;
+        var my = function (v) { return bottom - ((v - lo2) / (hi2 - lo2)) * panelH; };
+        var zeroY = Math.max(top, Math.min(bottom, my(0)));
+        var barW2 = Math.max(1, plotW / pts.length * 0.5);
+        var hist = (panel.hist || []).map(function (v, i) {
+          if (i >= pts.length || !Number.isFinite(v)) return '';
+          var y = my(v);
+          return '<rect x="' + (px(i) - barW2 / 2).toFixed(1) + '" y="' + Math.min(y, zeroY).toFixed(1) + '" width="' + barW2.toFixed(1) +
+            '" height="' + Math.max(1, Math.abs(zeroY - y)).toFixed(1) + '" fill="' + (v >= 0 ? '#5FAE5A' : '#e5534b') + '" opacity=".4"/>';
+        }).join('');
+        return head + '<line x1="' + padL + '" y1="' + zeroY.toFixed(1) + '" x2="' + (w - padR) + '" y2="' + zeroY.toFixed(1) +
+          '" stroke="' + LINE + '" stroke-width="1" stroke-dasharray="2 5"/>' + hist +
+          pathOf(panel.macd, my, PANEL_COLOR.macd, '1.7') + pathOf(panel.signal, my, PANEL_COLOR.signal, '1.4');
+      }
+      return head;
     }).join('');
 
     var firstY = py(vals[0]);
@@ -380,7 +472,8 @@
     var inner = '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1">' +
       '<stop offset="0%" stop-color="' + accent + '" stop-opacity=".34"/><stop offset="100%" stop-color="' + accent + '" stop-opacity="0"/></linearGradient></defs>' +
       grid + '<line x1="' + padL + '" y1="' + firstY.toFixed(1) + '" x2="' + (w - padR) + '" y2="' + firstY.toFixed(1) + '" stroke="' + accent + '" stroke-width="1" stroke-dasharray="4 6" opacity=".36"/>' +
-      '<path d="' + areaPath + '" fill="url(#' + gid + ')"/><path d="' + linePath + '" fill="none" stroke="' + accent + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+      (candleMode ? candleSvg
+        : '<path d="' + areaPath + '" fill="url(#' + gid + ')"/><path d="' + linePath + '" fill="none" stroke="' + accent + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>') +
       overlays.map(function (o) {
         var d = '', pen = false;
         o.values.forEach(function (v, i) {
@@ -394,9 +487,10 @@
       }).join('') +
       '<line x1="' + padL + '" y1="262" x2="' + (w - padR) + '" y2="262" stroke="' + LINE2 + '"/><text x="' + padL + '" y="272" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="9" letter-spacing="1.2">VOLUME</text>' +
       volumeBars + xLabels +
-      '<line class="pn-market-cross" x1="0" y1="' + padT + '" x2="0" y2="' + volumeBottom + '" stroke="' + MUT + '" stroke-width="1" stroke-dasharray="3 4" visibility="hidden"/>' +
+      panelSvg +
+      '<line class="pn-market-cross" x1="0" y1="' + padT + '" x2="0" y2="' + crossBottom + '" stroke="' + MUT + '" stroke-width="1" stroke-dasharray="3 4" visibility="hidden"/>' +
       '<circle class="pn-market-dot" cx="0" cy="0" r="5" fill="' + accent + '" stroke="#0e1116" stroke-width="2.5" visibility="hidden"/>' +
-      '<rect class="pn-market-hit" x="' + padL + '" y="' + padT + '" width="' + plotW + '" height="' + (volumeBottom - padT) + '" fill="transparent"/>';
+      '<rect class="pn-market-hit" x="' + padL + '" y="' + padT + '" width="' + plotW + '" height="' + (crossBottom - padT) + '" fill="transparent"/>';
 
     var id = ids();
     id.title.text = opts.title || 'Stock price history';
@@ -435,10 +529,18 @@
       return '<g>' + shape + '<title>' + title + '</title></g>';
     }).join('');
 
-    var overlayLegend = (overlays.length || eventMarks.length)
+    var panelLegend = panels.map(function (panel) {
+      if (panel.key === 'macd') {
+        return '<span><i style="background:' + PANEL_COLOR.macd + '"></i>MACD</span>' +
+          '<span><i style="background:' + PANEL_COLOR.signal + '"></i>Signal</span>';
+      }
+      return '<span><i style="background:' + (PANEL_COLOR[panel.key] || MUT) + '"></i>' + esc(panel.label || panel.key) + '</span>';
+    }).join('');
+
+    var overlayLegend = (overlays.length || eventMarks.length || panels.length)
       ? '<div class="market-overlaylegend">' + overlays.map(function (o) {
           return '<span><i style="background:' + (o.color || MUT) + '"></i>' + esc(o.label || '') + '</span>';
-        }).join('') + (eventMarks.length ? (
+        }).join('') + panelLegend + (eventMarks.length ? (
           '<span><i class="mk-diamond" style="background:' + eventColor.payment + '"></i>Confirmed dividend</span>' +
           '<span><i class="mk-diamond mk-hollow" style="border-color:' + eventColor.payment + '"></i>Estimated (frequency pattern)</span>'
         ) : '') + '</div>'
@@ -483,6 +585,20 @@
           return Number.isFinite(v)
             ? '<span style="color:' + (o.color || MUT) + '">' + esc(o.label || '') + ' ' + esc(money(v)) + '</span>'
             : '';
+        }).join('') +
+        panels.map(function (panel) {
+          if (panel.key === 'rsi') {
+            var rv = (panel.values || [])[activeIndex];
+            return Number.isFinite(rv)
+              ? '<span style="color:' + PANEL_COLOR.rsi + '">RSI ' + rv.toFixed(1) + '</span>' : '';
+          }
+          if (panel.key === 'macd') {
+            var mv = (panel.macd || [])[activeIndex], sv = (panel.signal || [])[activeIndex];
+            return Number.isFinite(mv)
+              ? '<span style="color:' + PANEL_COLOR.macd + '">MACD ' + mv.toFixed(3) +
+                (Number.isFinite(sv) ? ' · sig ' + sv.toFixed(3) : '') + '</span>' : '';
+          }
+          return '';
         }).join('');
     }
     function hidePoint() {

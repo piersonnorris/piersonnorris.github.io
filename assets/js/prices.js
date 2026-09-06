@@ -366,6 +366,63 @@
     return out;
   }
 
+  /* Wilder's RSI, aligned to the input: the first `period` slots are
+     null because the first reading needs `period` deltas (period + 1
+     closes), then Wilder smoothing carries it forward. A window with no
+     losses reads 100 and one with no gains reads 0 — both are real RSI
+     values, not error states. */
+  function rsi(values, period) {
+    period = period || 14;
+    var out = new Array(values.length).fill(null);
+    if (!(period >= 1) || values.length <= period) return out;
+    var gain = 0, loss = 0, i, diff;
+    for (i = 1; i <= period; i++) {
+      if (!isFinite(values[i]) || !isFinite(values[i - 1])) return out;
+      diff = values[i] - values[i - 1];
+      if (diff >= 0) gain += diff; else loss -= diff;
+    }
+    var avgGain = gain / period, avgLoss = loss / period;
+    out[period] = avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss);
+    for (i = period + 1; i < values.length; i++) {
+      if (!isFinite(values[i]) || !isFinite(values[i - 1])) { out[i] = out[i - 1]; continue; }
+      diff = values[i] - values[i - 1];
+      avgGain = (avgGain * (period - 1) + Math.max(diff, 0)) / period;
+      avgLoss = (avgLoss * (period - 1) + Math.max(-diff, 0)) / period;
+      out[i] = avgLoss === 0 ? 100 : 100 - 100 / (1 + avgGain / avgLoss);
+    }
+    return out;
+  }
+
+  /* MACD: fast EMA − slow EMA, plus a signal EMA of that difference and
+     the histogram between them. The difference only exists from
+     slow − 1 onward, so the signal is computed over the dense run of
+     real values and scattered back into input-aligned slots — running
+     ema() straight over an array that opens with nulls would bail. */
+  function macd(values, fastPeriod, slowPeriod, signalPeriod) {
+    fastPeriod = fastPeriod || 12;
+    slowPeriod = slowPeriod || 26;
+    signalPeriod = signalPeriod || 9;
+    var n = values.length;
+    var out = { macd: new Array(n).fill(null), signal: new Array(n).fill(null), hist: new Array(n).fill(null) };
+    var fast = ema(values, fastPeriod), slow = ema(values, slowPeriod);
+    var dense = [], index = [], i;
+    for (i = 0; i < n; i++) {
+      if (Number.isFinite(fast[i]) && Number.isFinite(slow[i])) {
+        out.macd[i] = fast[i] - slow[i];
+        dense.push(out.macd[i]);
+        index.push(i);
+      }
+    }
+    if (dense.length < signalPeriod) return out;
+    var sig = ema(dense, signalPeriod);
+    for (i = 0; i < dense.length; i++) {
+      if (!Number.isFinite(sig[i])) continue;
+      out.signal[index[i]] = sig[i];
+      out.hist[index[i]] = dense[i] - sig[i];
+    }
+    return out;
+  }
+
   /* Deterministic fabricated OHLCV history for the demo page — a
      seeded random walk, so the fake login shows a working chart with
      EMAs without any API key and without any real market data. */
@@ -411,6 +468,8 @@
     resolve: resolve,
     history: history,
     ema: ema,
+    rsi: rsi,
+    macd: macd,
     sampleHistory: sampleHistory,
     valuate: valuate,
     sumBy: sumBy,

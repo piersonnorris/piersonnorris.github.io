@@ -4,7 +4,7 @@ The shared task list for the three people building this site: **Pierce** (owner,
 
 Sync rule: this file is canonical. The same list is mirrored to `TASKS.md` (Pierce's local Obsidian vault note, untracked) and seeded into the tracker's **Projects** board (`assets/js/taskboard.js → seed()`), which is also what `/island/` reads — so a card added there shows up in three places automatically. When a task changes state, update this file and the mirror you touched — whoever commits next reconciles the third.
 
-Updated: 2026-09-06 — §5 PN Tasks added (Pierce's open-questions queue + idea backlog); §3a: 14 of the 22-item UI backlog built same-day, 8 deliberately deferred (each says why).
+Updated: 2026-09-06 — R13/R14 shipped (chart sidebar + notes, then V2 customization: candles, RSI/MACD, sort, remembered prefs) with a new `charts.test.js`; §5 PN Tasks added (Pierce's open-questions queue + idea backlog); §3a: 14 of the 22-item UI backlog built same-day, 8 deliberately deferred (each says why).
 
 ---
 
@@ -25,7 +25,13 @@ September 2026 (48 holdings) confirmed by Pierce and sealed into the tracker alo
 ### R13. Chart-tab stock sidebar + inline outlook notes — ✅ done 2026-09-06
 The Charts tab's stock picker moved from a horizontal chip row to a left-hand vertical list; each row gets a notes icon that inline-expands a private per-ticker "outlook" note (thesis, what you're watching) without leaving the chart. Reuses the same ticker-level note `openTicker()`/the Positions-tab `.notebtn` already created — one note per ticker, not per platform lot — so it's the same note wherever you reach it from, and it still exports to Obsidian. New `PNNotes.getTickerNote()` / `saveTickerNote()` in `assets/js/notes-ui.js`; sidebar + inline-expand markup in `tools/tracker/index.template.html` (`renderChartSidebar()`). Verified: template/inline-script parse clean, `calendar.test.js` + `taskboard.test.js` still pass, rebuilt with `--reuse-payload` and grepped the output for real holdings numbers — zero plaintext hits.
 - Next: Pierce click-tests it for real (the note field, symbol switching, mobile stacking below 760px) — flagged as an open item in **§5 PN Tasks**.
-- Also kicked off: a draft "Version 2 — customization" scope in `docs/STOCK_CHART_PLAN.md`, since Pierce asked to start defining what a customizable chart means. Needs his picks before anything in that list gets built.
+- Also kicked off: a "Version 2 — customization" scope in `docs/STOCK_CHART_PLAN.md` — now largely built, see R14.
+
+### R14. Chart V2 — customization — ✅ done 2026-09-06
+Four of the six drafted V2 options shipped: **candlestick chart type** (falls back to the line when a provider returns closes only), **RSI 14 and MACD 12/26/9 sub-panels** stacked under the volume strip (this is what R12 called "chart indicators v2"), **sidebar A–Z / Value sort**, and **remembered display prefs** (type, oscillators, sort, range — `pn.chart.prefs`, per browser, display-only). Sidebar note markers came with it. Indicator maths (`ema`/`rsi`/`macd`) live in `assets/js/prices.js`; `charts.js` stays a renderer that receives aligned arrays.
+- **New test file:** `tools/tracker/charts.test.js` — alignment, RSI bounds, MACD's `hist === macd − signal` identity, and sign behaviour on rising/falling/flat series. BLUEPRINT §10 asked for chart fixtures and there were none. It earned its keep immediately: it caught a wrong expectation of mine (Wilder smoothing oscillates either side of 50 on an alternating series rather than converging on it) and, separately, a real bug where the remembered range was read before `CHART_RANGES` was initialised and silently fell back to 3M every load.
+- Deliberately left open: manual drag-to-reorder the sidebar, and per-stock accent colors — reasons in `docs/STOCK_CHART_PLAN.md`.
+- Still needs Pierce's eyes on the real thing: candles at each range, both oscillators on at once, and the sidebar under 760px.
 
 ### R4. Content decisions — **Pierce** (blocking Claude + ChatGPT)
 Open questions that block copy on the public pages (details in `CONTENT.md` `[OPEN]` markers):
@@ -58,7 +64,7 @@ Produce the PDF; it drops in at `/assets/resume/pierson-norris-resume.pdf`. The 
 - **R9. Two-way Google Calendar sync** — needs a private OAuth backend design that keeps tokens off the public site. One-way `.ics` export already works.
 - **R10. Obsidian visual style** — pick a direction from `notes/visual-options/` (local exploration) and apply it to `/notes/` and the tracker's Obsidian tab.
 - **R11. Real launch hardening** — before promoting the site: revisit the template page's deliberate demo login (`tools/tracker/index.template.html`, fake by design "for now" per Pierce 2026-09-05), run the BLUEPRINT §10 definition-of-done list, attach the `piersonnorris.com` domain (CNAME + absolute-URL sweep).
-- **R12. Chart indicators v2** — candlesticks, RSI/MACD, and EMA-crossover flags on the *stock chart* (corrected 2026-09-06 — this previously said "vault graph," which is a different feature entirely), only if Pierce actually uses v1. Dividend markers and normalized comparison mode (the plan's own "recommended next milestone") shipped 2026-09-06 — see `docs/STOCK_CHART_PLAN.md` Version 2 status. Portfolio-aggregate line, total-return toggle, and a benchmark line stay parked until a dated transaction ledger exists — faking one off today's share counts would misrepresent performance. Candlesticks/RSI/MACD are one of several options now listed in that file's draft "Version 2 — customization" section (see R13) — folding into that decision rather than a separate track.
+- **R12. Chart indicators v2** — candlesticks, RSI/MACD, and EMA-crossover flags on the *stock chart* (corrected 2026-09-06 — this previously said "vault graph," which is a different feature entirely), only if Pierce actually uses v1. Dividend markers and normalized comparison mode (the plan's own "recommended next milestone") shipped 2026-09-06 — see `docs/STOCK_CHART_PLAN.md` Version 2 status. Portfolio-aggregate line, total-return toggle, and a benchmark line stay parked until a dated transaction ledger exists — faking one off today's share counts would misrepresent performance. **Closed out 2026-09-06 by R14**: candlesticks, RSI and MACD all shipped as part of the V2 customization pass. EMA-crossover *flags* (an explicit marker when two EMAs cross) are the only piece of the original R12 wording not built — reopen it only if the crossings are hard to spot by eye now that the overlays and oscillators are both there.
 
 ## 3a. UI polish backlog — audited 2026-09-06, 15/22 built
 
@@ -102,7 +108,7 @@ A full pass over the live site (Home, Experience, Notes, Tracker, Island), verif
 4. **The tracker ships encrypted.** Only `tools/tracker/build.js` writes `tools/tracker/index.html`; verify no plaintext holdings after every build.
 5. **Board ↔ Obsidian ↔ this file stay in sync** (see sync rule at top).
 6. **Questions for Pierce get logged, not just asked in chat.** Anything Claude or ChatGPT can't resolve without Pierce goes in **§5 PN Tasks → Open questions** so it survives past one session.
-7. **Local rebuild + test loop:** `node tools/tracker/build.js --local-snapshot`, `node tools/tracker/calendar.test.js`, `node tools/tracker/taskboard.test.js`, then click through the demo page.
+7. **Local rebuild + test loop:** `node tools/tracker/build.js --local-snapshot`, `node tools/tracker/calendar.test.js`, `node tools/tracker/taskboard.test.js`, `node tools/tracker/charts.test.js`, then click through the demo page.
 
 ## 5. PN Tasks — Pierce's queue
 
@@ -117,5 +123,8 @@ A dedicated inbox for anything that specifically needs Pierce: an open question 
 - **Ship-in-a-bottle Easter egg.** A bottle-and-ship graphic somewhere on the site — click the bottle and the cork pops, pull the ship free; click the ship and it opens an embedded Obsidian-vault viewer with a genuinely polished UI, not just an iframe dump. Directly overlaps **R10 (Obsidian visual style)** — the viewer's look *is* that open design question, so picking one direction answers both. Pierce also wants something similarly small-footprint-but-high-impact on the home page itself. **Owner: Pierce.** Needs a design direction first — single-note view vs. graph view, colors/typography carried over from R10's pick, where the bottle actually lives (home vs. `/notes/`) — before Claude or ChatGPT should build any of it.
   **Source:** Pierce, Cowork chat with Claude, 2026-09-06 — his own words: "reaching a visual obsidian with some [Easter] eggs on the website like a shipping [bottle] ... in addition to something like that on the home site too that looks small, but has impact."
 
-- **Chart V2 customization — pick from the draft menu.** `docs/STOCK_CHART_PLAN.md` "Version 2 — customization" lists candidates (chart type per stock, RSI/MACD, sidebar reordering, per-stock color, remembered defaults, a note-marker on the sidebar). **Owner: Pierce.** Needs him to say which of these he actually wants before any of it gets scoped and built — see R13.
-  **Source:** Pierce, Cowork chat with Claude, 2026-09-06.
+- **Chart V2 — the two options left on the table.** Four of the six drafted customizations shipped (R14). Still Pierce's call: **manual drag-to-reorder** the sidebar (A–Z and Value may already cover it), and **per-stock accent colors** (comparison mode already auto-assigns distinguishable ones). Neither gets built unless he says the current behaviour actually annoys him.
+  **Source:** Pierce, Cowork chat with Claude, 2026-09-06 — "Start implementing V2."
+
+- **Click-test the chart V2 build.** Candles at each range, RSI and MACD both on at once, the A–Z/Value sort, and how the sidebar stacks under 760px. Claude verified it by tests and code review — the browser tooling was down this session, so nobody has actually *looked* at it yet.
+  **Source:** Claude flagged it, 2026-09-06.

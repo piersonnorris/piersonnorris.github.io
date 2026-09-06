@@ -19,8 +19,8 @@ Pierce is setting up the Robinhood MCP on his side. Once connected, Claude wires
 `.github/workflows/refresh-tracker.yml` exists but cannot run until repo secrets are set: `TRACKER_PASSWORD` (the tracker PIN), `GOOGLE_SERVICE_ACCOUNT_JSON`, `SHEET_ID`. Until then the tracker is rebuilt locally with `node tools/tracker/build.js --local-snapshot`.
 - Done when: the scheduled workflow runs green and commits a refreshed `tools/tracker/index.html`.
 
-### R3. Investment handoff file — **Pierce → Claude**
-Pierce is passing off the next investment file shortly. When it lands: refresh `private/STOCK_HANDOFF.md` from the Sheet (or run the `stock-portfolio-update` skill with screenshots), create the new month tab, rebuild the tracker. Multiple month tabs light up the month switcher and the value-over-time chart automatically.
+### R3. Investment handoff file — ✅ done 2026-09-06
+September 2026 (48 holdings) confirmed by Pierce and sealed into the tracker alongside August. Month switcher and value-over-time chart both show two points now. Reopens automatically next time a new month lands: refresh `private/STOCK_HANDOFF.md` from the Sheet (or run the `stock-portfolio-update` skill with screenshots), create the new tab, rebuild.
 
 ### R4. Content decisions — **Pierce** (blocking Claude + ChatGPT)
 Open questions that block copy on the public pages (details in `CONTENT.md` `[OPEN]` markers):
@@ -55,7 +55,7 @@ Produce the PDF; it drops in at `/assets/resume/pierson-norris-resume.pdf`. The 
 - **R11. Real launch hardening** — before promoting the site: revisit the template page's deliberate demo login (`tools/tracker/index.template.html`, fake by design "for now" per Pierce 2026-09-05), run the BLUEPRINT §10 definition-of-done list, attach the `piersonnorris.com` domain (CNAME + absolute-URL sweep).
 - **R12. Chart indicators v2** — candlesticks, RSI/MACD, and EMA-crossover flags on the *stock chart* (corrected 2026-09-06 — this previously said "vault graph," which is a different feature entirely), only if Pierce actually uses v1. Dividend markers and normalized comparison mode (the plan's own "recommended next milestone") shipped 2026-09-06 — see `docs/STOCK_CHART_PLAN.md` Version 2 status. Portfolio-aggregate line, total-return toggle, and a benchmark line stay parked until a dated transaction ledger exists — faking one off today's share counts would misrepresent performance.
 
-## 3a. UI polish backlog — audited 2026-09-06, 14/22 built 2026-09-06
+## 3a. UI polish backlog — audited 2026-09-06, 15/22 built
 
 A full pass over the live site (Home, Experience, Notes, Tracker, Island), verified against the actual code rather than assumed — contrast ratios were measured, the favicon/skip-link/og:image gaps were grepped for, not guessed. All 22 mirror the taskboard seed (`assets/js/taskboard.js`), so they show up on both the private Projects board and the public `/island/` page. 14 were built the same day; 8 stayed in `backlog` on purpose (see each item).
 
@@ -67,7 +67,7 @@ A full pass over the live site (Home, Experience, Notes, Tracker, Island), verif
 - 🔲 **U5 — Complete Open Graph + og:image.** Still open: a compliant og:image needs a real raster (PNG/JPG) asset — Facebook/Twitter's crawlers don't reliably render SVG og:images, and this session has no image-generation tool. Needs a dedicated design pass.
 
 **Navigation & information architecture**
-- 🔲 **U6 — Mobile nav menu.** Real usability issue, sizable build (hamburger/drawer across five pages) — deferred to its own pass rather than rushed alongside 13 other changes.
+- ✅ **U6 — Mobile nav menu** (built 2026-09-06, its own pass). Hamburger toggle (`assets/js/nav.js`) shared across all six pages, collapsing `.navlinks` under 760px into a push-down panel. Caught a real trap: Experience defines its own unconditional `.navlinks{display:flex}` which — equal specificity, later in the cascade than site.css — would have silently beaten a site.css-only fix, so it got its own matching override. Verified at true desktop width (toggle hidden) and mobile (opens, closes, auto-closes on link click) on all six pages including the real encrypted tracker.
 - 🔲 **U7 — One real icon set.** Deferred as a real design project; U15's empty-state icon is a first small step toward it.
 - ✅ **U8 — Wire the home feed to `updates.js`.** Re-scoped before building: `updates.js` tracks *website-engineering* changes, wrong subject matter for a career-facing homepage. Pinned an explicit sync-note comment to the real source of truth (the Experience page / CONTENT.md §3) instead.
 - 🔲 **U9 — Site-wide "last updated" stamp.** Re-scoped: `updates.js` is the wrong source here too, for the same reason as U8. Needs someone to decide what "last updated" should mean for a *public* page before anything gets built.

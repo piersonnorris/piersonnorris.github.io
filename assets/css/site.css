@@ -96,6 +96,26 @@ h3{font-weight:700;font-size:18px;letter-spacing:-.01em;margin:0 0 6px}
 .navlinks .soon i{font-style:normal;font-size:10px;letter-spacing:.08em}
 .navlinks .lockicon{color:var(--dim);font-size:10px}
 
+/* U6: hamburger toggle, hidden until the nav row actually needs it.
+   Collapsing pushes the header taller rather than overlaying content —
+   simplest thing that can't clash with a page's other fixed/sticky UI
+   (the tracker's filter bars, the notes vault sidebar, etc). */
+.navtoggle{
+  display:none;width:34px;height:34px;align-items:center;justify-content:center;
+  background:transparent;border:1px solid var(--line2);border-radius:8px;color:var(--ink);
+  cursor:pointer;margin-left:auto;flex:none;
+}
+.navtoggle:hover{border-color:var(--acc);color:var(--acc)}
+.navtoggle svg{display:block}
+@media (max-width:760px){
+  .navtoggle{display:inline-flex}
+  .navlinks{
+    display:none;flex-basis:100%;flex-direction:column;align-items:flex-start;gap:16px;
+    padding-top:16px;margin-top:14px;border-top:1px solid var(--line);
+  }
+  .navlinks.is-open{display:flex}
+}
+
 /* ---------- surfaces ---------- */
 .panel{
   background:var(--panel);border:1px solid var(--line);border-radius:var(--r);

@@ -32,6 +32,11 @@ body.island-page{
 .island-page .navlinks a:hover{color:var(--ink)}
 .island-page .navlinks a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--wood)}
 .island-page .lockicon{color:rgba(74,49,23,.45)}
+/* U6: the toggle needs the island's own ink tone, not the dark-theme
+   default var(--ink) (near-white — invisible against this sky). */
+.island-page .navtoggle{color:var(--ink-soft);border-color:rgba(74,49,23,.3)}
+.island-page .navtoggle:hover{border-color:var(--ink-soft)}
+.island-page .navlinks.is-open{border-top-color:rgba(74,49,23,.18)}
 
 /* ---------------- scene ----------------
    Three stacked bands in normal document flow — sky (fixed height),

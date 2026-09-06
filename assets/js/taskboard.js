@@ -92,11 +92,11 @@
         dependencies: ['Pierce backend setup'], relatedLink: '#charts', created: now, updated: now
       },
       {
-        id: 'goal-handoff', title: 'R3 · Next investment handoff file', status: 'in-progress',
-        outcome: 'Fresh month tab in the Sheet, refreshed private snapshot, rebuilt tracker.',
-        nextAction: 'Pierce passes the file; Claude refreshes STOCK_HANDOFF.md and rebuilds.',
+        id: 'goal-handoff', title: 'R3 · Next investment handoff file', status: 'complete',
+        outcome: 'September 2026 (48 holdings) confirmed by Pierce and sealed into the tracker alongside August. Month switcher and value-over-time chart both show two points.',
+        nextAction: 'Reopens automatically next time a new month lands — no action needed until then.',
         milestones: ['September tab created', 'Snapshot refreshed', 'Month switcher shows two months'],
-        dependencies: ['File from Pierce'], relatedLink: '#positions', created: now, updated: now
+        dependencies: [], relatedLink: '#positions', created: now, updated: now
       },
       {
         id: 'goal-actions-secrets', title: 'R2 · GitHub Actions tracker secrets', status: 'planned',
@@ -209,10 +209,10 @@
         dependencies: [], relatedLink: '', created: now, updated: now
       },
       {
-        id: 'goal-ui-mobilenav', title: 'U6 · Mobile nav menu', status: 'backlog',
-        outcome: 'The nav reads cleanly on a phone instead of wrapping into a ragged multi-line stack.',
-        nextAction: 'Six links plus ·pin/·soon tags now share one flex-wrap row; design a hamburger/drawer for narrow widths.',
-        milestones: ['Menu button + drawer', 'Apply across all five pages', 'Test at 360px'],
+        id: 'goal-ui-mobilenav', title: 'U6 · Mobile nav menu', status: 'complete',
+        outcome: 'A hamburger toggle (assets/js/nav.js, shared across all six pages) collapses .navlinks under 760px into a push-down panel — no overlay, so it never fights the tracker\'s other fixed UI. Found and fixed a real trap along the way: Experience defines its own unconditional .navlinks{display:flex}, which — same specificity, later in the cascade than site.css — would have silently defeated a shared-only fix, so its own override lives in that page too.',
+        nextAction: 'Done. Verified at true desktop width (1400px, toggle hidden) and mobile (375px, toggle visible, opens/closes, auto-closes on link click) on Home, Experience, Notes, Island, the real encrypted tracker, and 404 — zero console errors on any.',
+        milestones: ['Shared markup + assets/js/nav.js', 'Experience-specific cascade fix', 'Verified all six pages at both widths'],
         dependencies: [], relatedLink: '', created: now, updated: now
       },
       {

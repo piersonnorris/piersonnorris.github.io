@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Notes — Pierson Norris</title>
+  <meta name="description" content="Private working notes. Encrypted in the browser, never uploaded.">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/notes.css">
+  <style>
+    main{padding:0 0 80px}
+    .head{position:relative;padding:52px 0 26px}
+    .head::before{
+      content:"";position:absolute;inset:-52px -25% auto -25%;height:300px;pointer-events:none;
+      background:radial-gradient(ellipse at 20% 0%,rgba(95,174,90,.09),transparent 62%);
+    }
+    .head > *{position:relative}
+    .head h1{font-size:clamp(32px,6vw,46px);margin:14px 0 12px}
+    .howto{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;
+      margin:0 0 30px;
+    }
+    .howto .panel{padding:15px 17px}
+    .howto h3{font-size:13px;font-family:var(--display);text-transform:uppercase;
+      letter-spacing:.05em;margin:0 0 6px;color:var(--ink)}
+    .howto p{margin:0;font-size:13.5px;color:var(--mut);line-height:1.6}
+    .howto code{
+      font-family:var(--mono);font-size:12px;background:var(--bg);
+      border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--acc);
+    }
+  </style>
+</head>
+<body>
+  <header class="sitehead">
+    <div class="wrap">
+      <nav class="sitenav" aria-label="Primary">
+        <a class="brand" href="/">Pierson Norris</a>
+        <div class="navlinks">
+          <a href="/">Home</a>
+          <a href="/experience/">Experience</a>
+          <a href="/notes/" aria-current="page">Notes <span class="lockicon">·pin</span></a>
+          <a href="/tools/tracker/">Tracker <span class="lockicon">·pin</span></a>
+          <span class="soon">About <i>·soon</i></span>
+          <span class="soon">Projects <i>·soon</i></span>
+          <span class="soon">Contact <i>·soon</i></span>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap-wide">
+      <section class="head">
+        <p class="eyebrow">Obsidian — general vault</p>
+        <h1>Notes.</h1>
+        <p class="lede">Everyday working notes: Markdown, tags, <b>[[wikilinks]]</b> and backlinks. Encrypted with your PIN and stored <b>in this browser only</b> — nothing is uploaded, and nothing lands in the repo. Stock notes live in their own separate vault inside the <a href="/tools/tracker/#stocknotes" style="color:var(--acc)">tracker</a>.</p>
+
+        <div class="howto">
+          <div class="panel">
+            <h3>Round-trips with Obsidian</h3>
+            <p><b>Export</b> gives you a <code>.zip</code> of one <code>.md</code> per note, with YAML frontmatter — unzip it into your vault. <b>Import</b> reads <code>.md</code> files straight back in.</p>
+          </div>
+          <div class="panel">
+            <h3>Linking works</h3>
+            <p>Type <code>[[Note title]]</code> and it becomes a link in preview. Click a link to a note that doesn't exist yet and it gets created. Backlinks show at the bottom of every note.</p>
+          </div>
+          <div class="panel">
+            <h3>Where it lives</h3>
+            <p>AES-256-GCM, key derived from your PIN with PBKDF2 at 600k iterations. Clearing site data or switching browsers loses the vault — <b>export regularly</b>.</p>
+          </div>
+        </div>
+      </section>
+
+      <div id="vault"></div>
+    </div>
+
+    <div class="wrap">
+      <footer class="sitefoot">
+        <address>
+          <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a><br>
+          Built by hand — plain HTML, no framework.
+        </address>
+      </footer>
+    </div>
+  </main>
+
+  <script src="/assets/js/vault.js"></script>
+  <script src="/assets/js/notes-ui.js"></script>
+  <script>
+    PNNotes.mount({
+      el: document.getElementById('vault'),
+      scope: 'general',
+      mode: 'general',
+      lockCopy: {
+        title: 'General vault',
+        blurb: 'Everyday notes — separate from the stock desk. Decrypts in this browser; nothing is sent anywhere.'
+      }
+    });
+  </script>
+</body>
+</html>

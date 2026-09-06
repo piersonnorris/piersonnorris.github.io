@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Portfolio Tracker — Pierson Norris</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/notes.css">
+  <style>
+    main{padding:0 0 80px}
+
+    /* lock */
+    #lock{display:grid;place-items:center;min-height:66svh;padding:40px 0}
+    .lockcard{
+      width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line);
+      border-radius:16px;padding:36px 32px;text-align:center;
+    }
+    .glyph{
+      font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--acc);
+      border:1px solid var(--line2);border-radius:999px;display:inline-block;
+      padding:6px 15px 6px 18px;margin-bottom:20px;
+    }
+    .lockcard h1{font-size:28px;margin:0 0 8px}
+    .lockcard p{color:var(--mut);font-size:14px;margin:0 0 24px;line-height:1.65}
+    .pinrow{display:flex;gap:10px}
+    #pin{
+      flex:1;font-family:var(--mono);font-size:20px;letter-spacing:.4em;
+      text-align:center;padding:12px 8px 12px 14px;
+    }
+    #pin::placeholder{letter-spacing:.15em;font-size:13px}
+    #msg{font-family:var(--mono);font-size:12.5px;min-height:20px;margin:14px 0 0;color:var(--dim)}
+    #msg.err{color:var(--bad)}
+    .shake{animation:shake .35s}
+    @keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+    @media (prefers-reduced-motion:reduce){.shake{animation:none}}
+
+    /* vault */
+    #vault{display:none}
+    .bar{display:flex;align-items:center;gap:14px;margin:34px 0 6px;flex-wrap:wrap}
+    .bar h1{font-size:clamp(26px,5vw,38px);margin:0}
+    .bar .spacer{margin-left:auto}
+    .metaline{font-family:var(--mono);font-size:12px;color:var(--dim);margin:0 0 20px}
+    .metaline b{color:var(--mut);font-weight:500}
+
+    .months{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 22px}
+
+    /* headline numbers */
+    .headline{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin:0 0 20px;
+    }
+    .hcard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+    .hcard .k{
+      font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;
+      color:var(--dim);margin:0 0 7px;
+    }
+    .hcard .v{
+      font-family:var(--display);font-weight:800;font-size:27px;letter-spacing:-.02em;
+      color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.05;margin:0;
+    }
+    .hcard .v.acc{color:var(--acc-hi)}
+    .hcard .s{font-family:var(--mono);font-size:11px;color:var(--mut);margin:5px 0 0}
+
+    .scopebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:-6px 0 20px;padding:12px 14px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+    .scopebar p{font-family:var(--mono);font-size:11px;color:var(--mut);margin:0}
+    .scopebar b{color:var(--acc-hi);font-weight:500}
+    .scopebar .btn{margin-left:auto;padding:7px 11px;font-size:11px}
+
+    /* prices panel */
+    .prices{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin:0 0 22px}
+    .prices > summary{
+      cursor:pointer;list-style:none;padding:14px 18px;display:flex;align-items:center;gap:10px;
+      font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--acc);
+    }
+    .prices > summary::-webkit-details-marker{display:none}
+    .prices > summary::after{content:"+";margin-left:auto;font-size:14px}
+    .prices[open] > summary::after{content:"\2013"}
+    .prices .body{padding:0 18px 18px;border-top:1px solid var(--line)}
+    .prices .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:16px}
+    .manualgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:6px}
+    .manualgrid label > span{text-transform:none;letter-spacing:.04em;color:var(--acc)}
+    .pricenote{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:14px 0 0;line-height:1.7}
+
+    /* platform cards */
+    .platform{
+      background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+      padding:16px 18px 6px;margin:0 0 16px;
+    }
+    .platform h3{
+      font-size:17px;margin:0 0 8px;display:flex;align-items:center;gap:9px;
+    }
+    .platform .pcount{
+      font-family:var(--mono);font-size:11.5px;color:var(--dim);font-weight:400;margin-left:auto;
+    }
+    .notebtn{
+      font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--dim);cursor:pointer;
+      background:transparent;border:1px solid var(--line2);border-radius:5px;padding:2px 7px;
+      transition:color .15s,border-color .15s;
+    }
+    .notebtn:hover{color:var(--acc);border-color:var(--acc)}
+    .nopr{color:var(--dim)}
+    .rowtoggle{appearance:none;width:17px;height:17px;margin:0;vertical-align:middle;accent-color:var(--acc);cursor:pointer}
+    tr.is-excluded{opacity:.46}
+    tr.is-excluded td.label{text-decoration:line-through}
+
+    .sectionhead{margin:44px 0 16px}
+    .sectionhead h2{margin:6px 0 4px}
+    .sectionhead p{color:var(--mut);margin:0;font-size:14px;max-width:66ch}
+
+    .banner{
+      background:rgba(232,163,61,.09);border:1px solid rgba(232,163,61,.35);border-radius:var(--r);
+      padding:13px 16px;margin:0 0 22px;font-size:13.5px;color:var(--mut);
+    }
+    .banner b{color:var(--warn)}
+
+    .dividends{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:0 0 24px}
+    .dividends h2{font-size:19px;margin:0 0 4px}
+    .dividends > p{font-size:13.5px;color:var(--mut);margin:0 0 14px}
+    .dividend-summary{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}
+    .dividend-metric{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 11px;min-width:140px}
+    .dividend-metric b{display:block;font-family:var(--display);color:var(--acc-hi);font-size:18px;line-height:1.1}
+    .dividend-metric span{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
+    .dividend-input{width:92px!important;min-width:92px;padding:7px 8px!important;font-family:var(--mono)!important;font-size:12px!important;text-align:right}
+    .dividend-date{width:124px!important;padding:7px 8px!important;font-family:var(--mono)!important;font-size:12px!important}
+    .dividend-calendar{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
+    .calendar-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}.calendar-top h3{font-size:16px;margin:0}.calendar-top p{font-size:12px;color:var(--dim);margin:0}.calendar-top .btn{margin-left:auto}
+    .calendar-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}.calendar-event{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px 11px}.calendar-event .date{font-family:var(--mono);font-size:11px;color:var(--acc-hi);letter-spacing:.04em}.calendar-event b{display:block;margin:4px 0 2px;font-size:13px}.calendar-event p{margin:0;color:var(--mut);font-size:12px}
+    .stockchart{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:0 0 22px}
+    .stockchart h2{font-size:19px;margin:0 0 4px}.stockchart .chart-copy{font-size:13.5px;color:var(--mut);margin:0 0 13px}
+    .tickerbar{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 15px}.tickerbar .chip{padding:6px 10px;font-size:11px}
+    .stockchart-status{font-family:var(--mono);font-size:11px;color:var(--dim);margin:12px 0 0}
+    .tracker-tabs{display:flex;gap:4px;padding:5px;margin:18px 0 22px;background:var(--panel);border:1px solid var(--line);border-radius:11px;overflow-x:auto}
+    .tracker-tab{appearance:none;border:0;background:transparent;color:var(--mut);font:500 12px/1 var(--mono);letter-spacing:.04em;padding:11px 14px;border-radius:7px;cursor:pointer;white-space:nowrap}
+    .tracker-tab:hover{color:var(--ink);background:rgba(255,255,255,.035)}.tracker-tab[aria-selected="true"]{background:var(--acc);color:#0e1116}
+    .tracker-panel[hidden]{display:none}.tracker-panel{animation:panel-in .18s ease-out}@keyframes panel-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .dividend-chart{margin:18px 0 0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:15px}.dividend-chart h3{font-size:16px;margin:0 0 2px}.dividend-chart .sub{font:11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px}
+    .obsidian-sync{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.obsidian-sync .sync-status{font:12px var(--mono);color:var(--dim);margin:0}
+    @media (max-width:640px){.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}}
+  </style>
+</head>
+<body>
+  <header class="sitehead">
+    <div class="wrap">
+      <nav class="sitenav" aria-label="Primary">
+        <a class="brand" href="/">Pierson Norris</a>
+        <div class="navlinks">
+          <a href="/">Home</a>
+          <a href="/experience/">Experience</a>
+          <a href="/notes/">Notes <span class="lockicon">·pin</span></a>
+          <a href="/tools/tracker/" aria-current="page">Tracker</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="wrap-wide">
+
+      <section id="lock">
+        <form class="lockcard" id="lockcard">
+          <span class="glyph" id="glyph">ENCRYPTED</span>
+          <h1>Portfolio Tracker</h1>
+          <p>Holdings are sealed into this page with AES-256-GCM. Enter the PIN to unlock — decryption happens in your browser, nothing is sent anywhere.</p>
+          <div class="pinrow">
+            <input id="pin" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN">
+            <button id="go" class="btn primary" type="submit">Unlock</button>
+          </div>
+          <p id="msg" aria-live="polite"></p>
+          <p class="finetext">The same PIN opens the stock-notes vault below.</p>
+        </form>
+      </section>
+
+      <section id="vault">
+        <div class="bar">
+          <h1>Portfolio Tracker</h1>
+          <span class="spacer"></span>
+          <button id="relock" class="btn" type="button">Lock</button>
+        </div>
+        <p class="metaline" id="metaline"></p>
+
+        <div id="samplebanner"></div>
+        <div class="months" id="months" role="group" aria-label="Choose month"></div>
+        <div class="headline" id="headline"></div>
+        <div class="scopebar" id="scopebar"></div>
+
+        <details class="prices" id="pricespanel">
+          <summary>Price source</summary>
+          <div class="body">
+            <p class="pricenote" style="margin-top:14px">
+              The sheet stores share and coin <b>counts</b>, not dollar values — so every chart below needs a price per symbol.
+              Your key is stored in this browser only and is never committed to the repo. It is a read-only quote key: it cannot
+              see or move anything in an account.
+            </p>
+            <div class="grid">
+              <label class="fld"><span>Provider</span>
+                <select id="provider">
+                  <option value="twelvedata">Twelve Data — stocks + crypto</option>
+                  <option value="finnhub">Finnhub — stocks only</option>
+                  <option value="manual">Manual only</option>
+                </select>
+              </label>
+              <label class="fld"><span>API key</span>
+                <input type="password" id="apikey" placeholder="paste your key" autocomplete="off">
+              </label>
+              <label class="fld"><span>&nbsp;</span>
+                <button type="button" class="btn primary" id="refresh" style="width:100%;justify-content:center">Refresh prices</button>
+              </label>
+              <label class="fld"><span>&nbsp;</span>
+                <button type="button" class="btn danger" id="forgetkey" style="width:100%;justify-content:center">Forget key</button>
+              </label>
+            </div>
+            <p class="pricenote" id="pricestatus"></p>
+            <div id="manualwrap" hidden>
+              <p class="pricenote" style="margin-bottom:2px"><b>Prices still missing</b> — type them in and they will be used and remembered:</p>
+              <div class="manualgrid" id="manualgrid"></div>
+            </div>
+          </div>
+        </details>
+
+        <div class="tracker-tabs" role="tablist" aria-label="Portfolio views">
+          <button class="tracker-tab" type="button" role="tab" id="tab-positions" data-panel="positions" aria-controls="panel-positions" aria-selected="true">Positions</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-dividends" data-panel="dividends" aria-controls="panel-dividends" aria-selected="false">Dividends</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-charts" data-panel="charts" aria-controls="panel-charts" aria-selected="false">Charts</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-obsidian" data-panel="obsidian" aria-controls="panel-obsidian" aria-selected="false">Obsidian</button>
+        </div>
+
+        <section class="tracker-panel" id="panel-positions" role="tabpanel" aria-labelledby="tab-positions">
+          <div class="sectionhead">
+            <p class="eyebrow">Positions</p>
+            <h2>Holdings by platform</h2>
+            <p>Counts come straight from the sheet. Value appears once a price resolves for that symbol — rows that can't be priced say so rather than counting as zero.</p>
+          </div>
+          <div id="platforms"></div>
+        </section>
+
+        <section class="tracker-panel" id="panel-dividends" role="tabpanel" aria-labelledby="tab-dividends" hidden>
+          <div class="dividends" id="dividends"></div>
+        </section>
+
+        <section class="tracker-panel" id="panel-charts" role="tabpanel" aria-labelledby="tab-charts" hidden>
+          <section class="stockchart" id="stockchart"></section>
+          <div class="chartgrid" id="charts"></div>
+        </section>
+
+        <section class="tracker-panel" id="panel-obsidian" role="tabpanel" aria-labelledby="tab-obsidian" hidden>
+          <div class="sectionhead" id="stocknotes">
+            <p class="eyebrow">Obsidian — stock desk</p>
+            <h2>Ticker notes &amp; outlooks</h2>
+            <p>A separate vault from <a href="/notes/" style="color:var(--acc)">general notes</a>. Dividend-paying positions and the calendar can be synchronized here as encrypted Markdown, then exported straight into Obsidian.</p>
+          </div>
+          <div id="stockvault"></div>
+        </section>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <footer class="sitefoot">
+        <address>
+          <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a><br>
+          Built by hand — plain HTML, no framework.
+        </address>
+      </footer>
+    </div>
+  </main>
+
+  <script src="/assets/js/charts.js"></script>
+  <script src="/assets/js/prices.js"></script>
+  <script src="/assets/js/vault.js"></script>
+  <script src="/assets/js/notes-ui.js"></script>
+  <script>
+  (function () {
+    'use strict';
+
+    /* The build script (tools/tracker/build.js) replaces the next line
+       with the AES-GCM payload of the real holdings. Until it does,
+       PAYLOAD stays null and the page renders SAMPLE data with no PIN —
+       which is exactly what the public screenshot should show. */
+    var PAYLOAD = /*__PAYLOAD__*/null/*__END__*/;
+
+    var SAMPLE = {
+      generatedAt: '2026-08-23T11:00:00Z',
+      sample: true,
+      months: [{
+        tab: 'August 2026', month: 'August', year: 2026,
+        note: 'Sample data — fabricated, safe for a public repo.',
+        fetchedAt: '2026-08-23T11:00:00Z',
+        holdings: [
+          { platform: 'Sofi', label: 'AAPL', amount: 4.2, unit: 'Shares', notes: '' },
+          { platform: 'Sofi', label: 'VTI', amount: 10, unit: 'Shares', notes: '' },
+          { platform: 'Sofi', label: 'Robo (auto-invest)', amount: 250.0, unit: 'USD', notes: 'robo sub-account' },
+          { platform: 'Sofi', label: 'SOL (crypto)', amount: 0.8, unit: 'Units', notes: '' },
+          { platform: 'Webull', label: 'Cash', amount: 120.0, unit: 'USD', notes: 'no open positions' },
+          { platform: 'Robinhood', label: 'SPY $500 Call (option)', amount: 95.0, unit: 'USD', notes: 'contract value' },
+          { platform: 'Robinhood', label: 'VDE', amount: 2.1, unit: 'Shares', notes: '' },
+          { platform: 'Gemini', label: 'ETH', amount: 0.05, unit: 'Units', notes: '' },
+          { platform: 'Gemini', label: 'SOL', amount: 1.4, unit: 'Units', notes: '' },
+          { platform: 'GoMining', label: 'Total value', amount: 15.0, unit: 'USD', notes: '' }
+        ]
+      }],
+      quotes: { AAPL: 214.5, VTI: 292.1, VDE: 128.4, 'SOL/USD': 186.2, 'ETH/USD': 3120.0 }
+    };
+
+    var PLATFORM_ORDER = ['Sofi', 'Webull', 'Robinhood', 'Gemini', 'GoMining'];
+    var PLATFORM_CLASS = {
+      Sofi: 'p-sofi', Webull: 'p-webull', Robinhood: 'p-robinhood',
+      Gemini: 'p-gemini', GoMining: 'p-gomining'
+    };
+    var PLATFORM_COLOR = {
+      Sofi: '#00A2C7', Webull: '#3d6ea8', Robinhood: '#00C805',
+      Gemini: '#F5A623', GoMining: '#7C3AED'
+    };
+
+    var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
+
+    // ------------------------------------------------------ helpers
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+    function $(id) { return document.getElementById(id); }
+    function money(n) { return window.PNCharts.money(n); }
+    function positionKey(r) { return String(r.platform || '') + '\u241f' + String(r.label || ''); }
+    function exclusionMap() {
+      try { return JSON.parse(localStorage.getItem('pn.tracker.exclusions') || '{}') || {}; }
+      catch (e) { return {}; }
+    }
+    function isIncluded(r) { return !exclusionMap()[positionKey(r)]; }
+    function setIncluded(r, included) {
+      var map = exclusionMap();
+      if (included) delete map[positionKey(r)]; else map[positionKey(r)] = true;
+      try { localStorage.setItem('pn.tracker.exclusions', JSON.stringify(map)); } catch (e) {}
+    }
+    function dividendMap() {
+      var merged = {}, key;
+      for (key in dividendDefaults) if (Object.prototype.hasOwnProperty.call(dividendDefaults, key)) merged[key] = Object.assign({}, dividendDefaults[key]);
+      for (key in dividendEdits) if (Object.prototype.hasOwnProperty.call(dividendEdits, key)) merged[key] = Object.assign({}, merged[key] || {}, dividendEdits[key]);
+      return merged;
+    }
+    function saveDividendMap(map) {
+      dividendEdits = map;
+    }
+
+    function activateTrackerPanel(name, focusTab) {
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.tracker-tab'));
+      if (!tabs.some(function (tab) { return tab.dataset.panel === name; })) name = 'positions';
+      tabs.forEach(function (tab) {
+        var active = tab.dataset.panel === name;
+        tab.setAttribute('aria-selected', active ? 'true' : 'false');
+        tab.tabIndex = active ? 0 : -1;
+        var panel = $('panel-' + tab.dataset.panel);
+        if (panel) panel.hidden = !active;
+        if (active && focusTab) tab.focus();
+      });
+    }
+
+    function setupTrackerTabs() {
+      if ($('tab-positions').dataset.ready) return;
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('.tracker-tab'));
+      tabs.forEach(function (tab, index) {
+        tab.addEventListener('click', function () { activateTrackerPanel(tab.dataset.panel, false); });
+        tab.addEventListener('keydown', function (event) {
+          if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' && event.key !== 'Home' && event.key !== 'End') return;
+          event.preventDefault();
+          var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+          activateTrackerPanel(tabs[next].dataset.panel, true);
+        });
+      });
+      $('tab-positions').dataset.ready = '1';
+    }
+
+    function b64(s) {
+      var bin = atob(s), a = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
+      return a;
+    }
+
+    async function decrypt(pin) {
+      var enc = new TextEncoder();
+      var base = await crypto.subtle.importKey('raw', enc.encode(pin), 'PBKDF2', false, ['deriveKey']);
+      var key = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: b64(PAYLOAD.salt), iterations: PAYLOAD.iter, hash: 'SHA-256' },
+        base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+      var pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(PAYLOAD.iv) }, key, b64(PAYLOAD.ct));
+      return JSON.parse(new TextDecoder().decode(pt));
+    }
+
+    // ------------------------------------------------------ unlock flow
+
+    var form = $('lockcard'), pinEl = $('pin'), goEl = $('go'), msgEl = $('msg');
+
+    if (!PAYLOAD) {
+      /* The committed build source never opens a stock surface. Only the
+         generated encrypted index can unlock. */
+      $('glyph').textContent = 'BUILD SOURCE';
+      pinEl.disabled = true;
+      goEl.disabled = true;
+      goEl.textContent = 'Unavailable';
+      msgEl.textContent = 'Open /tools/tracker/ to use the password-protected tracker.';
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!PAYLOAD) return;
+      var pin = pinEl.value.trim();
+      if (!pin) { pinEl.focus(); return; }
+      goEl.disabled = true; msgEl.className = ''; msgEl.textContent = 'decrypting…';
+      decrypt(pin).then(function (data) {
+        pinEl.value = '';
+        goEl.disabled = false; msgEl.textContent = '';
+        $('lock').style.display = 'none';
+        $('vault').style.display = 'block';
+        boot(data, pin);
+      }).catch(function () {
+        goEl.disabled = false;
+        msgEl.className = 'err'; msgEl.textContent = 'Wrong PIN.';
+        pinEl.value = ''; pinEl.focus();
+        form.classList.remove('shake'); void form.offsetWidth; form.classList.add('shake');
+      });
+    });
+
+    $('relock').addEventListener('click', function () {
+      DATA = null; valued = []; sessionPin = null; dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false;
+      if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
+      $('vault').style.display = 'none';
+      $('lock').style.display = 'grid';
+      $('charts').innerHTML = '';
+      $('platforms').innerHTML = '';
+      pinEl.focus();
+    });
+
+    // ------------------------------------------------------ boot
+
+    function boot(data, pin) {
+      DATA = data;
+      /* The private encrypted build may provide dividendCalendar as
+         {SYMBOL:{annual,exDate,payDate,frequency}}. It is never placed in
+         this public template; browser edits stay only in this unlocked session. */
+      dividendDefaults = data.dividendCalendar || {};
+      sessionPin = pin;
+      activeMonth = 0;
+      dividendSyncDone = false;
+      setupTrackerTabs();
+      activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#dividends' ? 'dividends' : 'positions', false);
+
+      if (data.sample) {
+        $('samplebanner').innerHTML =
+          '<div class="banner"><b>Sample data.</b> This is the unbuilt template — every number below is fabricated. ' +
+          'The scheduled secure build bakes in real encrypted holdings; this preview remains fabricated.</div>';
+      }
+
+      renderMonths();
+      restorePriceCfg();
+      mountStockNotes(pin);
+      refresh(false);
+    }
+
+    function month() { return DATA.months[activeMonth] || { holdings: [] }; }
+
+    function renderMonths() {
+      var wrap = $('months');
+      if (!DATA.months || DATA.months.length < 2) { wrap.innerHTML = ''; return; }
+      wrap.innerHTML = DATA.months.map(function (m, i) {
+        return '<button type="button" class="chip" data-i="' + i + '" aria-pressed="' +
+          (i === activeMonth) + '">' + esc(m.tab) + '</button>';
+      }).join('');
+      Array.prototype.forEach.call(wrap.querySelectorAll('.chip'), function (c) {
+        c.addEventListener('click', function () {
+          activeMonth = +c.dataset.i;
+          renderMonths();
+          refresh(false);
+        });
+      });
+    }
+
+    // ------------------------------------------------------ prices
+
+    function restorePriceCfg() {
+      var cfg = window.PNPrices.loadCfg();
+      if (cfg.provider) $('provider').value = cfg.provider;
+      if (cfg.apikey) $('apikey').value = cfg.apikey;
+    }
+
+    $('refresh').addEventListener('click', function () {
+      var cfg = window.PNPrices.loadCfg();
+      cfg.provider = $('provider').value;
+      cfg.apikey = $('apikey').value.trim();
+      window.PNPrices.saveCfg(cfg);
+      refresh(true);
+    });
+
+    $('forgetkey').addEventListener('click', function () {
+      window.PNPrices.clearCfg();
+      $('apikey').value = '';
+      $('pricestatus').textContent = 'Key and cached quotes cleared from this browser.';
+      refresh(false);
+    });
+
+    function refresh(force) {
+      var holdings = month().holdings || [];
+      var status = $('pricestatus');
+      status.textContent = force ? 'fetching quotes…' : '';
+
+      window.PNPrices.resolve(holdings, { baked: DATA.quotes, force: force })
+        .then(function (res) {
+          allValued = window.PNPrices.valuate(holdings, res.quotes);
+          valued = allValued.filter(isIncluded);
+          renderStatus(res);
+          renderManual(res);
+          renderHeadline(res);
+          renderScope();
+          renderCharts();
+          renderStockChart();
+          renderPlatforms();
+          renderDividends();
+        })
+        .catch(function (err) {
+          status.textContent = 'Could not fetch quotes — ' + (err && err.message ? err.message : 'request failed') +
+            '. Counts below are still accurate; values are not.';
+          allValued = window.PNPrices.valuate(holdings, (DATA.quotes || {}));
+          valued = allValued.filter(isIncluded);
+          renderHeadline({ source: 'error', missing: [], needed: [] });
+          renderScope();
+          renderCharts();
+          renderStockChart();
+          renderPlatforms();
+          renderDividends();
+        });
+    }
+
+    function renderStatus(res) {
+      var labels = {
+        baked: 'prices baked into the payload at build time',
+        cache: 'cached quotes (under 15 min old)',
+        manual: 'manually entered prices',
+        twelvedata: 'live from Twelve Data',
+        finnhub: 'live from Finnhub',
+        none: 'no price source configured yet'
+      };
+      var s = labels[res.source] || res.source;
+      var miss = res.missing.length
+        ? ' · ' + res.missing.length + ' symbol' + (res.missing.length === 1 ? '' : 's') + ' still unpriced'
+        : ' · all ' + res.needed.length + ' symbols priced';
+      $('pricestatus').textContent = 'Source: ' + s + (res.needed.length ? miss : '');
+    }
+
+    function renderManual(res) {
+      var wrap = $('manualwrap'), grid = $('manualgrid');
+      if (!res.missing.length) { wrap.hidden = true; return; }
+      wrap.hidden = false;
+      var cfg = window.PNPrices.loadCfg();
+      var manual = cfg.manual || {};
+      grid.innerHTML = res.missing.map(function (sym) {
+        return '<label class="fld"><span>' + esc(sym) + '</span>' +
+          '<input type="text" inputmode="decimal" data-sym="' + esc(sym) + '" value="' +
+          (isFinite(manual[sym]) ? manual[sym] : '') + '" placeholder="0.00"></label>';
+      }).join('');
+      Array.prototype.forEach.call(grid.querySelectorAll('input'), function (i) {
+        i.addEventListener('change', function () {
+          var c = window.PNPrices.loadCfg();
+          c.manual = c.manual || {};
+          var v = parseFloat(i.value);
+          if (isFinite(v) && v > 0) c.manual[i.dataset.sym] = v;
+          else delete c.manual[i.dataset.sym];
+          window.PNPrices.saveCfg(c);
+          refresh(false);
+        });
+      });
+    }
+
+    // ------------------------------------------------------ render
+
+    function renderScope() {
+      var excluded = allValued.length - valued.length;
+      $('scopebar').innerHTML =
+        '<p>Calculation scope: <b>' + valued.length + ' included</b>' +
+        (excluded ? ' · ' + excluded + ' excluded' : ' · all positions included') +
+        '</p><button type="button" class="btn" id="includeall">Include all positions</button>';
+      $('includeall').addEventListener('click', function () {
+        try { localStorage.removeItem('pn.tracker.exclusions'); } catch (e) {}
+        refresh(false);
+      });
+    }
+
+    function renderHeadline(res) {
+      var m = month();
+      $('metaline').innerHTML =
+        'Tab <b>' + esc(m.tab || '—') + '</b> · fetched <b>' +
+        esc(m.fetchedAt ? new Date(m.fetchedAt).toLocaleString('en-US') : '—') + '</b>' +
+        (m.note ? ' · ' + esc(m.note) : '');
+
+      var total = window.PNPrices.total(valued);
+      var unpriced = window.PNPrices.unpricedCount(valued);
+      var positions = valued.length;
+      var dividends = dividendSummary();
+      var platforms = {};
+      valued.forEach(function (r) { platforms[r.platform] = true; });
+
+      $('headline').innerHTML =
+        '<div class="hcard"><p class="k">Total value</p><p class="v acc">' +
+          (total > 0 ? esc(money(total)) : '—') + '</p><p class="s">' +
+          (unpriced ? unpriced + ' row' + (unpriced === 1 ? '' : 's') + ' unpriced' : 'every row priced') + '</p></div>' +
+        '<div class="hcard"><p class="k">Positions</p><p class="v">' + positions + '</p>' +
+          '<p class="s">across ' + Object.keys(platforms).length + ' platforms</p></div>' +
+        '<div class="hcard"><p class="k">Symbols needing a quote</p><p class="v">' +
+          (res.needed ? res.needed.length : 0) + '</p><p class="s">' +
+          (res.missing && res.missing.length ? esc(res.missing.slice(0, 4).join(', ')) : 'all resolved') + '</p></div>' +
+        '<div class="hcard"><p class="k">Month</p><p class="v" style="font-size:21px">' +
+          esc(m.month || '—') + '</p><p class="s">' + esc(String(m.year || '')) + '</p></div>' +
+        '<div class="hcard"><p class="k">Est. annual dividends</p><p class="v acc">' +
+          (dividends.annual ? esc(money(dividends.annual)) : '—') + '</p><p class="s">' +
+          (dividends.covered ? dividends.covered + ' dividend position' + (dividends.covered === 1 ? '' : 's') : 'add payouts below') + '</p></div>';
+    }
+
+    function dividendSummary() {
+      var map = dividendMap(), grouped = {};
+      valued.forEach(function (r) {
+        if (r.kind !== 'Equity' || !r.symbol) return;
+        var g = grouped[r.symbol] || (grouped[r.symbol] = { shares: 0, value: 0 });
+        g.shares += r.amount || 0;
+        g.value += isFinite(r.value) ? r.value : 0;
+      });
+      var annual = 0, covered = 0, marketValue = 0;
+      Object.keys(grouped).forEach(function (symbol) {
+        var payout = Number(map[symbol] && map[symbol].annual);
+        if (isFinite(payout) && payout > 0) { annual += grouped[symbol].shares * payout; covered++; marketValue += grouped[symbol].value; }
+      });
+      return { annual: annual, covered: covered, marketValue: marketValue, yield: marketValue ? annual / marketValue : 0, grouped: grouped };
+    }
+
+    function renderCharts() {
+      var host = $('charts');
+      var total = window.PNPrices.total(valued);
+
+      if (!total) {
+        host.innerHTML =
+          '<div class="chartcard" style="grid-column:1/-1">' +
+          '<h3>Charts need prices</h3><p class="sub">nothing to plot yet</p>' +
+          '<p class="muted" style="font-size:14px;margin:0">Your holdings are share and coin counts. ' +
+          'Open <b>Price source</b> above, choose a provider and paste a free API key — or type prices in by hand — ' +
+          'and the allocation, mix and ranking charts below will fill in.</p></div>';
+        return;
+      }
+
+      host.innerHTML =
+        '<div class="chartcard"><h3>Allocation by platform</h3><p class="sub">share of total value</p><div id="c-plat"></div></div>' +
+        '<div class="chartcard"><h3>Asset mix</h3><p class="sub">equity · crypto · cash · options</p><div id="c-kind"></div></div>' +
+        '<div class="chartcard" style="grid-column:1/-1"><h3>Largest positions</h3><p class="sub">top 12 by value</p><div id="c-top"></div></div>' +
+        '<div class="chartcard" style="grid-column:1/-1"><h3>Value over time</h3><p class="sub">month by month</p><div id="c-time"></div></div>';
+
+      var byPlatform = window.PNPrices.sumBy(valued, 'platform').map(function (r) {
+        return { label: r.label, value: r.value, color: PLATFORM_COLOR[r.label] };
+      });
+      window.PNCharts.donut($('c-plat'), byPlatform, {
+        valueKind: 'money', title: 'Allocation by platform', centerSub: 'total'
+      });
+
+      window.PNCharts.stack($('c-kind'), window.PNPrices.sumBy(valued, 'kind'), {
+        valueKind: 'money', title: 'Asset mix'
+      });
+
+      var top = valued
+        .filter(function (r) { return isFinite(r.value) && r.value > 0; })
+        .map(function (r) {
+          return { label: r.label.replace(/\([^)]*\)/g, '').trim().slice(0, 16) || r.label,
+                   value: r.value, color: PLATFORM_COLOR[r.platform] };
+        });
+      window.PNCharts.bars($('c-top'), top, { valueKind: 'money', limit: 12, title: 'Largest positions' });
+
+      /* history across every month we have, valued with the same quotes */
+      var cfg = window.PNPrices.loadCfg();
+      window.PNPrices.resolve(month().holdings, { baked: DATA.quotes }).then(function (res) {
+        var series = (DATA.months || []).map(function (m) {
+          var rows = window.PNPrices.valuate(m.holdings || [], res.quotes);
+          return { label: (m.month || '').slice(0, 3) + ' ' + String(m.year || '').slice(2),
+                   value: window.PNPrices.total(rows) };
+        }).reverse();
+        window.PNCharts.line($('c-time'), series, {
+          valueKind: 'money', title: 'Portfolio value by month',
+          emptyMessage: 'Only one month in the sheet so far — this fills in from the second month on.'
+        });
+      });
+    }
+
+    function renderStockChart() {
+      var symbols = {};
+      valued.forEach(function (r) { if (r.symbol) symbols[r.symbol] = true; });
+      var list = Object.keys(symbols).sort();
+      if (!list.length) {
+        $('stockchart').innerHTML = '<h2>Stock chart</h2><p class="chart-copy">No included symbols are available for charting in this month.</p>';
+        return;
+      }
+      if (list.indexOf(activeChartSymbol) === -1) activeChartSymbol = list[0];
+      $('stockchart').innerHTML =
+        '<h2>Stock chart</h2><p class="chart-copy">Daily closing prices for included positions. Pick an asset to view its most recent 90 trading days.</p>' +
+        '<div class="tickerbar">' + list.map(function (symbol) {
+          return '<button type="button" class="chip" data-symbol="' + esc(symbol) + '" aria-pressed="' + (symbol === activeChartSymbol) + '">' + esc(symbol.replace('/USD', '')) + '</button>';
+        }).join('') + '</div><div id="c-stock"></div><p class="stockchart-status" id="stockchartstatus"></p>';
+      Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-symbol]'), function (button) {
+        button.addEventListener('click', function () { activeChartSymbol = button.dataset.symbol; renderStockChart(); });
+      });
+      var cfg = window.PNPrices.loadCfg();
+      if (!cfg.apikey || cfg.provider === 'manual') {
+        $('c-stock').innerHTML = '<p class="chart-empty">Set a live provider and API key in Price source to load this chart.</p>';
+        $('stockchartstatus').textContent = 'No ticker is sent anywhere until you configure and refresh a live source.';
+        return;
+      }
+      $('c-stock').innerHTML = '<p class="chart-empty">Loading ' + esc(activeChartSymbol) + '…</p>';
+      $('stockchartstatus').textContent = 'Loading 90 daily closes from ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + '…';
+      var requestedSymbol = activeChartSymbol;
+      window.PNPrices.history(requestedSymbol, { cfg: cfg }).then(function (series) {
+        if (activeChartSymbol !== requestedSymbol) return;
+        window.PNCharts.line($('c-stock'), series, {
+          valueKind: 'money', title: requestedSymbol + ' daily closing price',
+          emptyMessage: 'Not enough price history returned for this symbol.'
+        });
+        $('stockchartstatus').textContent = series.length + ' daily closes · ' + requestedSymbol + ' · refresh the page or price source to update.';
+      }).catch(function (err) {
+        if (activeChartSymbol !== requestedSymbol) return;
+        $('c-stock').innerHTML = '<p class="chart-empty">Could not load price history for ' + esc(requestedSymbol) + '.</p>';
+        $('stockchartstatus').textContent = err && err.message ? err.message : 'Price history request failed.';
+      });
+    }
+
+    function renderDividends() {
+      var summary = dividendSummary(), map = dividendMap(), symbols = Object.keys(summary.grouped).sort();
+      if (!symbols.length) {
+        $('dividends').innerHTML = '<h2>Dividend tracker</h2><p>No included equity positions to track in this month.</p>';
+        return;
+      }
+      var payerSymbols = symbols.filter(function (symbol) {
+        var item = map[symbol] || {};
+        return item.status === 'payer' || Number(item.annual) > 0 || item.frequency || item.exDate || item.payDate;
+      });
+      var displaySymbols = payerSymbols.length ? payerSymbols : symbols;
+      $('dividends').innerHTML =
+        '<h2>Dividend tracker</h2><p>' + (payerSymbols.length ? payerSymbols.length + ' included holding' + (payerSymbols.length === 1 ? '' : 's') + ' currently pay distributions. ' : '') + 'Confirmed research is delivered through the encrypted build; dates should still be rechecked with the issuer before investing around them.</p>' +
+        '<div class="dividend-summary">' +
+          '<div class="dividend-metric"><b>' + (summary.annual ? esc(money(summary.annual)) : '—') + '</b><span>est. annual income</span></div>' +
+          '<div class="dividend-metric"><b>' + (summary.annual ? esc(money(summary.annual / 12)) : '—') + '</b><span>monthly average</span></div>' +
+          '<div class="dividend-metric"><b>' + (summary.yield ? (summary.yield * 100).toFixed(2) + '%' : '—') + '</b><span>yield on tracked positions</span></div>' +
+        '</div><div class="tscroll"><table><thead><tr><th>Symbol</th><th class="r">Included shares</th><th class="r">Annual / share</th><th class="r">Est. annual income</th><th>Ex-date</th><th>Payment date</th></tr></thead><tbody>' +
+        displaySymbols.map(function (symbol) {
+          var row = summary.grouped[symbol], saved = map[symbol] || {}, payout = Number(saved.annual) || 0;
+          return '<tr><td class="label">' + esc(symbol) + '</td><td class="num">' + esc(row.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) +
+            '</td><td class="num"><input class="dividend-input" data-symbol="' + esc(symbol) + '" data-field="annual" inputmode="decimal" value="' + (payout || '') + '" placeholder="0.00" aria-label="Annual dividend per share for ' + esc(symbol) + '"></td>' +
+            '<td class="num">' + (payout ? esc(money(row.shares * payout)) : '—') + '</td><td><input class="dividend-date" data-symbol="' + esc(symbol) + '" data-field="exDate" type="date" value="' + esc(saved.exDate || '') + '" aria-label="Next ex-dividend date for ' + esc(symbol) + '"></td><td><input class="dividend-date" data-symbol="' + esc(symbol) + '" data-field="payDate" type="date" value="' + esc(saved.payDate || '') + '" aria-label="Dividend payment date for ' + esc(symbol) + '"></td></tr>';
+        }).join('') + '</tbody></table></div>' +
+        '<div class="dividend-chart"><h3>Estimated dividend income</h3><p class="sub">annual income by holding</p><div id="c-dividend"></div></div>' +
+        '<div class="dividend-calendar" id="dividendcalendar"></div>' +
+        '<div class="obsidian-sync"><button class="btn primary" type="button" id="syncdividends">Sync dividends to Obsidian</button><p class="sync-status" id="syncstatus">Creates encrypted ticker notes and a dividend calendar note.</p></div>';
+      Array.prototype.forEach.call($('dividends').querySelectorAll('input'), function (input) {
+        input.addEventListener('change', function () {
+          var next = dividendMap(), symbol = input.dataset.symbol;
+          next[symbol] = next[symbol] || {};
+          if (input.dataset.field === 'annual') next[symbol].annual = parseFloat(input.value) || 0;
+          else next[symbol][input.dataset.field] = input.value || '';
+          saveDividendMap(next);
+          renderHeadline({ needed: [] }); renderDividends();
+        });
+      });
+      renderDividendChart(summary, map);
+      renderDividendCalendar(map, displaySymbols);
+      $('syncdividends').addEventListener('click', function () { syncDividendsToObsidian(summary, map, displaySymbols); });
+      if (sessionPin && stockNotes && stockNotes.ready && !dividendSyncDone) {
+        stockNotes.ready.then(function (unlocked) {
+          if (!unlocked || dividendSyncDone) return;
+          dividendSyncDone = true;
+          syncDividendsToObsidian(summary, map, displaySymbols);
+        });
+      }
+    }
+
+    function renderDividendChart(summary, map) {
+      var rows = Object.keys(summary.grouped).map(function (symbol) {
+        var payout = Number(map[symbol] && map[symbol].annual) || 0;
+        return { label: symbol, value: summary.grouped[symbol].shares * payout };
+      }).filter(function (row) { return row.value > 0; });
+      window.PNCharts.bars($('c-dividend'), rows, {
+        valueKind: 'money', limit: 12, title: 'Estimated annual dividend income',
+        emptyMessage: 'Dividend-paying holdings appear here after confirmed payouts are added.'
+      });
+    }
+
+    function syncDividendsToObsidian(summary, map, symbols) {
+      var status = $('syncstatus');
+      if (!stockNotes || !stockNotes.vault.isUnlocked()) {
+        status.textContent = 'Open the Obsidian tab and unlock the stock vault first.';
+        activateTrackerPanel('obsidian', false);
+        return;
+      }
+      var payerSymbols = symbols.filter(function (symbol) {
+        var item = map[symbol] || {};
+        return item.status === 'payer' || Number(item.annual) > 0 || item.frequency || item.exDate || item.payDate;
+      });
+      if (!payerSymbols.length) {
+        status.textContent = 'No confirmed dividend-paying holdings are ready to sync.';
+        return;
+      }
+      var events = calendarEvents(map, payerSymbols);
+      var jobs = payerSymbols.map(function (symbol) {
+        var item = map[symbol] || {}, holding = summary.grouped[symbol];
+        var annual = Number(item.annual) || 0;
+        var body = '# ' + symbol + ' dividend profile\n\n' +
+          '- Included shares: ' + holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 }) + '\n' +
+          '- Annual payout per share: ' + (annual ? money(annual) : 'Not entered') + '\n' +
+          '- Estimated annual income: ' + (annual ? money(holding.shares * annual) : 'Not calculated') + '\n' +
+          '- Frequency: ' + (item.frequency || 'Confirm with issuer') + '\n' +
+          '- Next ex-dividend date: ' + (item.exDate || 'Not announced') + '\n' +
+          '- Payment date: ' + (item.payDate || 'Not announced') + '\n' +
+          (item.source ? '- Source: [Issuer dividend information](' + item.source + ')\n' : '') + '\n' +
+          'Linked calendar: [[Dividend calendar]]\n\n#dividend #portfolio';
+        return stockNotes.upsertNote({ title: symbol + ' dividend', ticker: symbol, body: body, tags: ['dividend', 'portfolio'] });
+      });
+      var calendarBody = '# Dividend calendar\n\n' +
+        (events.length ? '| Date | Holding | Event |\n|---|---|---|\n' + events.map(function (event) {
+          return '| ' + event.date + ' | [[' + event.symbol + ' dividend]] | ' + event.type + ' |';
+        }).join('\n') : 'No announced dates yet.') +
+        '\n\nGenerated from the encrypted portfolio tracker. Recheck dates with the issuer before relying on them.\n\n#dividend #calendar #portfolio';
+      jobs.push(stockNotes.upsertNote({ title: 'Dividend calendar', body: calendarBody, tags: ['dividend', 'calendar', 'portfolio'] }));
+      Promise.all(jobs).then(function () {
+        status.textContent = payerSymbols.length + ' dividend holding' + (payerSymbols.length === 1 ? '' : 's') + ' and the calendar are now in the encrypted Obsidian vault.';
+      }).catch(function () { status.textContent = 'The Obsidian sync did not finish. Try again while the vault is unlocked.'; });
+    }
+
+    function calendarEvents(map, symbols) {
+      var events = [];
+      symbols.forEach(function (symbol) {
+        var item = map[symbol] || {};
+        if (item.exDate) events.push({ date: item.exDate, symbol: symbol, type: 'Ex-dividend', amount: item.annual ? 'annual payout $' + Number(item.annual).toFixed(4) + ' / share' : '' });
+        if (item.payDate) events.push({ date: item.payDate, symbol: symbol, type: 'Payment expected', amount: item.payment ? '$' + Number(item.payment).toFixed(4) + ' / share' : (item.frequency || '') });
+      });
+      return events.sort(function (a, b) { return a.date.localeCompare(b.date); });
+    }
+
+    function downloadCalendar(events) {
+      if (!events.length) return;
+      var stamp = function (date) { return String(date || '').replace(/-/g, ''); };
+      var escapeIcs = function (value) { return String(value || '').replace(/\\/g, '\\\\').replace(/,/g, '\\,').replace(/;/g, '\\;').replace(/\n/g, '\\n'); };
+      var lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//PN Website//Dividend Tracker//EN', 'CALSCALE:GREGORIAN'];
+      events.forEach(function (event, index) {
+        var end = new Date(event.date + 'T12:00:00Z'); end.setUTCDate(end.getUTCDate() + 1);
+        lines.push('BEGIN:VEVENT', 'UID:pn-dividend-' + stamp(event.date) + '-' + event.symbol + '-' + index + '@pn-website',
+          'DTSTAMP:' + stamp(new Date().toISOString().slice(0, 10)) + 'T000000Z',
+          'DTSTART;VALUE=DATE:' + stamp(event.date), 'DTEND;VALUE=DATE:' + stamp(end.toISOString().slice(0, 10)),
+          'SUMMARY:' + escapeIcs(event.symbol + ' — ' + event.type),
+          'DESCRIPTION:' + escapeIcs('Dividend tracker: ' + event.symbol + (event.amount ? ' · ' + event.amount : '')), 'END:VEVENT');
+      });
+      lines.push('END:VCALENDAR');
+      var url = URL.createObjectURL(new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' }));
+      var link = document.createElement('a'); link.href = url; link.download = 'dividend-calendar.ics'; link.click();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    }
+
+    function renderDividendCalendar(map, symbols) {
+      var events = calendarEvents(map, symbols), host = $('dividendcalendar');
+      if (!host) return;
+      host.innerHTML = '<div class="calendar-top"><div><h3>Dividend calendar</h3><p>Only appears after this tracker is unlocked. Export the confirmed events as a private Google Calendar import.</p></div>' +
+        '<button class="btn" type="button" id="exportcalendar"' + (events.length ? '' : ' disabled') + '>Download .ics</button></div>' +
+        (events.length ? '<div class="calendar-list">' + events.map(function (event) {
+          return '<article class="calendar-event"><span class="date">' + esc(new Date(event.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })) + '</span><b>' + esc(event.symbol) + ' · ' + esc(event.type) + '</b><p>' + esc(event.amount || 'Date confirmed; amount not entered yet.') + '</p></article>';
+        }).join('') + '</div>' : '<p class="muted" style="font-size:13px;margin:0">Add confirmed ex-dividend and payment dates above to build the private calendar.</p>');
+      var exportButton = $('exportcalendar');
+      if (exportButton) exportButton.addEventListener('click', function () { downloadCalendar(events); });
+    }
+
+    function renderPlatforms() {
+      var groups = {};
+      allValued.forEach(function (r) {
+        (groups[r.platform] = groups[r.platform] || []).push(r);
+      });
+
+      var order = PLATFORM_ORDER.filter(function (p) { return groups[p]; })
+        .concat(Object.keys(groups).filter(function (p) { return PLATFORM_ORDER.indexOf(p) === -1; }));
+
+      $('platforms').innerHTML = order.map(function (p) {
+        var rows = groups[p];
+        var subtotal = window.PNPrices.total(rows.filter(isIncluded));
+        return '<div class="platform">' +
+          '<h3><span class="pdot ' + (PLATFORM_CLASS[p] || '') + '"></span>' + esc(p) +
+          '<span class="pcount">' + rows.length + ' line item' + (rows.length === 1 ? '' : 's') +
+          (subtotal > 0 ? ' · ' + esc(money(subtotal)) : '') + '</span></h3>' +
+          '<div class="tscroll"><table><thead><tr>' +
+            '<th>Holding</th><th class="r">Amount</th><th>Unit</th><th class="r">Price</th><th class="r">Value</th><th>Notes</th><th>Include</th><th></th>' +
+          '</tr></thead><tbody>' +
+          rows.map(function (r) {
+            var included = isIncluded(r);
+            return '<tr class="' + (included ? '' : 'is-excluded') + '">' +
+              '<td class="label">' + esc(r.label) + '</td>' +
+              '<td class="num">' + r.amount.toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td>' +
+              '<td class="unit">' + esc(r.unit) + '</td>' +
+              '<td class="num">' + (isFinite(r.price) && r.price ? esc(money(r.price)) : '<span class="nopr">—</span>') + '</td>' +
+              '<td class="num">' + (isFinite(r.value) ? esc(money(r.value)) : '<span class="nopr">unpriced</span>') + '</td>' +
+              '<td class="notes">' + esc(r.notes) + '</td>' +
+              '<td><input class="rowtoggle" type="checkbox" data-key="' + esc(positionKey(r)) + '" ' + (included ? 'checked' : '') + ' aria-label="Include ' + esc(r.label) + ' in calculations"></td>' +
+              '<td>' + (r.symbol
+                ? '<button type="button" class="notebtn" data-ticker="' +
+                  esc(r.symbol.split('/')[0]) + '">note</button>' : '') + '</td>' +
+            '</tr>';
+          }).join('') +
+          '</tbody></table></div></div>';
+      }).join('');
+
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.notebtn'), function (b) {
+        b.addEventListener('click', function () {
+          if (!stockNotes) return;
+          var ok = stockNotes.openTicker(b.dataset.ticker);
+          if (ok === false) {
+            alert('Unlock the stock-notes vault below first.');
+          }
+          document.getElementById('stocknotes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.rowtoggle'), function (toggle) {
+        toggle.addEventListener('change', function () {
+          var row = allValued.filter(function (r) { return positionKey(r) === toggle.dataset.key; })[0];
+          if (row) { setIncluded(row, toggle.checked); refresh(false); }
+        });
+      });
+    }
+
+    // ------------------------------------------------------ stock notes
+
+    function mountStockNotes(pin) {
+      if (stockNotes) { stockNotes.refresh(); return; }
+      var tickers = {};
+      (DATA.months || []).forEach(function (m) {
+        (m.holdings || []).forEach(function (h) {
+          var c = window.PNPrices.classify(h);
+          if (c.symbol) tickers[c.symbol.split('/')[0]] = true;
+        });
+      });
+
+      stockNotes = window.PNNotes.mount({
+        el: $('stockvault'),
+        scope: 'stocks',
+        mode: 'stocks',
+        tickers: Object.keys(tickers).sort(),
+        pin: pin || null,
+        lockCopy: {
+          title: 'Stock desk',
+          blurb: 'Per-ticker notes and outlooks. Separate vault from general notes — same PIN by default.'
+        }
+      });
+    }
+  })();
+  </script>
+</body>
+</html>

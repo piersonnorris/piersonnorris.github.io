@@ -4,105 +4,220 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Experience — Pierson Norris</title>
-  <meta name="description" content="Pierson Norris — experience timeline, 2023 to now. True North Services, Elon University, Screencastify AI internship, and what's next.">
+  <meta name="description" content="Pierson Norris — experience timeline, 2023 to now. True North Services LLC, Elon University, the Screencastify AI internship, and the systems behind each.">
   <link rel="canonical" href="https://piersonnorris.github.io/experience/">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <style>
     :root{
       --bg:#0e1116; --panel:#151b23; --panel2:#1a222d; --line:#232d39; --line2:#2e3947;
-      --ink:#e9edf3; --mut:#8b95a5; --dim:#5c6675; --acc:#5FAE5A; --acc-soft:rgba(95,174,90,.14);
-      --good:#45c26b; --open:#5FAE5A; --catevents:#E8A33D;
+      --ink:#e9edf3; --mut:#8b95a5; --dim:#5c6675;
+      --acc:#5FAE5A; --acc-hi:#8ED18A; --acc-soft:rgba(95,174,90,.12);
+      --good:#45c26b; --class:#4CC9F0; --events:#E8A33D;
+      --r:10px;
     }
     *{box-sizing:border-box}
-    html{background:var(--bg)}
+    html{background:var(--bg);scroll-behavior:smooth}
     body{margin:0;background:var(--bg);color:var(--ink);
       font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
-      font-size:15.5px;line-height:1.62;font-weight:450}
+      font-size:15.5px;line-height:1.62;font-weight:450;
+      -webkit-font-smoothing:antialiased}
     ::selection{background:var(--acc);color:#0e1116}
     a{color:inherit}
-    .wrap{max-width:880px;margin:0 auto;padding:0 24px}
-    .mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+    .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+    .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
     .eyebrow{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;
-      letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+      letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin:0}
 
-    header{border-bottom:1px solid var(--line);padding:18px 0}
+    /* ---------- header ---------- */
+    header{border-bottom:1px solid var(--line);padding:16px 0}
     nav{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
     nav a{text-decoration:none}
     .brand{font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;color:var(--ink)}
-    .navlinks{display:flex;gap:20px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em}
-    .navlinks a{color:var(--mut);border-bottom:1px solid transparent;padding-bottom:2px}
+    .navlinks{display:flex;gap:20px;flex-wrap:wrap;
+      font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.04em}
+    .navlinks a{color:var(--mut);border-bottom:1px solid transparent;padding-bottom:2px;transition:color .15s}
+    .navlinks a:hover{color:var(--acc)}
     .navlinks a[aria-current="page"]{color:var(--acc);border-bottom-color:var(--acc)}
     .navlinks span{color:var(--dim)}
 
-    main{padding:56px 0 80px}
-    h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(32px,6vw,48px);
-      letter-spacing:-.02em;line-height:1.05;margin:14px 0 10px}
-    .lede{color:var(--mut);max-width:62ch;margin:0 0 28px}
+    /* ---------- intro ---------- */
+    main{padding:0 0 90px}
+    .intro{position:relative;padding:60px 0 30px}
+    .intro::before{content:"";position:absolute;inset:-60px -20% auto -20%;height:340px;pointer-events:none;
+      background:radial-gradient(ellipse at 22% 0%,rgba(95,174,90,.10),transparent 62%)}
+    .intro > *{position:relative}
+    h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(34px,6.4vw,52px);
+      letter-spacing:-.025em;line-height:1.03;margin:16px 0 12px;text-wrap:balance}
+    .lede{color:var(--mut);max-width:64ch;margin:0 0 26px;font-size:16.5px}
     .lede b{color:var(--ink);font-weight:600}
 
-    .legend{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 40px}
-    .chip{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
-      padding:6px 12px;border-radius:999px;border:1px solid var(--line2);color:var(--mut);
-      background:var(--panel);cursor:pointer;user-select:none}
-    .chip[aria-pressed="true"]{color:#0e1116;background:var(--acc);border-color:var(--acc)}
-    .chip .dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;position:relative;top:-1px}
-    .dot.classroom{background:#4CC9F0}
-    .dot.outside{background:var(--good)}
-    .dot.events{background:var(--catevents)}
+    .stats{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
+    .stats li{background:var(--panel);border:1px solid var(--line);border-radius:999px;
+      padding:7px 14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--mut);
+      font-variant-numeric:tabular-nums}
+    .stats li b{color:var(--acc);font-weight:500}
 
-    .rail{position:relative;padding-left:26px;border-left:1px solid var(--line)}
-    .year{margin:44px 0 18px}
-    .year:first-child{margin-top:0}
-    .year h2{font-family:'Archivo',sans-serif;font-weight:800;font-size:26px;margin:0;
-      display:flex;align-items:center;gap:10px}
-    .year h2::before{content:"";width:11px;height:11px;border-radius:50%;background:var(--acc);
-      margin-left:-31px;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--line2)}
+    /* ---------- sticky filter bar ---------- */
+    .filterbar{position:sticky;top:0;z-index:20;margin:26px 0 0;
+      background:rgba(14,17,22,.88);backdrop-filter:blur(10px);
+      border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .filterbar .inner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0}
+    .chip{display:inline-flex;align-items:center;gap:7px;
+      font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.07em;text-transform:uppercase;
+      padding:7px 13px;border-radius:999px;border:1px solid var(--line2);color:var(--mut);
+      background:var(--panel);cursor:pointer;user-select:none;transition:border-color .15s,color .15s,background .15s}
+    .chip:hover{color:var(--ink);border-color:var(--mut)}
+    .chip[aria-pressed="true"]{color:#0e1116;background:var(--acc);border-color:var(--acc);font-weight:500}
+    .chip[aria-pressed="true"] .dot{background:#0e1116 !important;box-shadow:none}
+    .dot{width:7px;height:7px;border-radius:50%;flex:none}
+    .dot.all{background:var(--mut)}
+    .dot.classroom{background:var(--class);box-shadow:0 0 8px rgba(76,201,240,.45)}
+    .dot.outside{background:var(--good);box-shadow:0 0 8px rgba(69,194,107,.45)}
+    .dot.events{background:var(--events);box-shadow:0 0 8px rgba(232,163,61,.45)}
+    .count{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--dim);
+      font-variant-numeric:tabular-nums}
 
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px 20px;margin:14px 0}
-    .card .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px}
-    .tag{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
-      padding:3px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--mut)}
-    .tag.classroom{color:#4CC9F0;border-color:#4CC9F0}
-    .tag.outside{color:var(--good);border-color:var(--good)}
-    .tag.events{color:var(--catevents);border-color:var(--catevents)}
-    .date{color:var(--dim);font-size:12.5px}
-    .card h3{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700;margin:0 0 8px}
-    .card p{margin:0 0 8px;color:var(--ink)}
-    .card p b{font-weight:600}
-    .takeaway{border-left:2px solid var(--acc);padding-left:12px;margin:10px 0 0;color:var(--mut);font-size:14px}
+    /* ---------- rail ---------- */
+    .rail{position:relative;margin:14px 0 0;padding-left:30px}
+    .rail::before{content:"";position:absolute;left:0;top:6px;bottom:34px;width:1px;
+      background:linear-gradient(180deg,var(--acc),var(--line2) 22%,var(--line) 78%,transparent)}
 
-    .open{background:var(--acc-soft);border:1px dashed var(--acc);border-radius:8px;padding:16px 20px;margin:14px 0}
-    .open .tag{color:var(--acc);border-color:var(--acc);margin-bottom:8px;display:inline-block}
-    .open p{margin:0;color:var(--ink)}
-    .open p.q{font-weight:600}
+    .year{margin:40px 0 0;scroll-margin-top:80px}
+    .year:first-child{margin-top:22px}
+    .year > h2{font-family:'Archivo',sans-serif;font-weight:800;font-size:24px;letter-spacing:-.01em;
+      margin:0 0 4px;display:flex;align-items:center;gap:12px}
+    .year > h2::before{content:"";width:11px;height:11px;border-radius:50%;background:var(--acc);
+      margin-left:-35px;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--acc),0 0 12px rgba(95,174,90,.55);flex:none}
+    .year > h2 .n{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;
+      letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
 
-    .prologue{margin-top:44px;padding-top:28px;border-top:1px dashed var(--line2)}
-    .prologue .eyebrow{margin-bottom:8px}
-    .prologue p{color:var(--dim);font-size:13.5px;max-width:70ch}
+    /* ---------- cards ---------- */
+    .card{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+      padding:18px 20px;margin:14px 0;overflow:hidden;
+      transition:border-color .18s,transform .18s,background .18s}
+    .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--acc);
+      transform:scaleY(0);transform-origin:top;transition:transform .22s ease}
+    .card:hover{border-color:var(--line2);background:var(--panel2);transform:translateY(-2px)}
+    .card:hover::before{transform:scaleY(1)}
+    .card[data-cat="classroom"]::before{background:var(--class)}
+    .card[data-cat="events"]::before{background:var(--events)}
 
-    [data-cat]{display:block}
-    .rail.filter-classroom [data-cat]:not([data-cat="classroom"]),
-    .rail.filter-outside [data-cat]:not([data-cat="outside"]),
-    .rail.filter-events [data-cat]:not([data-cat="events"]) { display:none }
-    .rail.filter-classroom .year:has(> [data-cat="classroom"]) { display:block }
+    .meta{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:9px}
+    .tag{display:inline-flex;align-items:center;gap:6px;
+      font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+      padding:3px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--mut);background:rgba(0,0,0,.18)}
+    .tag::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}
+    .tag.classroom{color:var(--class);border-color:rgba(76,201,240,.35)}
+    .tag.outside{color:var(--good);border-color:rgba(69,194,107,.35)}
+    .tag.events{color:var(--events);border-color:rgba(232,163,61,.35)}
+    .date{color:var(--dim);font-size:12px;font-family:'IBM Plex Mono',monospace;
+      letter-spacing:.02em;font-variant-numeric:tabular-nums}
 
-    .skills{margin-top:64px}
-    .skills h2{font-family:'Archivo',sans-serif;font-size:22px;margin:0 0 18px}
-    .skillgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-    .skillgrid li{list-style:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;
-      padding:14px 16px;font-size:14px;color:var(--mut)}
-    .skillgrid li b{color:var(--ink);display:block;font-family:'Archivo',sans-serif;font-size:13px;
-      text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+    .card h3{font-family:'Archivo',sans-serif;font-size:18px;font-weight:700;letter-spacing:-.01em;margin:0 0 2px}
+    .org{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--dim);
+      letter-spacing:.04em;margin:0 0 9px}
+    .card p{margin:0 0 9px;color:var(--ink)}
+    .card p:last-child{margin-bottom:0}
+    .card p b{font-weight:600;color:var(--ink)}
 
-    .resume{margin-top:48px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+    /* metric strip */
+    .metrics{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px;padding:0;list-style:none}
+    .metrics li{background:rgba(95,174,90,.07);border:1px solid rgba(95,174,90,.22);border-radius:8px;
+      padding:8px 12px;min-width:82px}
+    .metrics b{display:block;font-family:'Archivo',sans-serif;font-size:19px;font-weight:800;
+      color:var(--acc-hi);line-height:1.1;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+    .metrics span{display:block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;
+      letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin-top:3px}
+
+    /* before to after pill */
+    .delta{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;
+      font-family:'IBM Plex Mono',monospace;font-size:12px;margin:6px 0 2px;
+      border:1px solid var(--line2);border-radius:8px;padding:7px 12px;background:rgba(0,0,0,.2)}
+    .delta .was{color:var(--dim);text-decoration:line-through;text-decoration-thickness:1px}
+    .delta .arrow{color:var(--acc)}
+    .delta .now{color:var(--acc-hi)}
+
+    /* detail disclosure */
+    details.more{margin:12px 0 0;border-top:1px solid var(--line);padding-top:11px}
+    details.more summary{cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:7px;
+      font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+      color:var(--acc);transition:color .15s}
+    details.more summary::-webkit-details-marker{display:none}
+    details.more summary::after{content:"+";font-size:13px;line-height:1;color:var(--acc)}
+    details.more[open] summary::after{content:"\2013"}
+    details.more summary:hover{color:var(--acc-hi)}
+    details.more .body{margin-top:11px}
+    .pts{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+    .pts li{position:relative;padding-left:16px;color:var(--mut);font-size:14.2px}
+    .pts li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%;
+      background:var(--line2)}
+    .pts li b{color:var(--ink);font-weight:600}
+    .pts li .lbl{color:var(--acc);font-family:'IBM Plex Mono',monospace;font-size:11px;
+      letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:1px}
+
+    /* mini sequence strip */
+    .seq{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0;padding:0;list-style:none}
+    .seq li{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--mut);
+      border:1px solid var(--line);border-radius:6px;padding:5px 9px;background:rgba(0,0,0,.18);
+      font-variant-numeric:tabular-nums}
+    .seq li b{color:var(--acc-hi);font-weight:500}
+
+    .takeaway{border-left:2px solid var(--acc);padding:2px 0 2px 13px;margin:13px 0 0;
+      color:var(--mut);font-size:14px;font-style:italic}
+    .takeaway.plain{font-style:normal}
+
+    .linkout{display:inline-flex;align-items:center;gap:6px;margin-top:11px;
+      font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--acc);
+      text-decoration:none;border-bottom:1px solid transparent;transition:border-color .15s}
+    .linkout:hover{border-bottom-color:var(--acc)}
+
+    /* open question note */
+    .open{border:1px dashed var(--line2);border-radius:8px;padding:11px 14px;margin:13px 0 0;
+      background:rgba(0,0,0,.16)}
+    .open .lbl{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;
+      text-transform:uppercase;color:var(--events);display:block;margin-bottom:4px}
+    .open p{margin:0;color:var(--mut);font-size:13.5px}
+    .rail > .year > .open{margin:14px 0}
+
+    /* ---------- prologue / skills / resume ---------- */
+    .prologue{margin-top:52px;padding-top:26px;border-top:1px dashed var(--line2)}
+    .prologue p{color:var(--dim);font-size:13.5px;max-width:72ch;margin:8px 0 0}
+
+    .skills{margin-top:66px}
+    .skills h2{font-family:'Archivo',sans-serif;font-size:22px;letter-spacing:-.01em;margin:8px 0 18px}
+    .skillgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;
+      margin:0;padding:0}
+    .skillgrid li{list-style:none;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+      padding:15px 17px;font-size:14px;color:var(--mut);transition:border-color .15s}
+    .skillgrid li:hover{border-color:var(--line2)}
+    .skillgrid li b{color:var(--ink);display:block;font-family:'Archivo',sans-serif;font-size:12.5px;
+      text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px}
+
+    .resume{margin-top:44px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
     .btn{font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.04em;padding:11px 18px;
-      border-radius:6px;border:1px solid var(--line2);color:var(--dim);background:var(--panel);
-      cursor:default}
+      border-radius:8px;border:1px solid var(--line2);color:var(--dim);background:var(--panel);cursor:default}
 
-    footer{border-top:1px solid var(--line);padding:28px 0;margin-top:20px}
+    footer{border-top:1px solid var(--line);padding:28px 0;margin-top:24px}
     address{font-style:normal;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--dim);line-height:2}
     address a{text-decoration:none;border-bottom:1px solid var(--line2)}
-    a:focus-visible,.chip:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+    address a:hover{color:var(--acc);border-bottom-color:var(--acc)}
+
+    a:focus-visible,.chip:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+    [hidden]{display:none !important}
+
+    @media (max-width:640px){
+      body{font-size:15px}
+      .wrap{padding:0 18px}
+      .rail{padding-left:24px}
+      .year > h2::before{margin-left:-29px}
+      .card{padding:16px}
+      .metrics li{flex:1 1 calc(50% - 8px);min-width:0}
+      .count{margin-left:0;width:100%}
+    }
+    @media (prefers-reduced-motion:reduce){
+      *{transition:none !important;animation:none !important}
+      html{scroll-behavior:auto}
+    }
   </style>
 </head>
 <body>
@@ -112,10 +227,10 @@
         <a class="brand" href="/">Pierson Norris</a>
         <div class="navlinks">
           <a href="/">Home</a>
-          <a href="/about/">About<span> ·soon</span></a>
           <a href="/experience/" aria-current="page">Experience</a>
+          <a href="/tools/tracker/">Tracker</a>
+          <a href="/about/">About<span> ·soon</span></a>
           <a href="/projects/">Projects<span> ·soon</span></a>
-          <a href="/tools/">Tools<span> ·soon</span></a>
           <a href="/contact/">Contact<span> ·soon</span></a>
         </div>
       </nav>
@@ -124,148 +239,317 @@
 
   <main>
     <div class="wrap">
-      <p class="eyebrow">Experience — 2023 → now</p>
-      <h1>What I've actually done.</h1>
-      <p class="lede">Newest first. Every entry is <b>tagged</b> by where it happened — the classroom, outside it, or a standalone milestone — so you can filter to what you care about.</p>
+      <section class="intro" aria-labelledby="pagetitle">
+        <p class="eyebrow">Experience — 2023 → now</p>
+        <h1 id="pagetitle">What I've actually done.</h1>
+        <p class="lede">Newest first. Every entry is <b>tagged</b> by where it happened — the classroom, outside it, or a standalone milestone — so you can filter to what you care about. Open an entry for the mechanics underneath it.</p>
+        <ul class="stats">
+          <li><b>1</b> company incorporated</li>
+          <li><b>50+</b> clients served</li>
+          <li><b>3</b> AI modules shipped</li>
+          <li><b>6</b> departments mapped</li>
+          <li><b>5</b> platforms tracked</li>
+        </ul>
+      </section>
+    </div>
 
-      <div class="legend" role="group" aria-label="Filter by category">
-        <button class="chip" data-filter="all" aria-pressed="true"><span class="dot" style="background:var(--mut)"></span>All</button>
-        <button class="chip" data-filter="classroom" aria-pressed="false"><span class="dot classroom"></span>Classroom</button>
-        <button class="chip" data-filter="outside" aria-pressed="false"><span class="dot outside"></span>Outside the Classroom</button>
-        <button class="chip" data-filter="events" aria-pressed="false"><span class="dot events"></span>Additional Events</button>
+    <div class="filterbar">
+      <div class="wrap">
+        <div class="inner" role="group" aria-label="Filter timeline by category">
+          <button class="chip" data-filter="all" aria-pressed="true"><span class="dot all"></span>All</button>
+          <button class="chip" data-filter="outside" aria-pressed="false"><span class="dot outside"></span>Outside the classroom</button>
+          <button class="chip" data-filter="classroom" aria-pressed="false"><span class="dot classroom"></span>Classroom</button>
+          <button class="chip" data-filter="events" aria-pressed="false"><span class="dot events"></span>Additional events</button>
+          <p class="count" id="count" aria-live="polite"></p>
+        </div>
       </div>
+    </div>
 
+    <div class="wrap">
       <div class="rail" id="rail">
 
-        <div class="year" data-cat="_2027">
-          <h2>2027</h2>
-          <div class="open">
-            <span class="tag">OPEN — Pierson</span>
-            <p class="q">What's the 2027 headline? Club-presidency goals, graduation in May, what you're aiming at after — tell me and this becomes a real entry.</p>
-          </div>
-        </div>
+        <!-- ================= 2026 ================= -->
+        <section class="year" id="y2026" aria-labelledby="h2026">
+          <h2 id="h2026">2026 <span class="n">most recent</span></h2>
 
-        <div class="year">
-          <h2>2026</h2>
-
-          <div class="card" data-cat="events">
-            <div class="meta"><span class="tag events">Additional Events</span><span class="date mono">2026–27 · ongoing</span></div>
-            <h3>Incoming President, Elon AI &amp; ET Club</h3>
-            <div class="open" style="margin-top:8px">
-              <span class="tag">OPEN — Pierson</span>
-              <p class="q">Exact title, term dates, and one line on your agenda for the club?</p>
+          <article class="card" data-cat="events">
+            <div class="meta"><span class="tag events">Additional events</span><span class="date"><time datetime="2026">2026 · ongoing</time></span></div>
+            <h3>Incoming President, Elon AI &amp; Emerging Tech Club</h3>
+            <p class="org">Elon University · Elon, NC</p>
+            <p>Stepped toward the club presidency after a summer spent building AI tooling in production rather than in theory.</p>
+            <div class="open">
+              <span class="lbl">Open — Pierson</span>
+              <p>Are you president now, or still incoming? Plus exact title, term start and end, and one line on your agenda. Four other places on the site say "incoming," so this changes together.</p>
             </div>
-          </div>
+          </article>
 
-          <div class="card" data-cat="events">
-            <div class="meta"><span class="tag events">Additional Events</span><span class="date mono">Jun 9 – Aug 7, 2026</span></div>
+          <article class="card" data-cat="events">
+            <div class="meta"><span class="tag events">Additional events</span><span class="date"><time datetime="2026-06-09">Jun 9</time> – <time datetime="2026-08-07">Aug 7, 2026</time></span></div>
             <h3>AI Intern, Screencastify</h3>
-            <p>One written prompt mapped <b>7 workflows across 6 departments in 48 hours</b>. The recurring finding: a person acting as the API between systems that don't talk. Shipped <b>3 live fixes</b>, including an AR-collections workflow cut from <b>4–8 hrs/week to under 15 minutes</b>; a 76-post content audit reframed marketing as under-concentrated, not under-worked.</p>
+            <p class="org">Screencastify · nine weeks</p>
+            <p>Rather than guessing where the bottlenecks were, I wrote one three-round workflow-mapping prompt and dropped it in a shared folder. Department leaders mapped their own work — trigger, middle, hand-offs, friction, root cause — and <b>seven workflows across six departments came back in 48 hours</b>, with exactly one meeting added to anyone's calendar.</p>
+            <p>All seven had the same failure: <b>a person acting as the API between systems that don't talk</b>. That isn't seven problems. It's one problem, seven times.</p>
+            <ul class="metrics">
+              <li><b>7</b><span>workflows</span></li>
+              <li><b>6</b><span>departments</span></li>
+              <li><b>48</b><span>hours</span></li>
+              <li><b>3</b><span>fixes shipped</span></li>
+            </ul>
+            <details class="more">
+              <summary>The three fixes</summary>
+              <div class="body">
+                <ul class="pts">
+                  <li><span class="lbl">Finance — weekly AR collections</span>Manual reconciliation across a billing system, an inbox, and a tracking sheet. Replaced with CSV in → prioritized outreach list, category and aging summary out. <b>4–8 hrs/week down to under 15 minutes.</b></li>
+                  <li><span class="lbl">Product marketing — Monday update email</span>A manual analytics pull, then writing the narrative from memory. Replaced with a saved prompt template: paste the export, get a formatted draft. <b>~30 min/week plus the rework loop, gone.</b></li>
+                  <li><span class="lbl">Engineering — sprint review recording</span>Blocked every week waiting on ticket updates. Fixed with a hard-cutoff policy and one saved filter — <b>no tool build at all</b>. Stalls became part of the story instead of a blocker.</li>
+                </ul>
+                <p class="takeaway plain">None of the three needed engineering time. Combined build time: one afternoon.</p>
+              </div>
+            </details>
+            <details class="more">
+              <summary>The distribution audit</summary>
+              <div class="body">
+                <ul class="pts">
+                  <li>Audited <b>76 posts</b> across three channels and found the problem wasn't effort — the cadence was scattered and nothing anchored it. The reframe: <b>not under-working, under-concentrating</b>.</li>
+                  <li>Proposed the <b>Content Waterfall</b> — one ungated anchor asset systematically repurposed into eight placements (two short-form A/B cuts → the winner promoted and syndicated → long-form for search → a professional-network cut → a thread), plus a single named distribution owner instead of a committee.</li>
+                </ul>
+              </div>
+            </details>
             <p class="takeaway">The method is the résumé line — find the problem in someone's actual Tuesday, get sign-off, build it with them, ship it.</p>
-          </div>
+          </article>
 
-          <div class="card" data-cat="outside">
-            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">May – Aug 2026</span></div>
+          <article class="card" data-cat="events">
+            <div class="meta"><span class="tag events">Additional events</span><span class="date"><time datetime="2026-06-15">Jun 15</time> – <time datetime="2026-07-31">Jul 31, 2026</time></span></div>
+            <h3>Built Castify OS — three internal AI modules, live</h3>
+            <p class="org">Screencastify · idea to production in nine weeks</p>
+            <p>It started as a prompt bank and one sentence on June 15. By the end of the internship it was one shell with three modules in it, each the output of the same loop: find the problem, scope it on a page, get sign-off, build it <i>with</i> the department head, ship it.</p>
+            <ul class="seq">
+              <li><b>Jun 15</b> idea</li>
+              <li><b>Jun 18</b> first agent skill</li>
+              <li><b>Jun 29</b> build spec</li>
+              <li><b>Jul 7</b> shipped</li>
+              <li><b>Jul 9</b> first live client</li>
+              <li><b>Jul 31</b> third module in beta</li>
+            </ul>
+            <details class="more">
+              <summary>What the three modules do</summary>
+              <div class="body">
+                <ul class="pts">
+                  <li><span class="lbl">Proposal Generator — sales · live</span>Deal context in (call notes, transcripts, emails); a client-ready branded PDF plus an editable .docx out. Shipped to production July 7, first live client proposal two days later.</li>
+                  <li><span class="lbl">Outbound Email Agent — marketing · live</span>Reads pending contacts from a sheet, researches each one, and drafts cold emails into Gmail. <b>Approval-gated by design — it drafts and marks the row, it never auto-sends.</b></li>
+                  <li><span class="lbl">Traffic &amp; AI Referral Analytics — marketing · beta</span>Two brands, two sites, one view — and AI-assistant referrals (ChatGPT, Perplexity, Gemini) broken out as their own channel class instead of disappearing into "other."</li>
+                </ul>
+                <div class="delta"><span class="was">30 min per proposal, by hand</span><span class="arrow">→</span><span class="now">5 min</span></div>
+              </div>
+            </details>
+            <p class="takeaway">AI doesn't replace the workflow. It removes the part of the workflow nobody wanted to do.</p>
+          </article>
+
+          <article class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the classroom</span><span class="date"><time datetime="2026-07-17">Jul 17, 2026</time></span></div>
+            <h3>Ran True North's first company all-hands</h3>
+            <p class="org">True North Services LLC · co-presented with the operations lead</p>
+            <p>A nine-part meeting built to move the company from group-chat coordination to a shared standard: the quote process end to end, a live walkthrough of the company site, a team-spotlight program feeding the LinkedIn page, a written marketing do's-and-don'ts, and a new referral incentive.</p>
+            <details class="more">
+              <summary>What got standardized</summary>
+              <div class="body">
+                <ul class="pts">
+                  <li><span class="lbl">The quote process, in five steps</span>Respond as True North and capture the name and address → price the job face to face with your reasoning, not over text → log it in the quote form → send a formal quote → book it on the calendar and brief the crew going to the site.</li>
+                  <li><span class="lbl">Marketing standard</span>Before <i>and</i> after on every post, same angle, natural light, teammates credited by name — and never a client's address or personal details.</li>
+                  <li><span class="lbl">Referral incentive</span>A <b>$10 minimum</b> for landing a client, paid only once the client is landed <i>and</i> the job is completed.</li>
+                </ul>
+              </div>
+            </details>
+          </article>
+
+          <article class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the classroom</span><span class="date"><time datetime="2026-05">May</time> – <time datetime="2026-08">Aug 2026</time></span></div>
             <h3>Built True North's digital infrastructure</h3>
-            <p>Hand-built company site (standalone HTML, Netlify, custom domain), a Google Form lead-capture wired to service categories, a 90+ photo marketing library, and SMS-automation scoping.</p>
-          </div>
+            <p class="org">True North Services LLC</p>
+            <p>Hand-built the company site (standalone HTML, deployed on Netlify with a custom domain), then wired the front door to the back office: a lead-capture form mapped to service categories, a post-quote form feeding a responses sheet, a 90+ photo marketing library, and SMS-automation scoping.</p>
+            <details class="more">
+              <summary>The lead path</summary>
+              <div class="body">
+                <ul class="pts">
+                  <li>Site → quote request form → responses sheet → assigned manager. No lead lives only in someone's text messages.</li>
+                  <li>A separate post-quote form captures the outcome of every quote appointment, so close rate becomes a number the company can actually see.</li>
+                  <li>A shared photo library, so before/after content exists for marketing without anyone hunting through phones.</li>
+                </ul>
+              </div>
+            </details>
+            <a class="linkout" href="https://truenorthservicesllc.netlify.app/" rel="noopener" target="_blank">truenorthservicesllc.netlify.app →</a>
+          </article>
 
-          <div class="card" data-cat="outside">
-            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">Apr – May 2026</span></div>
+          <article class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the classroom</span><span class="date"><time datetime="2026-05">May 2026</time></span></div>
+            <h3>Wrote the crew training program</h3>
+            <p class="org">True North Services LLC · head-manager service training</p>
+            <p>A field-standards deck written from scratch so a new manager can run a job without shadowing one first. Three services, each with a six-step procedure and its own do's and don'ts.</p>
+            <details class="more">
+              <summary>What's in it</summary>
+              <div class="body">
+                <ul class="pts">
+                  <li><span class="lbl">Power washing</span>Inspect and prep, tip and pressure selection, test in a discreet spot, pre-treat, top-to-bottom overlapping passes, rinse and walkthrough — plus the failure modes that cost money: holding the spray in one place, narrow tips on soft material, spraying up under siding.</li>
+                  <li><span class="lbl">Paver sand reapplication</span>Clear the joints, confirm the surface is dry, sweep diagonally, compact and top off, clear every grain off the paver faces, then mist to activate. Dry surface and cure time are non-negotiable.</li>
+                  <li><span class="lbl">Window washing</span>Debris first, soak the pane, scrub side to side including the corners, overlapping squeegee strokes with the blade wiped each pass, microfiber dry, corners dried so nothing molds.</li>
+                </ul>
+              </div>
+            </details>
+            <p class="takeaway">The training is the quality control — you can't inspect your way to a standard you never wrote down.</p>
+          </article>
+
+          <article class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the classroom</span><span class="date"><time datetime="2026-04">Apr</time> – <time datetime="2026-06">Jun 2026</time></span></div>
+            <h3>Put the company on a documented operating system</h3>
+            <p class="org">True North Services LLC · three-form workflow</p>
+            <p>Every lead runs one path, and no distribution is finalized until the paperwork clears. Three mandatory forms feed a single master sheet, so the company stops relying on memory, text messages, and informal verbal agreements.</p>
+            <ul class="seq">
+              <li>lead</li>
+              <li><b>Form 1</b> quote scheduling</li>
+              <li>appointment</li>
+              <li><b>Form 2</b> result &amp; pricing</li>
+              <li>approval → job</li>
+              <li><b>Form 3</b> end-of-job</li>
+              <li>invoice → paid</li>
+            </ul>
+            <details class="more">
+              <summary>What each form captures</summary>
+              <div class="body">
+                <ul class="pts">
+                  <li><span class="lbl">Form 1 — quote scheduling &amp; assignment</span>Client details, property address, service type, lead source, preferred contact, requested time, assigned manager.</li>
+                  <li><span class="lbl">Form 2 — quote result &amp; pricing</span>Final scope, before photos, quoted price, estimated labor and materials, proposed start date, payment terms, close probability, approval status.</li>
+                  <li><span class="lbl">Form 3 — end-of-job report</span>Actual labor hours, materials used, after photos, property condition, satisfaction confirmation, damage issues, upsell opportunities, equipment problems.</li>
+                  <li><span class="lbl">The master sheet</span>Leads, quotes, closed jobs, scheduling, payments, applicants, referral partners, manager performance, equipment, and a weekly scorecard — reviewed on a weekly ops call.</li>
+                </ul>
+              </div>
+            </details>
+            <p class="takeaway">No form, no distribution. The paperwork <i>is</i> the control.</p>
+          </article>
+
+          <article class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the classroom</span><span class="date"><time datetime="2026-04">Apr</time> – <time datetime="2026-05">May 2026</time></span></div>
             <h3>Incorporated True North Services LLC</h3>
-            <p>LLC filing, an operations framework, a priority system, and a crew-training program (two decks) written from scratch. Team of <b>four-plus</b>, with a team lead now running weekly ops calls.</p>
+            <p class="org">Founder &amp; owner · North Shore, Illinois</p>
+            <p>Took a summer cleaning business and made it a company: the LLC filing, an operations and risk framework, a written priority roadmap, and a manager-contractor model in which managers are independent contractors who own their crews, their scheduling, and their execution risk. Team of <b>four-plus</b>, with an operations lead running weekly ops calls.</p>
+            <details class="more">
+              <summary>The economics and the guardrails</summary>
+              <div class="body">
+                <ul class="pts">
+                  <li><span class="lbl">Revenue split</span>Of gross: <b>20%</b> company (brand, systems, overhead, growth), <b>5%</b> backend (systems, data, forms, admin), <b>5%</b> lead fee to whoever produced the job, <b>70%</b> manager — who covers labor, materials, and margin risk.</li>
+                  <li><span class="lbl">Pricing floors</span>A <b>$100</b> minimum job size, a <b>30%+</b> manager margin target, and a pricing-floor check before any quote goes out. Underpriced jobs get reviewed before distribution.</li>
+                  <li><span class="lbl">Liability structure</span>Jobs over <b>$500</b> require a signed client agreement before work begins; managers sign a scope-and-indemnification agreement; before/after photos are required on property-sensitive jobs; card fees are passed through at a flat rate.</li>
+                  <li><span class="lbl">Service boundary matrix</span>Direct services — power washing, window washing, weeding, mulching, bush trimming, staining, pavers, gravel paths, seasonal cleanups. Referral-only — roofing, plumbing, electrical, large tree work, licensed trades. Anything outside the list is approval-only.</li>
+                  <li><span class="lbl">Cash</span>Bank transfer first, cash second, card third. Revenue lands in the LLC account; distributions run biweekly once documentation, disputes, and refunds are settled.</li>
+                </ul>
+              </div>
+            </details>
             <p class="takeaway">From hustle to institution — docs, training, and structure that run without you in the room.</p>
-          </div>
+          </article>
 
-          <div class="card" data-cat="outside">
-            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">2026 · ongoing</span></div>
-            <h3>Asset Tracking system</h3>
-            <p>Five-platform portfolio tracker built in Google Sheets, monthly-tab automation, and a gated live dashboard on this site.</p>
-          </div>
-        </div>
+          <article class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the classroom</span><span class="date"><time datetime="2026">2026 · ongoing</time></span></div>
+            <h3>Asset tracking system</h3>
+            <p class="org">Personal · Google Sheets to encrypted dashboard</p>
+            <p>A five-platform portfolio tracker built in Google Sheets with monthly-tab automation, feeding a password-gated live dashboard on this site. Real numbers never touch the public repo.</p>
+            <a class="linkout" href="/tools/tracker/">Portfolio tracker · PIN required →</a>
+          </article>
+        </section>
 
-        <div class="year">
-          <h2>2025</h2>
+        <!-- ================= 2025 ================= -->
+        <section class="year" id="y2025" aria-labelledby="h2025">
+          <h2 id="h2025">2025</h2>
 
-          <div class="card" data-cat="outside">
-            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">Spring 2025</span></div>
+          <article class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the classroom</span><span class="date"><time datetime="2025-03">Spring 2025</time></span></div>
             <h3>Manager &amp; equity partner, Student Maintenance LLC</h3>
+            <p class="org">Chicago North Shore</p>
             <p>Brought on as manager with an ownership stake: on-site quoting, closing leads, marketing content, and sales-team leadership.</p>
-            <div class="open" style="margin-top:8px">
-              <span class="tag">OPEN — Pierson</span>
-              <p class="q">Keep this on the public site at all? If yes — confirm the dates and how you want the equity stake described.</p>
+            <div class="open">
+              <span class="lbl">Open — Pierson</span>
+              <p>Keep this on the public site at all? If yes — confirm the dates and how you want the equity stake described.</p>
             </div>
-          </div>
+          </article>
 
           <div class="open">
-            <span class="tag">OPEN — Pierson</span>
-            <p class="q">What else defined 2025 — junior-year classes worth naming, a club role, something outside the business?</p>
+            <span class="lbl">Open — Pierson</span>
+            <p>What else defined 2025 — junior-year classes worth naming, a club role, something outside the business?</p>
           </div>
-        </div>
+        </section>
 
-        <div class="year">
-          <h2>2024</h2>
+        <!-- ================= 2024 ================= -->
+        <section class="year" id="y2024" aria-labelledby="h2024">
+          <h2 id="h2024">2024</h2>
 
-          <div class="card" data-cat="outside">
-            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">2024</span></div>
+          <article class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the classroom</span><span class="date"><time datetime="2024">2024</time></span></div>
             <h3>Business + portfolio, year two</h3>
+            <p class="org">Chicago North Shore · Elon University</p>
             <p>Ran the cleaning business back-to-back summers while carrying the dual major; self-managed investment portfolio active since 2020.</p>
-          </div>
+          </article>
 
           <div class="open">
-            <span class="tag">OPEN — Pierson</span>
-            <p class="q">What defined 2024 for you — clubs, coursework, a summer story? Right now this year is thin.</p>
+            <span class="lbl">Open — Pierson</span>
+            <p>What defined 2024 for you — clubs, coursework, a summer story? Right now this year is thin.</p>
           </div>
-        </div>
+        </section>
 
-        <div class="year">
-          <h2>2023</h2>
+        <!-- ================= 2023 ================= -->
+        <section class="year" id="y2023" aria-labelledby="h2023">
+          <h2 id="h2023">2023 <span class="n">where it starts</span></h2>
 
-          <div class="card" data-cat="classroom">
-            <div class="meta"><span class="tag classroom">Classroom</span><span class="date mono">Aug 2023</span></div>
+          <article class="card" data-cat="classroom">
+            <div class="meta"><span class="tag classroom">Classroom</span><span class="date"><time datetime="2023-08">Aug 2023</time></span></div>
             <h3>Started at Elon University</h3>
+            <p class="org">Elon, North Carolina</p>
             <p>Finance &amp; Accounting dual major; minors in Entrepreneurship and Mandarin Chinese (near-fluent).</p>
-            <div class="open" style="margin-top:8px">
-              <span class="tag">OPEN — Pierson</span>
-              <p class="q">Still accurate as written?</p>
+            <div class="open">
+              <span class="lbl">Open — Pierson</span>
+              <p>Still accurate as written?</p>
             </div>
-          </div>
+          </article>
 
-          <div class="card" data-cat="outside">
-            <div class="meta"><span class="tag outside">Outside the Classroom</span><span class="date mono">May 2023</span></div>
+          <article class="card" data-cat="outside">
+            <div class="meta"><span class="tag outside">Outside the classroom</span><span class="date"><time datetime="2023-05">May 2023</time></span></div>
             <h3>Founded Oasis Exterior Cleaning</h3>
-            <p>Power washing + window washing, Chicago North Shore. <b>50+ clients</b>, five-figure revenue (~$12k profit) in the first summer, <b>+68% customer growth</b> from hand-built local marketing (flyers, Nextdoor, Instagram, Facebook), managing a crew of high-school and college students.</p>
-            <p class="takeaway">Sold a service door-to-door and ran a crew before most people pick a major.</p>
-            <div class="open" style="margin-top:8px">
-              <span class="tag">OPEN — Pierson</span>
-              <p class="q">Is Oasis → True North one continuous story (a rebrand) or two separate chapters? Changes how this and the 2026 entry connect.</p>
+            <p class="org">Power washing &amp; window washing · Chicago North Shore</p>
+            <p>Started the summer before college with a crew of high-school and college students. <b>50+ clients</b> and five-figure revenue (~$12k profit) in the first summer, <b>+68% customer growth</b> from hand-built local marketing — flyers, Nextdoor, Instagram, Facebook.</p>
+            <ul class="metrics">
+              <li><b>50+</b><span>clients</span></li>
+              <li><b>~$12k</b><span>first-summer profit</span></li>
+              <li><b>+68%</b><span>customer growth</span></li>
+            </ul>
+            <p class="takeaway">Sold a service door to door and ran a crew before most people pick a major.</p>
+            <div class="open">
+              <span class="lbl">Open — Pierson</span>
+              <p>Is Oasis → True North one continuous story (a rebrand) or two separate chapters? It changes how this and the 2026 entries connect.</p>
             </div>
-          </div>
-        </div>
+          </article>
+        </section>
 
       </div>
 
       <div class="prologue">
         <p class="eyebrow">Before Elon</p>
         <p><span class="mono">2020–2023</span> — First W-2 at Taco Bell (2021) · mover/assistant at Inspired Interiors (2021–23) · one-month internship under Gemini Builds It CEO Courtney Wright (spring 2023) · trading his own portfolio since Aug 2020 · New Trier High School, class of 2023.</p>
-        <div class="open" style="margin-top:4px"><span class="tag">OPEN — Pierson</span><p class="q">Keep this prologue block on the public page, or cut it?</p></div>
+        <div class="open"><span class="lbl">Open — Pierson</span><p>Keep this prologue block on the public page, or cut it?</p></div>
       </div>
 
-      <div class="skills">
-        <h2>Skills</h2>
+      <section class="skills" aria-labelledby="skillsh">
+        <p class="eyebrow">Capability</p>
+        <h2 id="skillsh">Skills</h2>
         <ul class="skillgrid">
-          <li><b>Operations &amp; Leadership</b>Crew hiring + training programs, ops frameworks, weekly ops cadence, client management (50+ clients).</li>
-          <li><b>Sales &amp; Local Marketing</b>Door-to-door and referral sales, Nextdoor/Meta local campaigns, lead-capture funnels.</li>
-          <li><b>Finance &amp; Markets</b>Finance &amp; Accounting dual major; active self-directed investor since 2020 (equities + options + crypto, five platforms).</li>
-          <li><b>AI &amp; Automation</b>Workflow mapping, prompt-built internal tools, Google Sheets/Apps Script automation, N8N exploration, Sheets API.</li>
-          <li><b>Web</b>Hand-built HTML/CSS sites (True North on Netlify; this site).</li>
+          <li><b>Operations &amp; leadership</b>Crew hiring and training programs, documented ops frameworks, weekly ops cadence, manager-contractor structuring, client management (50+ clients).</li>
+          <li><b>Sales &amp; local marketing</b>Door-to-door and referral sales, in-person quoting, Nextdoor/Meta local campaigns, lead-capture funnels, content standards.</li>
+          <li><b>Finance &amp; markets</b>Finance &amp; Accounting dual major; unit economics, pricing floors and margin structures; active self-directed investor since 2020 (equities, options, crypto — five platforms).</li>
+          <li><b>AI &amp; automation</b>Workflow mapping and diagnosis, prompt-built internal tools, agent modules with human approval gates, Google Sheets/Apps Script automation, Sheets API, N8N exploration.</li>
+          <li><b>Web</b>Hand-built HTML/CSS sites (True North on Netlify; this site), form-to-sheet plumbing, static deploys.</li>
           <li><b>Languages</b>English; Mandarin Chinese (near-fluent).</li>
         </ul>
-      </div>
+      </section>
 
       <div class="resume">
         <span class="btn">Résumé (PDF) — pending</span>
-        <span class="date mono" style="color:var(--dim)">drops in once the PDF exists at /assets/resume/</span>
+        <span class="date">drops in once the PDF exists at /assets/resume/</span>
       </div>
     </div>
   </main>
@@ -281,17 +565,42 @@
   </footer>
 
   <script>
-    (function(){
-      var chips = document.querySelectorAll('.chip');
-      var rail = document.getElementById('rail');
-      chips.forEach(function(chip){
-        chip.addEventListener('click', function(){
-          chips.forEach(function(c){ c.setAttribute('aria-pressed', 'false'); });
+    (function () {
+      var chips = Array.prototype.slice.call(document.querySelectorAll('.chip'));
+      var years = Array.prototype.slice.call(document.querySelectorAll('.year'));
+      var countEl = document.getElementById('count');
+
+      function apply(filter) {
+        var shown = 0;
+        years.forEach(function (year) {
+          var visible = 0;
+          Array.prototype.forEach.call(year.children, function (node) {
+            if (node.tagName === 'H2') return;
+            var cat = node.getAttribute('data-cat');
+            var keep;
+            if (cat === null) {
+              keep = (filter === 'all'); // standalone open-question notes
+            } else {
+              keep = (filter === 'all' || cat === filter);
+              if (keep) { visible++; }
+            }
+            node.hidden = !keep;
+          });
+          year.hidden = (visible === 0);
+          shown += visible;
+        });
+        countEl.textContent = shown + (shown === 1 ? ' entry' : ' entries');
+      }
+
+      chips.forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          chips.forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
           chip.setAttribute('aria-pressed', 'true');
-          var f = chip.getAttribute('data-filter');
-          rail.className = 'rail' + (f === 'all' ? '' : ' filter-' + f);
+          apply(chip.getAttribute('data-filter'));
         });
       });
+
+      apply('all');
     })();
   </script>
 </body>

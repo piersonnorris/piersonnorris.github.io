@@ -1,0 +1,172 @@
+/* ============================================================
+   Notes ("Obsidian") UI — used by /notes/ and the tracker's
+   stock-notes panel. Depends on site.css for tokens.
+   ============================================================ */
+
+.nv{display:block}
+
+.nv-warn{
+  background:var(--panel);border:1px solid var(--warn);border-radius:var(--r);
+  padding:16px 18px;color:var(--mut);font-size:14px;
+}
+.nv-warn b{color:var(--ink)}
+
+/* ---------------- lock ---------------- */
+.nv-lock{display:grid;place-items:center;padding:40px 0}
+.nv-lockcard{
+  width:100%;max-width:430px;background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;padding:34px 30px;text-align:center;
+}
+.nv-glyph{
+  font-family:var(--mono);font-size:11px;letter-spacing:.28em;color:var(--acc);
+  border:1px solid var(--line2);border-radius:999px;display:inline-block;
+  padding:6px 14px 6px 17px;margin-bottom:18px;
+}
+.nv-lockcard h2{font-size:25px;margin:0 0 8px}
+.nv-lockcard p{color:var(--mut);font-size:13.5px;margin:0 0 22px;line-height:1.65}
+.nv-pinrow{display:flex;gap:10px}
+.nv-pin{
+  flex:1;font-family:var(--mono);font-size:19px;letter-spacing:.35em;
+  text-align:center;padding:11px 8px 11px 14px;
+}
+.nv-pin::placeholder{letter-spacing:.12em;font-size:13px}
+.nv-msg{font-family:var(--mono);font-size:12.5px;min-height:20px;margin:13px 0 0;color:var(--dim)}
+.nv-msg.err{color:var(--bad)}
+
+/* ---------------- app shell ---------------- */
+.nv-app{
+  display:grid;grid-template-columns:252px minmax(0,1fr);gap:0;align-items:stretch;
+  background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+@media (max-width:860px){ .nv-app{grid-template-columns:1fr;border-radius:var(--r)} }
+
+.nv-side{
+  background:#111821;border:0;border-right:1px solid var(--line);border-radius:0;
+  padding:14px;position:sticky;top:14px;
+}
+@media (max-width:860px){ .nv-side{position:static;border-right:0;border-bottom:1px solid var(--line)} }
+
+.nv-toolbar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+.nv-toolbar .btn{padding:8px 11px;font-size:11.5px}
+.nv-importlbl{cursor:pointer}
+
+.nv-search{margin:0 0 10px}
+
+.nv-tags{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 10px}
+.nv-tag{
+  font-family:var(--mono);font-size:10.5px;color:var(--mut);cursor:pointer;
+  background:var(--bg);border:1px solid var(--line2);border-radius:999px;padding:4px 9px;
+  display:inline-flex;align-items:center;gap:5px;transition:color .15s,border-color .15s;
+}
+.nv-tag:hover{color:var(--ink);border-color:var(--mut)}
+.nv-tag.on{color:#0e1116;background:var(--acc);border-color:var(--acc)}
+.nv-tag span{opacity:.6;font-size:9.5px}
+
+.nv-count{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--dim);margin:0 0 8px}
+
+.nv-flash{
+  font-family:var(--mono);font-size:11.5px;color:var(--acc);margin:0 0 10px;
+  background:var(--acc-soft);border:1px solid rgba(95,174,90,.3);border-radius:7px;padding:7px 10px;
+}
+
+.nv-list{list-style:none;margin:0;padding:0;max-height:min(58vh,560px);overflow-y:auto}
+.nv-none{color:var(--dim);font-size:13px;padding:8px 2px}
+.nv-item{
+  display:block;width:100%;text-align:left;cursor:pointer;
+  background:transparent;border:1px solid transparent;border-radius:8px;
+  padding:9px 10px;margin:0 0 3px;color:inherit;
+  transition:background .14s,border-color .14s;
+}
+.nv-item:hover{background:var(--bg);border-color:var(--line)}
+.nv-item.on{background:var(--bg);border-color:var(--acc)}
+.nv-itemtop{display:flex;align-items:center;gap:7px;margin-bottom:2px}
+.nv-itemtitle{
+  font-weight:600;font-size:13.5px;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;
+}
+.nv-ticker{
+  font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--acc);
+  border:1px solid rgba(95,174,90,.4);border-radius:4px;padding:1px 5px;flex:none;
+}
+.nv-itemmeta{
+  display:block;font-family:var(--mono);font-size:10.5px;color:var(--dim);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+.nv-stance{
+  font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  border-radius:4px;padding:2px 5px;flex:none;border:1px solid currentColor;
+}
+.s-bullish{color:var(--good)}
+.s-bearish{color:var(--bad)}
+.s-neutral{color:var(--mut)}
+.s-watching{color:var(--info)}
+.s-exiting{color:var(--warn)}
+
+/* ---------------- main pane ---------------- */
+.nv-main{
+  background:#161d26;border:0;border-radius:0;padding:24px;min-height:460px;
+}
+.nv-blank{display:grid;place-content:center;text-align:center;min-height:360px;gap:6px}
+.nv-blank h3{margin:6px 0 0}
+.nv-blank p{max-width:44ch;margin:0 auto}
+
+.nv-edithead{display:flex;gap:12px;align-items:flex-start;margin:0 0 16px}
+.nv-title{
+  flex:1;font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.01em;
+  background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;
+  padding:6px 2px;
+}
+.nv-title:focus{border-bottom-color:var(--acc)}
+.nv-editbtns{display:flex;gap:6px;flex:none}
+.nv-editbtns .btn{padding:8px 12px;font-size:11.5px}
+
+.nv-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:10px}
+.nv-row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+
+.nv-saved{font-family:var(--mono);font-size:11px;color:var(--dim);min-height:16px;margin:6px 0 0}
+
+.nv-backlinks{margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.nv-backlinks ul{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.nv-blink{
+  font-family:var(--mono);font-size:11.5px;color:var(--acc);cursor:pointer;
+  background:var(--bg);border:1px solid var(--line2);border-radius:6px;padding:5px 10px;
+}
+.nv-blink:hover{border-color:var(--acc)}
+
+/* ---------------- rendered markdown ---------------- */
+.md{font-size:15px;line-height:1.68;color:var(--ink)}
+.md h1,.md h2,.md h3,.md h4{font-family:var(--display);letter-spacing:-.01em;margin:22px 0 8px}
+.md h1{font-size:24px} .md h2{font-size:20px} .md h3{font-size:17px} .md h4{font-size:15px}
+.md h1:first-child,.md h2:first-child,.md h3:first-child{margin-top:0}
+.md p{margin:0 0 12px}
+.md ul,.md ol{margin:0 0 12px;padding-left:22px}
+.md li{margin:0 0 5px}
+.md blockquote{
+  margin:0 0 12px;padding:2px 0 2px 14px;border-left:2px solid var(--acc);
+  color:var(--mut);font-style:italic;
+}
+.md code{
+  font-family:var(--mono);font-size:.88em;background:var(--bg);
+  border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+}
+.md-pre{
+  background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  padding:12px 14px;overflow-x:auto;margin:0 0 12px;
+}
+.md-pre code{border:0;background:none;padding:0;font-size:12.5px;line-height:1.6}
+.md hr{border:0;border-top:1px solid var(--line);margin:20px 0}
+.md a{color:var(--acc)}
+.md .wikilink{
+  color:var(--acc);text-decoration:none;border-bottom:1px dashed var(--acc);cursor:pointer;
+}
+.md .md-tag{
+  font-family:var(--mono);font-size:.86em;color:var(--info);
+  background:rgba(76,201,240,.09);border-radius:4px;padding:1px 5px;
+}
+.nv-render{
+  background:var(--bg);border:1px solid var(--line);border-radius:9px;
+  padding:18px 20px;min-height:260px;
+}

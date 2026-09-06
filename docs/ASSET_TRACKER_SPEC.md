@@ -34,8 +34,28 @@ Why this shape: GitHub Pages is static and the repo is public (free Pages), so a
 | `GOOGLE_SERVICE_ACCOUNT_JSON` | Secret | Full JSON key file contents |
 | `TRACKER_PASSWORD` | Secret | The gate password (Pierson sets it; never appears in chat or code) |
 | `SHEET_ID` | Secret | The spreadsheet ID |
+| `DIVIDEND_CALENDAR_JSON` | Secret | Optional researched dividend data; never commit a holdings-linked calendar |
 
 The Action is the ONLY place these are read. `.gitignore` already blocks `secrets/` and `*service-account*.json` as a second line of defense for local testing.
+
+### Dividend calendar payload
+
+The encrypted build may receive `DIVIDEND_CALENDAR_JSON` in this shape. Keep only issuer-confirmed dates; a historical cadence is not a confirmed future payment.
+
+```json
+{
+  "TICKER": {
+    "annual": 0.00,
+    "exDate": "YYYY-MM-DD",
+    "payDate": "YYYY-MM-DD",
+    "frequency": "quarterly"
+  }
+}
+```
+
+After tracker unlock, the dashboard can export the confirmed dates as a `.ics` file for import into the owner's private Google Calendar. The dashboard PIN protects access to the calendar on the site; Google Calendar access remains governed by the owner's Google account.
+
+The same unlock also synchronizes dividend-paying tickers and a linked `Dividend calendar` Markdown note into the encrypted stock-notes vault. Dividend edits stay in memory until they are written into that vault; they are never stored as readable browser data.
 
 ## 3. Source data shape
 

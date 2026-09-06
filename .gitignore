@@ -19,7 +19,14 @@
 !/docs/**
 !/experience/
 !/experience/**
+!/notes/
+!/notes/index.html
 !/tools/
 !/tools/tracker/
 !/tools/tracker/index.html
+!/tools/tracker/index.template.html
+!/tools/tracker/build.js
+!/.github/
+!/.github/workflows/
+!/.github/workflows/refresh-tracker.yml
 /docs/STOCK_UPDATE_PROMPT.md

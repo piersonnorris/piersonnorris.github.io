@@ -73,6 +73,23 @@ Two pieces shipped, price-only, with no invented data:
 - **Dividend event markers**, on the single-stock chart. Confirmed ex-date/pay-date (from the researched private JSON) render as solid diamonds; because a price chart is backward-looking, "estimated" markers are projected *backward* from the confirmed pay date at the symbol's own stated frequency, filling in prior quarters inside the visible range — never a forward guess, never a date without support. Hover/focus each marker for its date via a native `<title>`.
 - **Multi-select comparison mode**, a "Compare" toggle next to the single-stock view. Up to 5 owned equities at once, each series independently normalized to 100 at the start of the selected range, with a legend and hover tooltip showing each symbol's return. `PNCharts.compare()` in `assets/js/charts.js`.
 
+### V1 addition — 2026-09-06
+
+The stock switcher moved from a horizontal chip row to a left-hand vertical list (Pierce: "an area to click right of a stock's name on the left with notes to add"). Each row now carries a notes icon that inline-expands a private per-ticker outlook note — same note `openTicker()` already reaches from the Positions tab, just one more way in. See ROADMAP R13.
+
+### Version 2 — customization (draft, 2026-09-06 — needs Pierce's picks before building)
+
+Pierce asked to start defining what "the chart should be customizable" means. This is a first pass at the menu, not a commitment to build all of it — prune or reorder freely:
+
+- **Chart type per stock** — line (today) vs. candlestick (OHLC), remembered per symbol or set once for all.
+- **Indicator picks beyond EMA** — RSI and/or MACD as an optional sub-panel under the price chart (this is what R12 calls "chart indicators v2").
+- **Sidebar order** — alphabetical (today) vs. by position value vs. a manual drag-to-reorder, so the stocks you actually watch sit at the top.
+- **Color per stock** — an assignable accent color per ticker, carried into both the single-stock chart and comparison mode's legend.
+- **Default range + default indicator set** — remembered per browser instead of resetting to 3M/no-EMA every unlock.
+- **Sidebar note visibility** — whether a ticker with a saved note gets a persistent marker (so you can tell at a glance which stocks have an outlook written down) without opening it.
+
+None of this is built yet. Once Pierce says which of these (if any) he wants, they get their own scope the way dividend markers and comparison mode did.
+
 Deliberately **not** built yet, because they need data this session doesn't have honestly:
 - **Portfolio aggregate line** and the **Price return / Total return toggle** — both require the dated transaction ledger below. Building either off "today's shares, applied to the whole range" would misrepresent performance, which this plan already flags as a risk.
 - **Benchmark line** — reasonable to add once comparison mode has real use; skipped for now to keep scope tight.

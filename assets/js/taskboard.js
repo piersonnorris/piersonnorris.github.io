@@ -337,6 +337,20 @@
         nextAction: "Pierce picks a design direction (this overlaps R10 -- the viewer's look answers both) before Claude or ChatGPT builds anything.",
         milestones: ['Design direction chosen (ties to R10)', 'Bottle/cork/ship click interaction', 'Embedded Obsidian viewer UI', 'Matching home-page touch'],
         dependencies: ['R10 · Obsidian visual style', 'Pierce design direction'], relatedLink: '#projects', created: now, updated: now
+      },
+      {
+        id: 'goal-pn-chart-v2-picks', title: 'PN Tasks · Chart V2 customization -- pick from the draft menu', status: 'backlog',
+        outcome: 'docs/STOCK_CHART_PLAN.md "Version 2 -- customization" lists candidates: chart type per stock (line vs. candlestick), RSI/MACD sub-panel, sidebar reordering, per-stock color, remembered default range/indicators, a note-marker on the sidebar. Source: Pierce, Cowork chat with Claude, 2026-09-06.',
+        nextAction: 'Pierce says which of the listed options he actually wants before any of it gets scoped and built.',
+        milestones: ['Pierce reviews the draft menu', 'Picks confirmed', 'Each pick gets its own scope, same as dividend markers/comparison mode'],
+        dependencies: ['Pierce picks'], relatedLink: '#charts', created: now, updated: now
+      },
+      {
+        id: 'goal-chart-sidebar-notes', title: 'R13 · Chart-tab stock sidebar + inline outlook notes', status: 'complete',
+        outcome: 'The Charts tab\'s stock picker is now a left-hand vertical list instead of a horizontal chip row. Each row has a notes icon that inline-expands a private per-ticker outlook note -- the same ticker-level note openTicker() and the Positions-tab .notebtn already use, so it is one note reachable from either place, and it still exports to Obsidian.',
+        nextAction: 'Pierce click-tests it for real: the note field, symbol switching, and how the list stacks under 760px on mobile.',
+        milestones: ['renderChartSidebar() + inline note markup', 'PNNotes.getTickerNote()/saveTickerNote()', 'Rebuilt + both test files pass', 'Grepped output for plaintext holdings -- zero hits'],
+        dependencies: [], relatedLink: '#charts', created: now, updated: now
       }
     ]);
   }

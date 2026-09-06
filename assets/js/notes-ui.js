@@ -506,6 +506,32 @@
           return note;
         });
       },
+      /* Ticker-level "outlook" notes: same concept openTicker() already
+         creates (title "<TICKER> outlook", keyed by ticker with no
+         positionKey so it's distinct from a per-platform purchase
+         journal). These two just let a caller read/write that note's
+         body inline without switching the vault panel's selection --
+         used by the Charts tab's inline per-stock notes. */
+      getTickerNote: function (ticker) {
+        if (!vault.isUnlocked()) return null;
+        ticker = String(ticker || '').toUpperCase();
+        if (!ticker) return null;
+        return vault.list().filter(function (n) { return !n.positionKey && String(n.ticker || '').toUpperCase() === ticker; })[0] || null;
+      },
+      saveTickerNote: function (ticker, body) {
+        if (!vault.isUnlocked()) return Promise.resolve(false);
+        ticker = String(ticker || '').toUpperCase();
+        if (!ticker) return Promise.resolve(false);
+        var hit = vault.list().filter(function (n) { return !n.positionKey && String(n.ticker || '').toUpperCase() === ticker; })[0];
+        var patch = {
+          title: hit ? hit.title : (ticker + ' outlook'),
+          ticker: ticker,
+          body: String(body || ''),
+          tags: hit && Array.isArray(hit.tags) ? hit.tags : ['portfolio', 'outlook']
+        };
+        var write = hit ? vault.update(hit.id, patch) : vault.create_note(patch);
+        return write.then(function (note) { renderAll(); return note; });
+      },
       openPositionJournal: function (fields) {
         if (!vault.isUnlocked()) return false;
         fields = fields || {};

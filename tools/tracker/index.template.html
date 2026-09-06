@@ -213,8 +213,21 @@
     .market-quote{margin-left:auto;text-align:right}.market-quote strong{display:block;font:800 28px/1 var(--display);font-variant-numeric:tabular-nums}.market-quote span{font:500 12px/1.3 var(--mono)}.market-quote .up{color:#75d477}.market-quote .down{color:#f0726b}.market-quote .flat{color:var(--mut)}
     /* U14: three clearly-labeled control groups instead of one dense row */
     .market-controls{padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}
-    .tickerbar{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}.tickerbar .chip{padding:7px 10px;font-size:11px;white-space:nowrap}
     .rangebar{display:inline-flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+    /* left-hand owned-stock list on the Charts tab, replacing the old horizontal chip bar */
+    .market-layout{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:start}
+    .stock-sidelist{display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:7px;max-height:440px;overflow-y:auto}
+    .sidelist-row{display:flex;align-items:center;gap:5px}
+    .sidelist-item{flex:1;min-width:0;text-align:left;appearance:none;border:1px solid transparent;background:transparent;color:var(--mut);font:600 12px/1.3 var(--mono);padding:8px 9px;border-radius:7px;cursor:pointer;transition:color .15s,background .15s,border-color .15s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .sidelist-item:hover{color:var(--ink);background:rgba(255,255,255,.035)}
+    .sidelist-item[aria-pressed="true"]{color:#0e1116;background:var(--acc);border-color:var(--acc)}
+    .sidelist-notebtn{flex:0 0 auto;display:grid;place-items:center;width:26px;height:26px;padding:0;color:var(--dim);background:transparent;border:1px solid var(--line2);border-radius:6px;cursor:pointer;transition:color .15s,border-color .15s}
+    .sidelist-notebtn:hover{color:var(--acc);border-color:var(--acc)}
+    .sidelist-notebtn[aria-expanded="true"]{color:var(--acc-hi);border-color:var(--acc)}
+    .sidelist-noteinline{padding:7px 2px 9px;animation:panel-in .15s ease-out}
+    .sidelist-noteinline textarea{width:100%;min-height:64px;resize:vertical;background:var(--panel2);border:1px solid var(--line2);border-radius:7px;color:var(--ink);font:12px/1.5 var(--mono);padding:8px}
+    .sidelist-notestatus{font:9.5px/1.3 var(--mono);color:var(--dim);margin:5px 0 0}
+    @media (max-width:760px){.market-layout{grid-template-columns:1fr}.stock-sidelist{max-height:220px}}
     .rangebtn{appearance:none;border:0;background:transparent;color:var(--dim);font:500 10px/1 var(--mono);padding:7px 8px;border-radius:5px;cursor:pointer}.rangebtn:hover{color:var(--ink)}.rangebtn[aria-pressed="true"]{background:var(--line2);color:var(--acc-hi)}
     .market-chart-shell{position:relative;min-height:300px}.market-frame{position:relative}.pnchart-market{min-height:260px}.pnchart-market:focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}.market-tooltip{position:absolute;z-index:3;min-width:156px;transform:translate(-50%,-110%);pointer-events:none;background:rgba(10,14,19,.96);border:1px solid var(--line2);border-radius:8px;padding:9px 10px;box-shadow:0 12px 30px rgba(0,0,0,.35);font:10.5px/1.45 var(--mono);color:var(--mut)}.market-tooltip b,.market-tooltip span{display:block}.market-tooltip b{color:var(--ink);margin-bottom:3px}.market-tooltip span:first-of-type{color:var(--acc-hi)}
     /* comparison mode */
@@ -236,7 +249,7 @@
     .dividend-chart{margin:18px 0 0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:15px}.dividend-chart h3{font-size:16px;margin:0 0 2px}.dividend-chart .sub{font:11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px}
     .obsidian-sync{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.obsidian-sync .sync-status{font:12px var(--mono);color:var(--dim);margin:0}
     @media (max-width:900px){.cal-layout{grid-template-columns:1fr}.cal-summary,.proj-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cal-filters{margin-left:0}.cal-side{padding:14px}}
-    @media (max-width:700px){.market-quote{margin-left:0;text-align:left}.market-controls{align-items:stretch}.tickerbar{flex-basis:100%}.rangebar{width:max-content}.market-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.market-kpi:last-child{grid-column:1/-1}.stockchart{padding:16px}.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}.pj-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pj-entry{grid-template-columns:1fr 1fr}.pj-entry .btn{grid-column:1/-1}.pj-lot{grid-template-columns:1fr 1fr}.pj-lot span:nth-child(4){display:none}.pj-lot button{grid-column:2;grid-row:1;text-align:right}.purchase-journal{padding:14px}.portfolio-calendar,.project-board-shell{padding:15px}.cal-private{margin-left:0}.cal-toolbar{align-items:flex-start}.cal-monthtitle{min-width:145px}.cal-formgrid,.goal-formgrid{grid-template-columns:1fr}.cal-formgrid .wide,.goal-formgrid .wide{grid-column:auto}.proj-actions{margin-left:0}.goal-formstatus{margin-left:0;width:100%}}
+    @media (max-width:700px){.market-quote{margin-left:0;text-align:left}.market-controls{align-items:stretch}.rangebar{width:max-content}.market-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.market-kpi:last-child{grid-column:1/-1}.stockchart{padding:16px}.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}.pj-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pj-entry{grid-template-columns:1fr 1fr}.pj-entry .btn{grid-column:1/-1}.pj-lot{grid-template-columns:1fr 1fr}.pj-lot span:nth-child(4){display:none}.pj-lot button{grid-column:2;grid-row:1;text-align:right}.purchase-journal{padding:14px}.portfolio-calendar,.project-board-shell{padding:15px}.cal-private{margin-left:0}.cal-toolbar{align-items:flex-start}.cal-monthtitle{min-width:145px}.cal-formgrid,.goal-formgrid{grid-template-columns:1fr}.cal-formgrid .wide,.goal-formgrid .wide{grid-column:auto}.proj-actions{margin-left:0}.goal-formstatus{margin-left:0;width:100%}}
   </style>
 </head>
 <body>
@@ -459,7 +472,7 @@
       Gemini: '#F5A623', GoMining: '#7C3AED'
     };
 
-    var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, activeChartRange = '3M', expandedPositionKey = null, positionNoteSaveTimer = null, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
+    var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, activeChartRange = '3M', expandedPositionKey = null, positionNoteSaveTimer = null, expandedChartNoteSymbol = null, chartNoteSaveTimer = null, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
     var calendarAnchor = window.PNCalendar.anchorKey(new Date()), calendarSelectedDate = window.PNCalendar.dateKey(new Date()), calendarEditingId = null, privateCalendarEvents = [];
     var calendarFilters = { 'ex-dividend': true, payment: true, earnings: true, private: true };
     var projectGoals = [], projectEditingId = null, projectBoardReady = false;
@@ -590,7 +603,7 @@
     });
 
     $('relock').addEventListener('click', function () {
-      DATA = null; valued = []; sessionPin = null; demoMode = false; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
+      DATA = null; valued = []; sessionPin = null; demoMode = false; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); expandedChartNoteSymbol = null; clearTimeout(chartNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
       if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
       $('vault').style.display = 'none';
       $('lock').style.display = 'grid';
@@ -963,6 +976,57 @@
       return events;
     }
 
+    /* Left-hand owned-stock list on the Charts tab. Each row: pick that
+       stock's chart, or open an inline private "outlook" note next to its
+       name. The note is the same ticker-level note openTicker()/the
+       Positions-tab .notebtn already use (keyed by ticker, not by
+       position) -- so a note added here shows up in the Obsidian vault
+       and vice versa, it's just one more accessible place to reach it. */
+    function renderChartSidebar(list) {
+      var host = $('stocksidelist');
+      if (!host) return;
+      var unlocked = !!(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked());
+      host.innerHTML = list.map(function (symbol) {
+        var ticker = symbol.split('/')[0];
+        var expanded = expandedChartNoteSymbol === symbol;
+        var note = unlocked ? stockNotes.getTickerNote(ticker) : null;
+        return '<div class="sidelist-row"><button type="button" class="sidelist-item" data-symbol="' + esc(symbol) +
+          '" aria-pressed="' + (symbol === activeChartSymbol) + '">' + esc(ticker) + '</button>' +
+          '<button type="button" class="sidelist-notebtn" data-symbol="' + esc(symbol) + '" data-ticker="' + esc(ticker) +
+          '" aria-expanded="' + expanded + '" aria-label="' + (expanded ? 'Close' : 'Add') + ' notes for ' + esc(ticker) + '">✎</button></div>' +
+          (expanded ? '<div class="sidelist-noteinline"><textarea class="sidelist-noteinput" data-ticker="' + esc(ticker) +
+            '" placeholder="Outlook, thesis, what you\'re watching…">' + esc(note ? note.body : '') + '</textarea>' +
+            '<p class="sidelist-notestatus" data-note-status="' + esc(ticker) + '">' + (note ? 'Saved in encrypted storage.' : 'Start typing to create this private note.') + '</p></div>' : '');
+      }).join('');
+      Array.prototype.forEach.call(host.querySelectorAll('[data-symbol].sidelist-item'), function (button) {
+        button.addEventListener('click', function () { activeChartSymbol = button.dataset.symbol; renderStockChart(); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.sidelist-notebtn'), function (button) {
+        button.addEventListener('click', function () {
+          if (!unlocked) {
+            alert('Unlock the stock-notes vault below first.');
+            document.getElementById('stocknotes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+          }
+          expandedChartNoteSymbol = expandedChartNoteSymbol === button.dataset.symbol ? null : button.dataset.symbol;
+          renderChartSidebar(list);
+        });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.sidelist-noteinput'), function (input) {
+        input.addEventListener('input', function () {
+          clearTimeout(chartNoteSaveTimer);
+          var statusNode = host.querySelector('[data-note-status="' + input.dataset.ticker + '"]');
+          if (statusNode) statusNode.textContent = 'saving…';
+          chartNoteSaveTimer = setTimeout(function () {
+            if (!stockNotes || !stockNotes.vault.isUnlocked()) return;
+            stockNotes.saveTickerNote(input.dataset.ticker, input.value).then(function () {
+              if (statusNode && statusNode.isConnected) statusNode.textContent = 'saved ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            }).catch(function () { if (statusNode && statusNode.isConnected) statusNode.textContent = 'Could not save.'; });
+          }, 450);
+        });
+      });
+    }
+
     function renderStockChart() {
       var symbols = {};
       valued.forEach(function (r) { if (r.kind === 'Equity' && r.symbol) symbols[r.symbol] = true; });
@@ -984,12 +1048,10 @@
           return out;
         }, { shares: 0, value: 0, price: null });
       $('stockchart').innerHTML =
+        '<div class="market-layout"><div class="stock-sidelist" id="stocksidelist" aria-label="Choose an owned stock"></div><div class="market-main">' +
         '<div class="market-head"><div class="market-title"><div class="market-symbol"><b>' + esc(activeChartSymbol) + '</b><span>owned</span></div><p class="chart-copy">Price, volume, and position context</p></div>' +
         '<div class="market-quote" id="marketquote"><strong>' + (isFinite(holding.price) ? esc(money(holding.price)) : '—') + '</strong><span class="flat">Waiting for history</span></div></div>' +
         '<div class="market-controls">' +
-        '<div class="ctrl-group"><span class="ctrl-label">Stock</span><div class="tickerbar" aria-label="Choose an owned stock">' + list.map(function (symbol) {
-          return '<button type="button" class="chip" data-symbol="' + esc(symbol) + '" aria-pressed="' + (symbol === activeChartSymbol) + '">' + esc(symbol.replace('/USD', '')) + '</button>';
-        }).join('') + '</div></div>' +
         '<div class="ctrl-group"><span class="ctrl-label">Range</span><div class="rangebar" aria-label="Chart range">' + ['1M', '3M', '6M', '1Y'].map(function (range) {
           return '<button type="button" class="rangebtn" data-range="' + range + '" aria-pressed="' + (range === activeChartRange) + '">' + range + '</button>';
         }).join('') + '</div></div>' +
@@ -999,10 +1061,8 @@
             '" aria-pressed="' + !!loadEmaState()[period] + '">' + period + '</button>';
         }).join('') + '<button type="button" class="emabtn off" data-ema="off">Turn off</button></div></div></div><div class="market-chart-shell" id="c-stock"></div><div class="market-kpis" id="marketkpis">' +
         '<div class="market-kpi"><span>Range return</span><b>—</b></div><div class="market-kpi"><span>Range high</span><b>—</b></div><div class="market-kpi"><span>Range low</span><b>—</b></div><div class="market-kpi"><span>Average close</span><b>—</b></div><div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' shares</b></div>' +
-        '</div><p class="stockchart-status" id="stockchartstatus"></p>';
-      Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-symbol]'), function (button) {
-        button.addEventListener('click', function () { activeChartSymbol = button.dataset.symbol; renderStockChart(); });
-      });
+        '</div><p class="stockchart-status" id="stockchartstatus"></p></div></div>';
+      renderChartSidebar(list);
       Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-range]'), function (button) {
         button.addEventListener('click', function () { activeChartRange = button.dataset.range; renderStockChart(); });
       });

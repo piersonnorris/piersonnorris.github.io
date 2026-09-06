@@ -1,45 +1,35 @@
-# piersonnorris.com — starter repo
+# piersonnorris.com
 
-This folder is the complete, ready-to-push starting point for Pierson Norris's personal website. It was prepared by Claude (Cowork) on 2026-08-23 as the handoff package for a ChatGPT-driven build.
+Pierson Norris's personal site and private portfolio console. Live at **https://piersonnorris.github.io** — plain HTML/CSS/JS on GitHub Pages, no framework, no build step (one sanctioned exception: the Node script that encrypts the tracker).
 
-**What's inside**
+Built by three collaborators: **Pierce** (owner — decisions, secrets, content answers), **Claude** (gated tooling, docs, Drive research, build pipeline), and **ChatGPT** (public pages from the blueprint). If you are one of the AIs: read **`docs/ROADMAP.md`** first — it holds the live task list, owners, and the standing rules. `docs/CONTENT.md` is the only source of public copy; `docs/BLUEPRINT.md` is the architecture spec.
+
+## Map
 
 | Path | What it is |
 |---|---|
-| `HANDOFF_PROMPT.md` | The exact prompt to paste into ChatGPT to start the build. Start here after pushing. |
-| `docs/BLUEPRINT.md` | The master build spec — architecture, brand, pages, AI-crawlability kit, milestones, QA checklist. ChatGPT's bible. |
-| `docs/CONTENT.md` | The real copy: bio, elevator pitch, the 2023–2027 timeline, skills, projects, links. No lorem ipsum, ever. |
-| `docs/ASSET_TRACKER_SPEC.md` | The gated portfolio-dashboard feature spec (Google Sheets → GitHub Action → encrypted page). Sanitized with sample data — safe for a public repo. |
-| `docs/SETUP_CHECKLIST.md` | The phased to-do list (mirrors the Build HQ page). |
-| `index.html` | A dark, on-brand "coming soon" placeholder so the site is live from day one. |
-| `robots.txt` / `llms.txt` | AI-crawlability starters — already allow GPTBot, ClaudeBot, PerplexityBot, etc. |
-| `.gitignore` | Pre-configured so credentials can never be committed by accident. |
-| `.nojekyll` | Tells GitHub Pages to serve files as-is (plain HTML, no Jekyll processing). |
+| `index.html` | Home — the "live console" landing page |
+| `experience/` | Public experience timeline (2023 → now, newest first) |
+| `notes/` | "Obsidian — general vault": PIN-encrypted in-browser notes, `.md` export/import |
+| `tools/tracker/` | The portfolio tracker. `index.html` is the **generated, encrypted** page; `index.template.html` is the source (and a fake-login demo with sample data); `build.js` seals real holdings in. See its README. |
+| `assets/` | Shared CSS + the JS modules (charts, prices, vault, notes UI, calendar, taskboard). See its README. |
+| `docs/` | The paper trail: `ROADMAP.md` (tasks), `BLUEPRINT.md` (spec), `CONTENT.md` (copy), tracker/calendar/chart/taskboard plans |
+| `.github/workflows/refresh-tracker.yml` | Scheduled encrypted-tracker rebuild (needs repo secrets — ROADMAP R2) |
+| `llms.txt` / `robots.txt` | AI-crawlability kit; keep `llms.txt` in sync with page content |
 
----
+## The privacy model, in one paragraph
 
-## Step 1 — Get this onto GitHub (~10 minutes, no terminal)
+The repo is public, so nothing sensitive is ever tracked. This folder doubles as Pierce's local Obsidian vault: `.gitignore` ignores **everything** by default and allowlists site files one by one — local notes, `private/` (real holdings, PIN, dividend research) and anything unlisted stay on Pierce's machine. The published tracker page contains only an AES-256-GCM payload that decrypts in the browser with the PIN; notes on the site are encrypted into each visitor's own localStorage and never uploaded. Before any commit: no PIN, keys, holdings, or client names in tracked files or messages.
 
-1. **Install [GitHub Desktop](https://desktop.github.com)** and sign in with your GitHub account.
-2. In GitHub Desktop: **File → Add local repository** → choose this folder. It will say the folder isn't a repo yet — click **create a repository** here. Name it exactly:
-   ```
-   piersonnorris.github.io
-   ```
-   (Replace `piersonnorris` with your actual GitHub username, lowercase. This exact name is what makes GitHub serve it as your personal site. If `piersonnorris` is free as a username, claim it — your site becomes `piersonnorris.github.io`.)
-3. Leave "Initialize with README" unchecked (this folder already has one). Click **Create Repository**.
-4. Click **Publish repository**. Uncheck **"Keep this code private"** — GitHub Pages is free only for public repos. Publish.
-5. On github.com, open the repo → **Settings → Pages** → under "Build and deployment," Source: **Deploy from a branch** → Branch: **main**, folder **/ (root)** → Save.
-6. Wait ~1 minute, then visit `https://piersonnorris.github.io` — you should see the dark "coming soon" page. The site is live.
+## Local workflow
 
-> Nothing in this folder is sensitive. Your real portfolio numbers, the Google service-account key, and the tracker password must NEVER be added to this repo — the `.gitignore` and the blueprint both enforce this.
+```bash
+# rebuild the encrypted tracker from the private snapshot
+node tools/tracker/build.js --local-snapshot
 
-## Step 2 — Hand off to ChatGPT
+# run the unit tests
+node tools/tracker/calendar.test.js
+node tools/tracker/taskboard.test.js
+```
 
-1. Open ChatGPT (your top-tier model) and create a dedicated **Project** for this build.
-2. Upload the four files in `docs/` to the Project (or connect the GitHub repo if your ChatGPT plan supports it).
-3. Paste the contents of `HANDOFF_PROMPT.md` as your first message.
-4. Build milestone by milestone (they're defined in the blueprint). After each milestone, commit + push in GitHub Desktop and check the live site.
-
-## Step 3 — Keep Claude in the loop
-
-The living timeline + checklist stay at the Build HQ page (Claude republishes it as things change). Content edits, new timeline entries, and open decisions flow: **you → Claude → updated docs → ChatGPT builds**.
+Preview by serving the folder root over HTTP (root-absolute paths — opening files directly won't resolve `/assets/…`). Any static server works. The template page at `/tools/tracker/index.template.html` opens as a **demo**: the login button deliberately bypasses the PIN and shows fabricated sample data, so every feature can be clicked through safely.

@@ -21,8 +21,10 @@
 !/experience/**
 !/notes/
 !/notes/index.html
+!/notes/README.md
 !/tools/
 !/tools/tracker/
+!/tools/tracker/README.md
 !/tools/tracker/index.html
 !/tools/tracker/index.template.html
 !/tools/tracker/build.js

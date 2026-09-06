@@ -11,14 +11,22 @@ require('../../assets/js/vault.js');
 async function main() {
   const board = window.PNTaskboard;
   const seeded = board.seed();
-  assert.equal(seeded.length, 4);
-  assert.equal(seeded.filter((goal) => goal.status === 'complete').length, 2);
+  /* The seed mirrors docs/ROADMAP.md, so assert its shape rather than a
+     magic count: goals exist, every one is fully formed, at least one is
+     complete, and every status is a real column. */
+  assert.ok(seeded.length >= 4);
+  assert.ok(seeded.filter((goal) => goal.status === 'complete').length >= 1);
+  const columnIds = board.columns.map((column) => column.id);
+  for (const goal of seeded) {
+    assert.ok(goal.id && goal.title && goal.nextAction, `goal ${goal.id} is incomplete`);
+    assert.ok(columnIds.includes(goal.status), `goal ${goal.id} has unknown status ${goal.status}`);
+  }
 
-  const moved = board.move(seeded, 'goal-brokerage', 1);
-  assert.equal(moved.find((goal) => goal.id === 'goal-brokerage').status, 'planned');
+  const moved = board.move(seeded, 'goal-calendar-sync', 1);
+  assert.equal(moved.find((goal) => goal.id === 'goal-calendar-sync').status, 'planned');
   const stats = board.metrics(moved, '2026-09-05');
-  assert.equal(stats.total, 4);
-  assert.equal(stats.complete, 2);
+  assert.equal(stats.total, seeded.length);
+  assert.equal(stats.complete, seeded.filter((goal) => goal.status === 'complete').length);
 
   const markdown = window.PNVault.toMarkdown({
     title: 'Portfolio project board', noteType: 'portfolio-project-board',
@@ -29,7 +37,7 @@ async function main() {
   assert.match(markdown, /## Portfolio project board/);
   const roundTrip = window.PNVault.fromMarkdown(markdown, 'Fallback');
   assert.equal(roundTrip.noteType, 'portfolio-project-board');
-  assert.equal(roundTrip.projectGoals.length, 4);
+  assert.equal(roundTrip.projectGoals.length, seeded.length);
   assert.equal(roundTrip.body.trim(), 'Private project notes.');
 
   const storage = new Map();
@@ -43,10 +51,11 @@ async function main() {
   await vault.create_note({ title: 'Portfolio project board', noteType: 'portfolio-project-board', projectGoals: moved });
   const envelope = storage.get('pn.vault.taskboard-test');
   assert.ok(envelope);
-  assert.equal(envelope.includes('Read-only brokerage connection'), false);
+  /* goal titles must be ciphertext in storage, never plaintext */
+  assert.equal(envelope.includes(seeded[0].title), false);
   vault.lock();
   await vault.unlock('test-pin');
-  assert.equal(vault.list()[0].projectGoals.length, 4);
+  assert.equal(vault.list()[0].projectGoals.length, seeded.length);
 
   console.log('Private portfolio taskboard tests: OK');
 }

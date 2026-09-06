@@ -103,6 +103,18 @@
     .rowtoggle{appearance:none;width:17px;height:17px;margin:0;vertical-align:middle;accent-color:var(--acc);cursor:pointer}
     tr.is-excluded{opacity:.46}
     tr.is-excluded td.label{text-decoration:line-through}
+    .rowdetailbtn{display:grid;place-items:center;width:32px;height:32px;margin-left:auto;padding:0;color:var(--mut);background:transparent;border:1px solid transparent;border-radius:7px;cursor:pointer;transition:color .15s,background .15s,border-color .15s}
+    .rowdetailbtn:hover{color:var(--acc-hi);background:var(--bg);border-color:var(--line2)}
+    .rowdetailbtn .chevron{font:400 24px/1 var(--display);transition:transform .16s ease;transform-origin:center}
+    .rowdetailbtn[aria-expanded="true"]{color:var(--acc-hi);background:var(--bg);border-color:var(--acc)}
+    .rowdetailbtn[aria-expanded="true"] .chevron{transform:rotate(90deg)}
+    .position-detail td{padding:0!important;background:#111820;border-bottom:1px solid var(--line2)}
+    .purchase-journal{padding:18px;border-left:2px solid var(--acc);animation:panel-in .18s ease-out}
+    .pj-top{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:14px}.pj-top h4{font-size:16px;margin:0 0 2px}.pj-top p{font:11px/1.45 var(--mono);color:var(--dim);margin:0}.pj-top .pj-badge{margin-left:auto;font:10px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;color:var(--acc-hi);border:1px solid rgba(142,209,138,.3);border-radius:999px;padding:6px 9px}
+    .pj-metrics{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:8px;margin-bottom:14px}.pj-metric{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 10px}.pj-metric span{display:block;font:9px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}.pj-metric b{font:600 13px/1.2 var(--mono);font-variant-numeric:tabular-nums}.pj-metric b.up{color:var(--good)}.pj-metric b.down{color:var(--bad)}
+    .pj-entry{display:grid;grid-template-columns:minmax(132px,.8fr) minmax(110px,.65fr) minmax(120px,.7fr) auto;gap:8px;align-items:end;padding:12px;background:rgba(10,14,19,.58);border:1px solid var(--line);border-radius:9px}.pj-entry .fld span,.pj-note .fld span{font-size:10px}.pj-entry .btn{height:40px;white-space:nowrap}
+    .pj-lots{display:grid;gap:6px;margin:10px 0 14px}.pj-lot{display:grid;grid-template-columns:1fr .8fr .8fr .8fr auto;gap:10px;align-items:center;padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:7px;font:11px/1.3 var(--mono);color:var(--mut)}.pj-lot b{color:var(--ink);font-weight:500}.pj-lot button{appearance:none;border:0;background:transparent;color:var(--dim);font:16px/1 var(--mono);cursor:pointer;padding:5px}.pj-lot button:hover{color:var(--bad)}
+    .pj-empty{font:11px/1.5 var(--mono);color:var(--dim);margin:10px 0 14px;padding:10px 12px;border:1px dashed var(--line2);border-radius:8px}.pj-note textarea{min-height:100px;resize:vertical}.pj-notefoot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px}.pj-save{font:11px/1.4 var(--mono);color:var(--dim);margin:0}.pj-notefoot .btn{margin-left:auto}.pj-locked{padding:18px;border:1px dashed var(--line2);border-radius:9px;color:var(--mut);font-size:13px}.pj-locked b{display:block;color:var(--ink);margin-bottom:3px}
 
     .sectionhead{margin:44px 0 16px}
     .sectionhead h2{margin:6px 0 4px}
@@ -126,17 +138,22 @@
     .dividend-calendar{margin-top:18px;border-top:1px solid var(--line);padding-top:16px}
     .calendar-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 12px}.calendar-top h3{font-size:16px;margin:0}.calendar-top p{font-size:12px;color:var(--dim);margin:0}.calendar-top .btn{margin-left:auto}
     .calendar-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}.calendar-event{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px 11px}.calendar-event .date{font-family:var(--mono);font-size:11px;color:var(--acc-hi);letter-spacing:.04em}.calendar-event b{display:block;margin:4px 0 2px;font-size:13px}.calendar-event p{margin:0;color:var(--mut);font-size:12px}
-    .stockchart{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:0 0 22px}
-    .stockchart h2{font-size:19px;margin:0 0 4px}.stockchart .chart-copy{font-size:13.5px;color:var(--mut);margin:0 0 13px}
-    .tickerbar{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 15px}.tickerbar .chip{padding:6px 10px;font-size:11px}
-    .stockchart-status{font-family:var(--mono);font-size:11px;color:var(--dim);margin:12px 0 0}
+    .stockchart{position:relative;overflow:hidden;background:linear-gradient(145deg,#171e28 0%,var(--panel) 62%);border:1px solid var(--line2);border-radius:14px;padding:20px;margin:0 0 22px;box-shadow:0 24px 60px rgba(0,0,0,.18)}
+    .stockchart::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(142,209,138,.7),transparent)}
+    .stockchart h2{font-size:19px;margin:0}.stockchart .chart-copy{font-size:13px;color:var(--mut);margin:4px 0 0}
+    .market-head{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:18px}.market-title{min-width:210px}.market-symbol{display:flex;align-items:center;gap:9px}.market-symbol b{font:800 27px/1 var(--display);letter-spacing:-.025em}.market-symbol span{font:10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--acc-hi);border:1px solid rgba(142,209,138,.32);border-radius:999px;padding:5px 7px}
+    .market-quote{margin-left:auto;text-align:right}.market-quote strong{display:block;font:800 28px/1 var(--display);font-variant-numeric:tabular-nums}.market-quote span{font:500 12px/1.3 var(--mono)}.market-quote .up{color:#75d477}.market-quote .down{color:#f0726b}.market-quote .flat{color:var(--mut)}
+    .market-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}.tickerbar{display:flex;gap:6px;flex:1;min-width:220px;overflow-x:auto;padding-bottom:2px}.tickerbar .chip{padding:7px 10px;font-size:11px;white-space:nowrap}.rangebar{display:flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}.rangebtn{appearance:none;border:0;background:transparent;color:var(--dim);font:500 10px/1 var(--mono);padding:7px 8px;border-radius:5px;cursor:pointer}.rangebtn:hover{color:var(--ink)}.rangebtn[aria-pressed="true"]{background:var(--line2);color:var(--acc-hi)}
+    .market-chart-shell{position:relative;min-height:300px}.market-frame{position:relative}.pnchart-market{min-height:260px}.pnchart-market:focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}.market-tooltip{position:absolute;z-index:3;min-width:156px;transform:translate(-50%,-110%);pointer-events:none;background:rgba(10,14,19,.96);border:1px solid var(--line2);border-radius:8px;padding:9px 10px;box-shadow:0 12px 30px rgba(0,0,0,.35);font:10.5px/1.45 var(--mono);color:var(--mut)}.market-tooltip b,.market-tooltip span{display:block}.market-tooltip b{color:var(--ink);margin-bottom:3px}.market-tooltip span:first-of-type{color:var(--acc-hi)}
+    .market-kpis{display:grid;grid-template-columns:repeat(5,minmax(90px,1fr));gap:8px;margin-top:12px}.market-kpi{background:rgba(10,14,19,.5);border:1px solid var(--line);border-radius:8px;padding:9px 10px}.market-kpi span{display:block;font:9px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}.market-kpi b{font:600 13px/1.2 var(--mono);font-variant-numeric:tabular-nums}.market-kpi b.up{color:#75d477}.market-kpi b.down{color:#f0726b}
+    .stockchart-status{font-family:var(--mono);font-size:11px;color:var(--dim);margin:12px 0 0}.market-setup{display:grid;place-items:center;min-height:285px;border:1px dashed var(--line2);border-radius:10px;background:rgba(9,12,16,.3);text-align:center;padding:28px}.market-setup b{display:block;font:700 17px var(--display);color:var(--ink);margin-bottom:6px}.market-setup p{max-width:52ch;margin:0;color:var(--mut);font-size:13px}
     .tracker-tabs{display:flex;gap:4px;padding:5px;margin:18px 0 22px;background:var(--panel);border:1px solid var(--line);border-radius:11px;overflow-x:auto}
     .tracker-tab{appearance:none;border:0;background:transparent;color:var(--mut);font:500 12px/1 var(--mono);letter-spacing:.04em;padding:11px 14px;border-radius:7px;cursor:pointer;white-space:nowrap}
     .tracker-tab:hover{color:var(--ink);background:rgba(255,255,255,.035)}.tracker-tab[aria-selected="true"]{background:var(--acc);color:#0e1116}
     .tracker-panel[hidden]{display:none}.tracker-panel{animation:panel-in .18s ease-out}@keyframes panel-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
     .dividend-chart{margin:18px 0 0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:15px}.dividend-chart h3{font-size:16px;margin:0 0 2px}.dividend-chart .sub{font:11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px}
     .obsidian-sync{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.obsidian-sync .sync-status{font:12px var(--mono);color:var(--dim);margin:0}
-    @media (max-width:640px){.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}}
+    @media (max-width:700px){.market-quote{margin-left:0;text-align:left}.market-controls{align-items:stretch}.tickerbar{flex-basis:100%}.rangebar{width:max-content}.market-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.market-kpi:last-child{grid-column:1/-1}.stockchart{padding:16px}.scopebar .btn{margin-left:0}.dividends{padding:16px}.tracker-tab{padding:10px 11px}.pj-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.pj-entry{grid-template-columns:1fr 1fr}.pj-entry .btn{grid-column:1/-1}.pj-lot{grid-template-columns:1fr 1fr}.pj-lot span:nth-child(4){display:none}.pj-lot button{grid-column:2;grid-row:1;text-align:right}.purchase-journal{padding:14px}}
   </style>
 </head>
 <body>
@@ -274,8 +291,8 @@
 
     /* The build script (tools/tracker/build.js) replaces the next line
        with the AES-GCM payload of the real holdings. Until it does,
-       PAYLOAD stays null and the page renders SAMPLE data with no PIN —
-       which is exactly what the public screenshot should show. */
+       PAYLOAD stays null and every stock surface remains locked. SAMPLE
+       is a fabricated fixture only; it is never displayed by this source. */
     var PAYLOAD = /*__PAYLOAD__*/null/*__END__*/;
 
     var SAMPLE = {
@@ -311,7 +328,7 @@
       Gemini: '#F5A623', GoMining: '#7C3AED'
     };
 
-    var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
+    var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, activeChartRange = '3M', expandedPositionKey = null, positionNoteSaveTimer = null, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
 
     // ------------------------------------------------------ helpers
 
@@ -422,7 +439,7 @@
     });
 
     $('relock').addEventListener('click', function () {
-      DATA = null; valued = []; sessionPin = null; dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false;
+      DATA = null; valued = []; sessionPin = null; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false;
       if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
       $('vault').style.display = 'none';
       $('lock').style.display = 'grid';
@@ -686,40 +703,73 @@
 
     function renderStockChart() {
       var symbols = {};
-      valued.forEach(function (r) { if (r.symbol) symbols[r.symbol] = true; });
+      valued.forEach(function (r) { if (r.kind === 'Equity' && r.symbol) symbols[r.symbol] = true; });
       var list = Object.keys(symbols).sort();
       if (!list.length) {
-        $('stockchart').innerHTML = '<h2>Stock chart</h2><p class="chart-copy">No included symbols are available for charting in this month.</p>';
+        $('stockchart').innerHTML = '<h2>Stock chart</h2><p class="chart-copy">No included stock positions are available for charting in this month.</p>';
         return;
       }
-      if (list.indexOf(activeChartSymbol) === -1) activeChartSymbol = list[0];
+      if (list.indexOf(activeChartSymbol) === -1) {
+        var largestEquity = valued.filter(function (row) { return row.kind === 'Equity' && row.symbol && isFinite(row.value); })
+          .sort(function (a, b) { return b.value - a.value; })[0];
+        activeChartSymbol = largestEquity ? largestEquity.symbol : list[0];
+      }
+      var holding = valued.filter(function (row) { return row.kind === 'Equity' && row.symbol === activeChartSymbol; })
+        .reduce(function (out, row) {
+          out.shares += Number(row.amount) || 0;
+          if (isFinite(row.value)) out.value += row.value;
+          if (isFinite(row.price)) out.price = row.price;
+          return out;
+        }, { shares: 0, value: 0, price: null });
       $('stockchart').innerHTML =
-        '<h2>Stock chart</h2><p class="chart-copy">Daily closing prices for included positions. Pick an asset to view its most recent 90 trading days.</p>' +
-        '<div class="tickerbar">' + list.map(function (symbol) {
+        '<div class="market-head"><div class="market-title"><div class="market-symbol"><b>' + esc(activeChartSymbol) + '</b><span>owned</span></div><p class="chart-copy">Price, volume, and position context</p></div>' +
+        '<div class="market-quote" id="marketquote"><strong>' + (isFinite(holding.price) ? esc(money(holding.price)) : '—') + '</strong><span class="flat">Waiting for history</span></div></div>' +
+        '<div class="market-controls"><div class="tickerbar" aria-label="Choose an owned stock">' + list.map(function (symbol) {
           return '<button type="button" class="chip" data-symbol="' + esc(symbol) + '" aria-pressed="' + (symbol === activeChartSymbol) + '">' + esc(symbol.replace('/USD', '')) + '</button>';
-        }).join('') + '</div><div id="c-stock"></div><p class="stockchart-status" id="stockchartstatus"></p>';
+        }).join('') + '</div><div class="rangebar" aria-label="Chart range">' + ['1M', '3M', '6M', '1Y'].map(function (range) {
+          return '<button type="button" class="rangebtn" data-range="' + range + '" aria-pressed="' + (range === activeChartRange) + '">' + range + '</button>';
+        }).join('') + '</div></div><div class="market-chart-shell" id="c-stock"></div><div class="market-kpis" id="marketkpis">' +
+        '<div class="market-kpi"><span>Range return</span><b>—</b></div><div class="market-kpi"><span>Range high</span><b>—</b></div><div class="market-kpi"><span>Range low</span><b>—</b></div><div class="market-kpi"><span>Average close</span><b>—</b></div><div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' shares</b></div>' +
+        '</div><p class="stockchart-status" id="stockchartstatus"></p>';
       Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-symbol]'), function (button) {
         button.addEventListener('click', function () { activeChartSymbol = button.dataset.symbol; renderStockChart(); });
       });
+      Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-range]'), function (button) {
+        button.addEventListener('click', function () { activeChartRange = button.dataset.range; renderStockChart(); });
+      });
       var cfg = window.PNPrices.loadCfg();
       if (!cfg.apikey || cfg.provider === 'manual') {
-        $('c-stock').innerHTML = '<p class="chart-empty">Set a live provider and API key in Price source to load this chart.</p>';
-        $('stockchartstatus').textContent = 'No ticker is sent anywhere until you configure and refresh a live source.';
+        $('c-stock').innerHTML = '<div class="market-setup"><div><b>Connect a read-only market source</b><p>Open Price source above, choose Twelve Data or Finnhub, and add an API key. The chart requests history only after the tracker is unlocked.</p></div></div>';
+        $('stockchartstatus').textContent = 'No symbol leaves this browser until you configure a live source.';
         return;
       }
-      $('c-stock').innerHTML = '<p class="chart-empty">Loading ' + esc(activeChartSymbol) + '…</p>';
-      $('stockchartstatus').textContent = 'Loading 90 daily closes from ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + '…';
-      var requestedSymbol = activeChartSymbol;
-      window.PNPrices.history(requestedSymbol, { cfg: cfg }).then(function (series) {
-        if (activeChartSymbol !== requestedSymbol) return;
-        window.PNCharts.line($('c-stock'), series, {
-          valueKind: 'money', title: requestedSymbol + ' daily closing price',
+      $('c-stock').innerHTML = '<div class="market-setup"><div><b>Loading ' + esc(activeChartSymbol) + '</b><p>Fetching ' + esc(activeChartRange) + ' of daily price and volume history…</p></div></div>';
+      $('stockchartstatus').textContent = 'Loading from ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + '…';
+      var requestedSymbol = activeChartSymbol, requestedRange = activeChartRange;
+      window.PNPrices.history(requestedSymbol, { cfg: cfg, range: requestedRange }).then(function (series) {
+        if (activeChartSymbol !== requestedSymbol || activeChartRange !== requestedRange) return;
+        if (!Array.isArray(series) || series.length < 2) throw new Error('Not enough daily history was returned for this range.');
+        var first = series[0].value, latest = series[series.length - 1].value;
+        var change = latest - first, changePct = first ? change / first * 100 : 0;
+        var high = Math.max.apply(null, series.map(function (point) { return isFinite(point.high) ? point.high : point.value; }));
+        var low = Math.min.apply(null, series.map(function (point) { return isFinite(point.low) ? point.low : point.value; }));
+        var average = series.reduce(function (sum, point) { return sum + point.value; }, 0) / series.length;
+        var direction = change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
+        $('marketquote').innerHTML = '<strong>' + esc(money(latest)) + '</strong><span class="' + direction + '">' + (change >= 0 ? '+' : '−') + esc(money(Math.abs(change))) + ' · ' + (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%</span>';
+        $('marketkpis').innerHTML =
+          '<div class="market-kpi"><span>' + esc(requestedRange) + ' return</span><b class="' + direction + '">' + (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%</b></div>' +
+          '<div class="market-kpi"><span>Range high</span><b>' + esc(money(high)) + '</b></div>' +
+          '<div class="market-kpi"><span>Range low</span><b>' + esc(money(low)) + '</b></div>' +
+          '<div class="market-kpi"><span>Average close</span><b>' + esc(money(average)) + '</b></div>' +
+          '<div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' sh · ' + (holding.value ? esc(money(holding.value)) : 'unpriced') + '</b></div>';
+        window.PNCharts.market($('c-stock'), series, {
+          title: requestedSymbol + ' ' + requestedRange + ' price and volume',
           emptyMessage: 'Not enough price history returned for this symbol.'
         });
-        $('stockchartstatus').textContent = series.length + ' daily closes · ' + requestedSymbol + ' · refresh the page or price source to update.';
+        $('stockchartstatus').textContent = series.length + ' sessions · ' + requestedSymbol + ' · ' + requestedRange + ' · ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + ' · cached for 15 minutes.';
       }).catch(function (err) {
-        if (activeChartSymbol !== requestedSymbol) return;
-        $('c-stock').innerHTML = '<p class="chart-empty">Could not load price history for ' + esc(requestedSymbol) + '.</p>';
+        if (activeChartSymbol !== requestedSymbol || activeChartRange !== requestedRange) return;
+        $('c-stock').innerHTML = '<div class="market-setup"><div><b>Chart unavailable</b><p>Could not load ' + esc(requestedSymbol) + ' history from the selected provider.</p></div></div>';
         $('stockchartstatus').textContent = err && err.message ? err.message : 'Price history request failed.';
       });
     }
@@ -866,6 +916,57 @@
       if (exportButton) exportButton.addEventListener('click', function () { downloadCalendar(events); });
     }
 
+    function journalFor(row) {
+      if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) return null;
+      return stockNotes.getPositionJournal(positionKey(row));
+    }
+
+    function purchaseJournalMarkup(row, detailId) {
+      var key = positionKey(row), ticker = row.symbol ? row.symbol.split('/')[0] : row.label;
+      if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) {
+        return '<tr class="position-detail" id="' + detailId + '"><td colspan="8"><div class="purchase-journal"><div class="pj-locked"><b>Purchase journal is locked</b>Open the Obsidian tab and unlock the stock desk to add buy prices or private notes.</div></div></td></tr>';
+      }
+      var journal = journalFor(row);
+      var purchases = journal && Array.isArray(journal.purchases) ? journal.purchases.filter(function (purchase) {
+        return isFinite(Number(purchase.shares)) && Number(purchase.shares) > 0 && isFinite(Number(purchase.price)) && Number(purchase.price) > 0;
+      }) : [];
+      var trackedShares = purchases.reduce(function (sum, purchase) { return sum + Number(purchase.shares); }, 0);
+      var cost = purchases.reduce(function (sum, purchase) { return sum + Number(purchase.shares) * Number(purchase.price); }, 0);
+      var average = trackedShares ? cost / trackedShares : null;
+      var trackedValue = trackedShares && isFinite(row.price) ? trackedShares * row.price : null;
+      var gain = isFinite(trackedValue) ? trackedValue - cost : null;
+      var gainPct = cost && isFinite(gain) ? gain / cost * 100 : null;
+      var direction = gain > 0 ? 'up' : gain < 0 ? 'down' : '';
+      var lotRows = purchases.length ? '<div class="pj-lots">' + purchases.slice().sort(function (a, b) {
+        return String(b.date || '').localeCompare(String(a.date || ''));
+      }).map(function (purchase) {
+        var shares = Number(purchase.shares), price = Number(purchase.price);
+        return '<div class="pj-lot"><b>' + esc(purchase.date ? new Date(purchase.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Undated') + '</b>' +
+          '<span>' + esc(shares.toLocaleString('en-US', { maximumFractionDigits: 6 })) + ' shares</span><span>' + esc(money(price)) + ' buy</span><span>' + esc(money(shares * price)) + ' cost</span>' +
+          '<button type="button" class="pj-delete" data-key="' + esc(key) + '" data-lot-index="' + purchases.indexOf(purchase) + '" aria-label="Delete ' + esc(ticker) + ' buy from ' + esc(purchase.date || 'undated entry') + '">×</button></div>';
+      }).join('') + '</div>' : '<p class="pj-empty">No buy prices tracked yet. Add the first purchase below.</p>';
+
+      return '<tr class="position-detail" id="' + detailId + '"><td colspan="8"><section class="purchase-journal" aria-label="' + esc(ticker) + ' purchase journal">' +
+        '<div class="pj-top"><div><h4>' + esc(ticker) + ' purchase journal</h4><p>' + esc(row.platform) + ' · saved inside your encrypted stock vault</p></div><span class="pj-badge">private · this device</span></div>' +
+        '<div class="pj-metrics"><div class="pj-metric"><span>Tracked shares</span><b>' + (trackedShares ? esc(trackedShares.toLocaleString('en-US', { maximumFractionDigits: 6 })) : '—') + '</b></div>' +
+        '<div class="pj-metric"><span>Average buy</span><b>' + (isFinite(average) ? esc(money(average)) : '—') + '</b></div><div class="pj-metric"><span>Tracked cost</span><b>' + (cost ? esc(money(cost)) : '—') + '</b></div>' +
+        '<div class="pj-metric"><span>Tracked P/L</span><b class="' + direction + '">' + (isFinite(gain) ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (isFinite(gainPct) ? ' · ' + (gainPct >= 0 ? '+' : '') + gainPct.toFixed(1) + '%' : '') : '—') + '</b></div></div>' +
+        lotRows + '<form class="pj-entry" data-key="' + esc(key) + '"><label class="fld"><span>Buy date</span><input type="date" name="date"></label>' +
+        '<label class="fld"><span>Shares bought</span><input type="number" name="shares" inputmode="decimal" min="0" step="any" placeholder="0.00" required></label>' +
+        '<label class="fld"><span>Buy price</span><input type="number" name="price" inputmode="decimal" min="0" step="any" placeholder="$0.00" required></label><button class="btn primary" type="submit">Add buy</button></form>' +
+        '<div class="pj-note"><label class="fld"><span>Internal note</span><textarea class="pj-noteinput" data-key="' + esc(key) + '" placeholder="Why you bought it, what changed, or what you want to watch…">' + esc(journal ? journal.body : '') + '</textarea></label>' +
+        '<div class="pj-notefoot"><p class="pj-save" data-save-key="' + esc(key) + '">' + (journal ? 'Saved in encrypted storage.' : 'Start typing to create this private note.') + '</p><button type="button" class="btn pj-open-note" data-key="' + esc(key) + '" data-ticker="' + esc(ticker) + '">Open full note</button></div></div>' +
+        '</section></td></tr>';
+    }
+
+    function saveJournal(row, purchases, body) {
+      return stockNotes.savePositionJournal({
+        positionKey: positionKey(row), ticker: row.symbol ? row.symbol.split('/')[0] : row.label,
+        title: row.platform,
+        purchases: purchases, body: body
+      });
+    }
+
     function renderPlatforms() {
       var groups = {};
       allValued.forEach(function (r) {
@@ -875,7 +976,7 @@
       var order = PLATFORM_ORDER.filter(function (p) { return groups[p]; })
         .concat(Object.keys(groups).filter(function (p) { return PLATFORM_ORDER.indexOf(p) === -1; }));
 
-      $('platforms').innerHTML = order.map(function (p) {
+      $('platforms').innerHTML = order.map(function (p, platformIndex) {
         var rows = groups[p];
         var subtotal = window.PNPrices.total(rows.filter(isIncluded));
         return '<div class="platform">' +
@@ -883,25 +984,37 @@
           '<span class="pcount">' + rows.length + ' line item' + (rows.length === 1 ? '' : 's') +
           (subtotal > 0 ? ' · ' + esc(money(subtotal)) : '') + '</span></h3>' +
           '<div class="tscroll"><table><thead><tr>' +
-            '<th>Holding</th><th class="r">Amount</th><th>Unit</th><th class="r">Price</th><th class="r">Value</th><th>Notes</th><th>Include</th><th></th>' +
+            '<th>Holding</th><th class="r">Amount</th><th>Unit</th><th class="r">Price</th><th class="r">Value</th><th>Notes</th><th>Include</th><th class="r">Details</th>' +
           '</tr></thead><tbody>' +
-          rows.map(function (r) {
-            var included = isIncluded(r);
-            return '<tr class="' + (included ? '' : 'is-excluded') + '">' +
+          rows.map(function (r, rowIndex) {
+            var included = isIncluded(r), key = positionKey(r), isStock = r.kind === 'Equity' && r.symbol;
+            var expanded = isStock && expandedPositionKey === key;
+            var detailId = 'position-detail-' + platformIndex + '-' + rowIndex;
+            var rowHtml = '<tr class="' + (included ? '' : 'is-excluded') + '">' +
               '<td class="label">' + esc(r.label) + '</td>' +
               '<td class="num">' + r.amount.toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td>' +
               '<td class="unit">' + esc(r.unit) + '</td>' +
               '<td class="num">' + (isFinite(r.price) && r.price ? esc(money(r.price)) : '<span class="nopr">—</span>') + '</td>' +
               '<td class="num">' + (isFinite(r.value) ? esc(money(r.value)) : '<span class="nopr">unpriced</span>') + '</td>' +
               '<td class="notes">' + esc(r.notes) + '</td>' +
-              '<td><input class="rowtoggle" type="checkbox" data-key="' + esc(positionKey(r)) + '" ' + (included ? 'checked' : '') + ' aria-label="Include ' + esc(r.label) + ' in calculations"></td>' +
-              '<td>' + (r.symbol
-                ? '<button type="button" class="notebtn" data-ticker="' +
-                  esc(r.symbol.split('/')[0]) + '">note</button>' : '') + '</td>' +
+              '<td><input class="rowtoggle" type="checkbox" data-key="' + esc(key) + '" ' + (included ? 'checked' : '') + ' aria-label="Include ' + esc(r.label) + ' in calculations"></td>' +
+              '<td>' + (isStock
+                ? '<button type="button" class="rowdetailbtn" data-key="' + esc(key) + '" aria-expanded="' + expanded + '" aria-controls="' + detailId + '" aria-label="' + (expanded ? 'Close' : 'Open') + ' buy prices and notes for ' + esc(r.label) + '"><span class="chevron" aria-hidden="true">›</span></button>'
+                : r.symbol ? '<button type="button" class="notebtn" data-ticker="' + esc(r.symbol.split('/')[0]) + '">note</button>' : '') + '</td>' +
             '</tr>';
+            return rowHtml + (expanded ? purchaseJournalMarkup(r, detailId) : '');
           }).join('') +
           '</tbody></table></div></div>';
       }).join('');
+
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.rowdetailbtn'), function (button) {
+        button.addEventListener('click', function () {
+          expandedPositionKey = button.getAttribute('aria-expanded') === 'true' ? null : button.dataset.key;
+          renderPlatforms();
+          var next = Array.prototype.filter.call($('platforms').querySelectorAll('.rowdetailbtn'), function (candidate) { return candidate.dataset.key === button.dataset.key; })[0];
+          if (next) next.focus();
+        });
+      });
 
       Array.prototype.forEach.call($('platforms').querySelectorAll('.notebtn'), function (b) {
         b.addEventListener('click', function () {
@@ -917,6 +1030,56 @@
         toggle.addEventListener('change', function () {
           var row = allValued.filter(function (r) { return positionKey(r) === toggle.dataset.key; })[0];
           if (row) { setIncluded(row, toggle.checked); refresh(false); }
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.pj-entry'), function (form) {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
+          var row = allValued.filter(function (r) { return positionKey(r) === form.dataset.key; })[0];
+          if (!row || !stockNotes || !stockNotes.vault.isUnlocked()) return;
+          var shares = parseFloat(form.elements.shares.value), price = parseFloat(form.elements.price.value);
+          if (!(shares > 0) || !(price > 0)) return;
+          var journal = journalFor(row), purchases = journal && Array.isArray(journal.purchases) ? journal.purchases.slice() : [];
+          purchases.push({ id: 'buy-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), date: form.elements.date.value || '', shares: shares, price: price });
+          var noteInput = form.closest('.purchase-journal').querySelector('.pj-noteinput');
+          saveJournal(row, purchases, noteInput ? noteInput.value : '').then(function () { renderPlatforms(); });
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.pj-delete'), function (button) {
+        button.addEventListener('click', function () {
+          var row = allValued.filter(function (r) { return positionKey(r) === button.dataset.key; })[0];
+          var journal = row ? journalFor(row) : null;
+          if (!row || !journal || !confirm('Delete this buy-price entry?')) return;
+          var purchases = Array.isArray(journal.purchases) ? journal.purchases.slice() : [];
+          purchases.splice(Number(button.dataset.lotIndex), 1);
+          saveJournal(row, purchases, journal.body || '').then(function () { renderPlatforms(); });
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.pj-noteinput'), function (input) {
+        input.addEventListener('input', function () {
+          clearTimeout(positionNoteSaveTimer);
+          var row = allValued.filter(function (r) { return positionKey(r) === input.dataset.key; })[0];
+          var saveNode = Array.prototype.filter.call($('platforms').querySelectorAll('[data-save-key]'), function (candidate) { return candidate.dataset.saveKey === input.dataset.key; })[0];
+          if (saveNode) saveNode.textContent = 'saving…';
+          positionNoteSaveTimer = setTimeout(function () {
+            if (!row || !stockNotes || !stockNotes.vault.isUnlocked()) return;
+            var journal = journalFor(row), purchases = journal && Array.isArray(journal.purchases) ? journal.purchases.slice() : [];
+            saveJournal(row, purchases, input.value).then(function () {
+              if (saveNode && saveNode.isConnected) saveNode.textContent = 'saved ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+            }).catch(function () { if (saveNode && saveNode.isConnected) saveNode.textContent = 'Could not save.'; });
+          }, 450);
+        });
+      });
+      Array.prototype.forEach.call($('platforms').querySelectorAll('.pj-open-note'), function (button) {
+        button.addEventListener('click', function () {
+          var row = allValued.filter(function (r) { return positionKey(r) === button.dataset.key; })[0];
+          var ok = row && stockNotes && stockNotes.openPositionJournal({
+            positionKey: button.dataset.key, ticker: button.dataset.ticker,
+            title: row.platform
+          });
+          if (ok === false) { alert('Unlock the stock-notes vault first.'); return; }
+          activateTrackerPanel('obsidian', false);
+          document.getElementById('stocknotes').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       });
     }
@@ -944,6 +1107,9 @@
           blurb: 'Per-ticker notes and outlooks. Separate vault from general notes — same PIN by default.'
         }
       });
+      if (stockNotes && stockNotes.ready) {
+        stockNotes.ready.then(function () { if (DATA) renderPlatforms(); });
+      }
     }
   })();
   </script>

@@ -11,6 +11,7 @@
    PNCharts.bars(el, rows, opts)      horizontal bars
    PNCharts.line(el, series, opts)    single line/area over time
    PNCharts.stack(el, rows, opts)     one 100% stacked bar
+   PNCharts.market(el, series, opts)  interactive price + volume
    PNCharts.spark(el, values, opts)   inline sparkline
 
    `rows` is always [{label, value, color?}, …]
@@ -315,6 +316,114 @@
       srTable(pts, opts.valueKind);
   }
 
+  // ---------- interactive market chart ----------
+
+  function market(el, series, opts) {
+    opts = opts || {};
+    var pts = (series || []).filter(function (p) { return p && isFinite(p.value); });
+    if (pts.length < 2) return empty(el, opts.emptyMessage || 'Price history is not available yet.');
+
+    var w = 820, h = 352, padL = 66, padR = 24, padT = 20, priceBottom = 248,
+        volumeTop = 276, volumeBottom = 322, plotW = w - padL - padR, plotH = priceBottom - padT;
+    var vals = pts.map(function (p) { return Number(p.value); });
+    var rawMin = Math.min.apply(null, vals), rawMax = Math.max.apply(null, vals);
+    var breathing = Math.max((rawMax - rawMin) * 0.1, rawMax * 0.012, 0.01);
+    var min = rawMin - breathing, max = rawMax + breathing, span = max - min;
+    var volumes = pts.map(function (p) { return isFinite(p.volume) ? Number(p.volume) : 0; });
+    var maxVolume = Math.max.apply(null, volumes.concat([0]));
+    var rising = vals[vals.length - 1] >= vals[0];
+    var accent = rising ? '#5FAE5A' : '#e5534b';
+
+    function px(i) { return padL + (i / (pts.length - 1)) * plotW; }
+    function py(v) { return padT + plotH - ((v - min) / span) * plotH; }
+    function volumeY(v) { return maxVolume ? volumeBottom - (v / maxVolume) * (volumeBottom - volumeTop) : volumeBottom; }
+
+    var linePath = pts.map(function (p, i) {
+      return (i ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(p.value).toFixed(1);
+    }).join(' ');
+    var areaPath = linePath + ' L' + px(pts.length - 1).toFixed(1) + ' ' + priceBottom +
+      ' L' + px(0).toFixed(1) + ' ' + priceBottom + ' Z';
+
+    var grid = '';
+    for (var g = 0; g < 5; g++) {
+      var ratio = g / 4, value = max - span * ratio, y = padT + plotH * ratio;
+      grid += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (w - padR) + '" y2="' + y.toFixed(1) + '" stroke="' + LINE + '" stroke-width="1"/>' +
+        '<text x="' + (padL - 11) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="10">' + esc(money(value)) + '</text>';
+    }
+
+    var volumeBars = maxVolume ? pts.map(function (p, i) {
+      var barW = Math.max(1.4, plotW / pts.length * 0.58), y = volumeY(volumes[i]);
+      var up = isFinite(p.open) && isFinite(p.close) ? p.close >= p.open : rising;
+      return '<rect x="' + (px(i) - barW / 2).toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + barW.toFixed(1) + '" height="' + Math.max(1, volumeBottom - y).toFixed(1) + '" rx="1" fill="' + (up ? '#5FAE5A' : '#e5534b') + '" opacity=".32"/>';
+    }).join('') : '';
+
+    var markCount = Math.min(5, pts.length), marks = [];
+    for (var m = 0; m < markCount; m++) marks.push(Math.round(m * (pts.length - 1) / Math.max(1, markCount - 1)));
+    var xLabels = marks.map(function (i) {
+      return '<text x="' + px(i).toFixed(1) + '" y="346" text-anchor="middle" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="10">' + esc(pts[i].label) + '</text>';
+    }).join('');
+
+    var firstY = py(vals[0]);
+    var gid = 'pnmarketgrad' + (++uid);
+    var inner = '<defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="' + accent + '" stop-opacity=".34"/><stop offset="100%" stop-color="' + accent + '" stop-opacity="0"/></linearGradient></defs>' +
+      grid + '<line x1="' + padL + '" y1="' + firstY.toFixed(1) + '" x2="' + (w - padR) + '" y2="' + firstY.toFixed(1) + '" stroke="' + accent + '" stroke-width="1" stroke-dasharray="4 6" opacity=".36"/>' +
+      '<path d="' + areaPath + '" fill="url(#' + gid + ')"/><path d="' + linePath + '" fill="none" stroke="' + accent + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<line x1="' + padL + '" y1="262" x2="' + (w - padR) + '" y2="262" stroke="' + LINE2 + '"/><text x="' + padL + '" y="272" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="9" letter-spacing="1.2">VOLUME</text>' +
+      volumeBars + xLabels +
+      '<line class="pn-market-cross" x1="0" y1="' + padT + '" x2="0" y2="' + volumeBottom + '" stroke="' + MUT + '" stroke-width="1" stroke-dasharray="3 4" visibility="hidden"/>' +
+      '<circle class="pn-market-dot" cx="0" cy="0" r="5" fill="' + accent + '" stroke="#0e1116" stroke-width="2.5" visibility="hidden"/>' +
+      '<rect class="pn-market-hit" x="' + padL + '" y="' + padT + '" width="' + plotW + '" height="' + (volumeBottom - padT) + '" fill="transparent"/>';
+
+    var id = ids();
+    id.title.text = opts.title || 'Stock price history';
+    id.desc.text = pts.length + ' daily closing prices from ' + pts[0].label + ' to ' + pts[pts.length - 1].label + ', with volume when available.';
+    el.innerHTML = '<div class="market-frame">' + wrapSvg(inner, w, h, id.title, id.desc, 'pnchart-market') +
+      '<div class="market-tooltip" hidden></div></div>' + srTable(pts.map(function (p) { return { label: p.date || p.label, value: p.value }; }), 'money');
+
+    var svg = el.querySelector('.pnchart-market');
+    var cross = el.querySelector('.pn-market-cross'), dot = el.querySelector('.pn-market-dot'), tooltip = el.querySelector('.market-tooltip');
+    var activeIndex = pts.length - 1;
+    svg.setAttribute('tabindex', '0');
+    svg.setAttribute('aria-label', id.title.text + '. Use left and right arrow keys to inspect daily values.');
+
+    function compactNumber(n) {
+      if (!isFinite(n) || n <= 0) return '—';
+      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return Math.round(n).toLocaleString('en-US');
+    }
+    function showPoint(index) {
+      activeIndex = Math.max(0, Math.min(pts.length - 1, index));
+      var p = pts[activeIndex], x = px(activeIndex), y = py(p.value);
+      cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.setAttribute('visibility', 'visible');
+      dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('visibility', 'visible');
+      var dayMove = isFinite(p.open) && p.open ? ((p.value - p.open) / p.open) * 100 : null;
+      tooltip.hidden = false;
+      tooltip.style.left = Math.max(12, Math.min(88, x / w * 100)) + '%';
+      tooltip.style.top = Math.max(8, y / h * 100 - 4) + '%';
+      tooltip.innerHTML = '<b>' + esc(p.date || p.label) + '</b><span>Close ' + esc(money(p.value)) + '</span>' +
+        (isFinite(p.high) && isFinite(p.low) ? '<span>High ' + esc(money(p.high)) + ' · Low ' + esc(money(p.low)) + '</span>' : '') +
+        '<span>' + (dayMove == null ? '' : (dayMove >= 0 ? '+' : '') + dayMove.toFixed(2) + '% day') + (maxVolume ? ' · Vol ' + esc(compactNumber(p.volume)) : '') + '</span>';
+    }
+    function hidePoint() {
+      cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); tooltip.hidden = true;
+    }
+    svg.addEventListener('pointermove', function (event) {
+      var rect = svg.getBoundingClientRect();
+      var svgX = (event.clientX - rect.left) * (w / rect.width);
+      showPoint(Math.round(((svgX - padL) / plotW) * (pts.length - 1)));
+    });
+    svg.addEventListener('pointerleave', hidePoint);
+    svg.addEventListener('focus', function () { showPoint(activeIndex); });
+    svg.addEventListener('blur', hidePoint);
+    svg.addEventListener('keydown', function (event) {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight' && event.key !== 'Home' && event.key !== 'End') return;
+      event.preventDefault();
+      showPoint(event.key === 'Home' ? 0 : event.key === 'End' ? pts.length - 1 : activeIndex + (event.key === 'ArrowRight' ? 1 : -1));
+    });
+  }
+
   // ---------- sparkline ----------
 
   function spark(el, values, opts) {
@@ -351,6 +460,7 @@
     bars: bars,
     stack: stack,
     line: line,
+    market: market,
     spark: spark,
     money: money,
     pct: pct,

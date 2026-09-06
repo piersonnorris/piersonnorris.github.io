@@ -180,6 +180,8 @@
       tags: (fields && fields.tags) || [],
       ticker: (fields && fields.ticker) || null,
       outlook: (fields && fields.outlook) || null,
+      positionKey: (fields && fields.positionKey) || null,
+      purchases: (fields && fields.purchases) || [],
       created: now,
       updated: now
     };
@@ -253,6 +255,10 @@
     var fm = ['---'];
     fm.push('title: ' + yamlStr(note.title));
     if (note.ticker) fm.push('ticker: ' + yamlStr(note.ticker));
+    if (note.positionKey) fm.push('position_key: ' + yamlStr(note.positionKey));
+    if (note.purchases && note.purchases.length) {
+      fm.push('purchases_json: ' + yamlStr(JSON.stringify(note.purchases)));
+    }
     if (note.tags && note.tags.length) {
       fm.push('tags: [' + note.tags.map(yamlStr).join(', ') + ']');
     }
@@ -277,6 +283,18 @@
       if (note.outlook.risks) body += '\n### Risks\n\n' + note.outlook.risks + '\n';
       body += '\n---\n\n';
     }
+    if (note.purchases && note.purchases.length) {
+      body += '<!-- pn-purchases:start -->\n## Buy prices\n\n';
+      body += '| Date | Shares | Buy price | Cost |\n|---|---:|---:|---:|\n';
+      note.purchases.forEach(function (purchase) {
+        var shares = Number(purchase.shares) || 0;
+        var price = Number(purchase.price) || 0;
+        body += '| ' + (purchase.date || 'Undated') + ' | ' + shares.toLocaleString('en-US', { maximumFractionDigits: 6 }) +
+          ' | $' + price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 4 }) +
+          ' | $' + (shares * price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' |\n';
+      });
+      body += '\n<!-- pn-purchases:end -->\n\n';
+    }
     body += note.body || '';
 
     return fm.join('\n') + body + '\n';
@@ -292,7 +310,7 @@
     var note = {
       title: fallbackTitle || 'Imported note',
       body: text || '',
-      tags: [], ticker: null, outlook: null,
+      tags: [], ticker: null, outlook: null, positionKey: null, purchases: [],
       created: new Date().toISOString(),
       updated: new Date().toISOString()
     };
@@ -314,6 +332,13 @@
         };
         if (k === 'title') note.title = unq(v);
         else if (k === 'ticker') note.ticker = unq(v).toUpperCase() || null;
+        else if (k === 'position_key') note.positionKey = unq(v) || null;
+        else if (k === 'purchases_json') {
+          try {
+            var purchases = JSON.parse(unq(v));
+            note.purchases = Array.isArray(purchases) ? purchases : [];
+          } catch (e) { note.purchases = []; }
+        }
         else if (k === 'tags') {
           var inner = v.replace(/^\[|\]$/g, '');
           note.tags = inner ? inner.split(',').map(function (t) { return unq(t); }).filter(Boolean) : [];
@@ -327,6 +352,11 @@
       });
       if (outlook.stance) note.outlook = outlook;
     }
+
+    /* The readable purchase table is generated from purchases_json on
+       export; remove it from the editable note body when importing so
+       repeated Obsidian round trips never duplicate the table. */
+    note.body = String(note.body || '').replace(/<!-- pn-purchases:start -->[\s\S]*?<!-- pn-purchases:end -->\s*/g, '');
 
     /* Inline #tags in the body get folded into the tag list too. */
     var inlineTags = (note.body.match(/(^|\s)#([a-z0-9][\w/-]*)/gi) || [])

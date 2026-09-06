@@ -78,7 +78,7 @@ Row 5+  Data rows:       <ticker/label> | <number> | Shares|Units|USD | <notes>
 
 **Parsing rule:** walk rows after row 3. A row is a section header when col A equals one of the five platform names AND col B = "Amount". Rows until the next fully-blank row belong to that platform.
 
-**Mixed units — critical:** you cannot sum column B across rows. Shares, coins, and dollars are mixed. v1 shows amounts with their units and does NOT compute a total portfolio value (live-price conversion is a deliberate later phase — no price API chosen yet).
+**Mixed units — critical:** you cannot sum column B across rows. Shares, coins, and dollars are mixed. The tracker first classifies each row, then values share and coin counts with baked, manual, or live read-only quotes. Any unpriced row is excluded from the dollar total and identified in the interface.
 
 ### 3.3 Normalized model (what the Action emits)
 
@@ -124,7 +124,9 @@ Tint for fills: blend 85% toward the page background rather than white (dark sit
 - **Month switcher** — mono tab strip of discovered months, newest active.
 - **Platform sections** — card per platform: color dot + name + holding count; rows: label / amount+unit (tabular-nums, mono) / notes muted.
 - **Header** — "Fetched <date>" timestamp from `fetchedAt` + the sheet's own note line.
-- **No totals row** (see mixed-units rule) — a muted footnote explains why: "Counts, not valuations — live pricing is a later phase."
+- **Valuation summary** — totals only normalized dollar values and clearly identifies unpriced rows. The source label states whether prices are baked, cached, manual, or live.
+- **Stock chart** — charts included equity positions after unlock, with price, volume, range controls, and position context. See §8.
+- **Stock row details** — a right-side disclosure arrow opens an encrypted purchase journal with dated buy lots, derived cost metrics, and an internal note that round-trips through the Obsidian export.
 - Wrapper page (`/tools/tracker/`) carries `<meta name="robots" content="noindex">` and is excluded from sitemap.xml.
 
 ## 6. Action workflow — template to adapt
@@ -164,3 +166,7 @@ jobs:
 - [ ] Wrong password → StatiCrypt prompt again; page source shows ciphertext only.
 - [ ] Sheet shared with the service account as **Viewer** only.
 - [ ] If the key ever leaks: revoke in Google Cloud Console → Credentials, regenerate, update the secret.
+
+## 8. Stock chart roadmap
+
+The chart experience, provider boundary, accessibility requirements, phased enhancements, and validation criteria are maintained in [STOCK_CHART_PLAN.md](STOCK_CHART_PLAN.md).

@@ -26,6 +26,7 @@
 
   var KEY_STORE = 'pn.prices.cfg';
   var CACHE_STORE = 'pn.prices.cache';
+  var HISTORY_CACHE_STORE = 'pn.prices.history.cache';
   var CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
 
   // ---------------------------------------------------------- config
@@ -42,7 +43,7 @@
   }
 
   function clearCfg() {
-    try { localStorage.removeItem(KEY_STORE); localStorage.removeItem(CACHE_STORE); }
+    try { localStorage.removeItem(KEY_STORE); localStorage.removeItem(CACHE_STORE); localStorage.removeItem(HISTORY_CACHE_STORE); }
     catch (e) { /* ignore */ }
   }
 
@@ -149,21 +150,58 @@
     return out;
   }
 
-  async function fetchTwelveDataHistory(symbol, apikey) {
+  function historyDays(range) {
+    return ({ '1M': 35, '3M': 100, '6M': 190, '1Y': 370 })[range] || 100;
+  }
+
+  function historyPoints(range) {
+    return ({ '1M': 22, '3M': 66, '6M': 132, '1Y': 252 })[range] || 66;
+  }
+
+  function historyCacheKey(provider, symbol, range) {
+    return [provider || 'unknown', symbol, range || '3M'].join('|');
+  }
+
+  function loadHistoryCache(key) {
+    try {
+      var all = JSON.parse(localStorage.getItem(HISTORY_CACHE_STORE) || '{}') || {};
+      var hit = all[key];
+      if (!hit || !hit.at || Date.now() - hit.at > CACHE_TTL_MS || !Array.isArray(hit.series)) return null;
+      return hit.series;
+    } catch (e) { return null; }
+  }
+
+  function saveHistoryCache(key, series) {
+    try {
+      var all = JSON.parse(localStorage.getItem(HISTORY_CACHE_STORE) || '{}') || {};
+      all[key] = { at: Date.now(), series: series };
+      Object.keys(all).forEach(function (cacheKey) {
+        if (!all[cacheKey].at || Date.now() - all[cacheKey].at > 24 * 60 * 60 * 1000) delete all[cacheKey];
+      });
+      localStorage.setItem(HISTORY_CACHE_STORE, JSON.stringify(all));
+    } catch (e) { /* ignore */ }
+  }
+
+  async function fetchTwelveDataHistory(symbol, apikey, range) {
+    var outputsize = historyPoints(range);
     var url = 'https://api.twelvedata.com/time_series?symbol=' + encodeURIComponent(symbol) +
-      '&interval=1day&outputsize=90&apikey=' + encodeURIComponent(apikey);
+      '&interval=1day&outputsize=' + outputsize + '&apikey=' + encodeURIComponent(apikey);
     var res = await fetch(url);
     if (!res.ok) throw new Error('Twelve Data returned ' + res.status);
     var json = await res.json();
     if (json && json.status === 'error') throw new Error(json.message || 'Twelve Data rejected the request');
     return (json.values || []).map(function (row) {
-      return { label: String(row.datetime || '').slice(5), value: parseFloat(row.close) };
+      return {
+        label: String(row.datetime || '').slice(5), date: String(row.datetime || ''),
+        value: parseFloat(row.close), open: parseFloat(row.open), high: parseFloat(row.high),
+        low: parseFloat(row.low), close: parseFloat(row.close), volume: parseFloat(row.volume)
+      };
     }).filter(function (row) { return isFinite(row.value); }).reverse();
   }
 
-  async function fetchFinnhubHistory(symbol, apikey) {
+  async function fetchFinnhubHistory(symbol, apikey, range) {
     if (symbol.indexOf('/') !== -1) throw new Error('Finnhub history does not cover crypto symbols');
-    var to = Math.floor(Date.now() / 1000), from = to - (100 * 24 * 60 * 60);
+    var to = Math.floor(Date.now() / 1000), from = to - (historyDays(range) * 24 * 60 * 60);
     var url = 'https://finnhub.io/api/v1/stock/candle?symbol=' + encodeURIComponent(symbol) +
       '&resolution=D&from=' + from + '&to=' + to + '&token=' + encodeURIComponent(apikey);
     var res = await fetch(url);
@@ -171,19 +209,29 @@
     var json = await res.json();
     if (!json || json.s !== 'ok') throw new Error('No daily history returned for ' + symbol);
     return (json.t || []).map(function (t, i) {
-      return { label: new Date(t * 1000).toISOString().slice(5, 10), value: parseFloat(json.c[i]) };
+      var date = new Date(t * 1000).toISOString().slice(0, 10);
+      return {
+        label: date.slice(5), date: date, value: parseFloat(json.c[i]),
+        open: parseFloat(json.o[i]), high: parseFloat(json.h[i]), low: parseFloat(json.l[i]),
+        close: parseFloat(json.c[i]), volume: parseFloat(json.v[i])
+      };
     }).filter(function (row) { return isFinite(row.value); });
   }
 
   function history(symbol, opts) {
     opts = opts || {};
     var cfg = opts.cfg || loadCfg();
+    var range = opts.range || '3M';
     if (!cfg.apikey || cfg.provider === 'manual') {
       return Promise.reject(new Error('Choose a live price provider and add its API key first'));
     }
-    return cfg.provider === 'finnhub'
-      ? fetchFinnhubHistory(symbol, cfg.apikey)
-      : fetchTwelveDataHistory(symbol, cfg.apikey);
+    var cacheKey = historyCacheKey(cfg.provider, symbol, range);
+    var cached = !opts.force && loadHistoryCache(cacheKey);
+    if (cached) return Promise.resolve(cached);
+    var request = cfg.provider === 'finnhub'
+      ? fetchFinnhubHistory(symbol, cfg.apikey, range)
+      : fetchTwelveDataHistory(symbol, cfg.apikey, range);
+    return request.then(function (series) { saveHistoryCache(cacheKey, series); return series; });
   }
 
   /* Resolve quotes for a set of holdings.

@@ -476,12 +476,62 @@
           return true;
         });
       },
+      /* Inline purchase journals in the portfolio table use the same
+         encrypted stock vault and export as ordinary Obsidian notes. */
+      getPositionJournal: function (key) {
+        if (!vault.isUnlocked()) return null;
+        return vault.list().filter(function (n) { return n.positionKey === key; })[0] || null;
+      },
+      savePositionJournal: function (fields) {
+        if (!vault.isUnlocked()) return Promise.resolve(false);
+        fields = fields || {};
+        var key = String(fields.positionKey || '');
+        if (!key) return Promise.resolve(false);
+        var hit = vault.list().filter(function (n) { return n.positionKey === key; })[0];
+        var patch = {
+          title: String(fields.title || fields.ticker || 'Position') + ' purchase journal',
+          ticker: String(fields.ticker || '').toUpperCase() || null,
+          positionKey: key,
+          purchases: Array.isArray(fields.purchases) ? fields.purchases : [],
+          body: String(fields.body || ''),
+          tags: ['portfolio', 'purchases']
+        };
+        var write = hit ? vault.update(hit.id, patch) : vault.create_note(patch);
+        return write.then(function (note) {
+          renderAll();
+          return note;
+        });
+      },
+      openPositionJournal: function (fields) {
+        if (!vault.isUnlocked()) return false;
+        fields = fields || {};
+        var key = String(fields.positionKey || '');
+        var hit = vault.list().filter(function (n) { return n.positionKey === key; })[0];
+        if (hit) {
+          state.selected = hit.id;
+          state.preview = false;
+          renderAll();
+          return true;
+        }
+        return vault.create_note({
+          title: String(fields.title || fields.ticker || 'Position') + ' purchase journal',
+          ticker: String(fields.ticker || '').toUpperCase() || null,
+          positionKey: key,
+          purchases: [], body: '', tags: ['portfolio', 'purchases']
+        }).then(function (note) {
+          state.selected = note.id;
+          state.preview = false;
+          renderAll();
+          return true;
+        });
+      },
       /* used by the tracker page to jump straight into a ticker's note */
       openTicker: function (ticker) {
         if (!vault.isUnlocked()) return false;
-        var hit = vault.list().filter(function (n) {
+        var matches = vault.list().filter(function (n) {
           return (n.ticker || '').toUpperCase() === String(ticker).toUpperCase();
-        })[0];
+        });
+        var hit = matches.filter(function (n) { return !n.positionKey; })[0] || matches[0];
         if (hit) { state.selected = hit.id; }
         else {
           return vault.create_note({ title: ticker + ' outlook', ticker: ticker })

@@ -164,7 +164,8 @@
 
   function bars(el, rows, opts) {
     opts = opts || {};
-    rows = clean(rows).slice().sort(function (a, b) { return b.value - a.value; });
+    rows = clean(rows).slice();
+    if (!opts.keepOrder) rows.sort(function (a, b) { return b.value - a.value; });
     if (opts.limit) rows = rows.slice(0, opts.limit);
     if (!rows.length) return empty(el, opts.emptyMessage);
 
@@ -326,7 +327,18 @@
     var w = 820, h = 352, padL = 66, padR = 24, padT = 20, priceBottom = 248,
         volumeTop = 276, volumeBottom = 322, plotW = w - padL - padR, plotH = priceBottom - padT;
     var vals = pts.map(function (p) { return Number(p.value); });
-    var rawMin = Math.min.apply(null, vals), rawMax = Math.max.apply(null, vals);
+    /* Overlay series (e.g. EMAs) share the price scale, so their finite
+       values must widen the axis or a long-period average would clip. */
+    var overlays = (opts.overlays || []).filter(function (o) {
+      return o && Array.isArray(o.values) && o.values.some(function (v) { return Number.isFinite(v); });
+    });
+    var scaleVals = vals.slice();
+    overlays.forEach(function (o) {
+      /* Number.isFinite, not isFinite — warm-up slots are null and
+         isFinite(null) is true, which would drag the scale to zero. */
+      o.values.forEach(function (v) { if (Number.isFinite(v)) scaleVals.push(v); });
+    });
+    var rawMin = Math.min.apply(null, scaleVals), rawMax = Math.max.apply(null, scaleVals);
     var breathing = Math.max((rawMax - rawMin) * 0.1, rawMax * 0.012, 0.01);
     var min = rawMin - breathing, max = rawMax + breathing, span = max - min;
     var volumes = pts.map(function (p) { return isFinite(p.volume) ? Number(p.volume) : 0; });
@@ -369,6 +381,17 @@
       '<stop offset="0%" stop-color="' + accent + '" stop-opacity=".34"/><stop offset="100%" stop-color="' + accent + '" stop-opacity="0"/></linearGradient></defs>' +
       grid + '<line x1="' + padL + '" y1="' + firstY.toFixed(1) + '" x2="' + (w - padR) + '" y2="' + firstY.toFixed(1) + '" stroke="' + accent + '" stroke-width="1" stroke-dasharray="4 6" opacity=".36"/>' +
       '<path d="' + areaPath + '" fill="url(#' + gid + ')"/><path d="' + linePath + '" fill="none" stroke="' + accent + '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+      overlays.map(function (o) {
+        var d = '', pen = false;
+        o.values.forEach(function (v, i) {
+          if (i >= pts.length) return;
+          if (!Number.isFinite(v)) { pen = false; return; }
+          d += (pen ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(v).toFixed(1);
+          pen = true;
+        });
+        return d ? '<path d="' + d + '" fill="none" stroke="' + (o.color || MUT) +
+          '" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" opacity=".92"/>' : '';
+      }).join('') +
       '<line x1="' + padL + '" y1="262" x2="' + (w - padR) + '" y2="262" stroke="' + LINE2 + '"/><text x="' + padL + '" y="272" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="9" letter-spacing="1.2">VOLUME</text>' +
       volumeBars + xLabels +
       '<line class="pn-market-cross" x1="0" y1="' + padT + '" x2="0" y2="' + volumeBottom + '" stroke="' + MUT + '" stroke-width="1" stroke-dasharray="3 4" visibility="hidden"/>' +
@@ -378,7 +401,13 @@
     var id = ids();
     id.title.text = opts.title || 'Stock price history';
     id.desc.text = pts.length + ' daily closing prices from ' + pts[0].label + ' to ' + pts[pts.length - 1].label + ', with volume when available.';
-    el.innerHTML = '<div class="market-frame">' + wrapSvg(inner, w, h, id.title, id.desc, 'pnchart-market') +
+    var overlayLegend = overlays.length
+      ? '<div class="market-overlaylegend">' + overlays.map(function (o) {
+          return '<span><i style="background:' + (o.color || MUT) + '"></i>' + esc(o.label || '') + '</span>';
+        }).join('') + '</div>'
+      : '';
+
+    el.innerHTML = '<div class="market-frame">' + overlayLegend + wrapSvg(inner, w, h, id.title, id.desc, 'pnchart-market') +
       '<div class="market-tooltip" hidden></div></div>' + srTable(pts.map(function (p) { return { label: p.date || p.label, value: p.value }; }), 'money');
 
     var svg = el.querySelector('.pnchart-market');
@@ -404,7 +433,13 @@
       tooltip.style.top = Math.max(8, y / h * 100 - 4) + '%';
       tooltip.innerHTML = '<b>' + esc(p.date || p.label) + '</b><span>Close ' + esc(money(p.value)) + '</span>' +
         (isFinite(p.high) && isFinite(p.low) ? '<span>High ' + esc(money(p.high)) + ' · Low ' + esc(money(p.low)) + '</span>' : '') +
-        '<span>' + (dayMove == null ? '' : (dayMove >= 0 ? '+' : '') + dayMove.toFixed(2) + '% day') + (maxVolume ? ' · Vol ' + esc(compactNumber(p.volume)) : '') + '</span>';
+        '<span>' + (dayMove == null ? '' : (dayMove >= 0 ? '+' : '') + dayMove.toFixed(2) + '% day') + (maxVolume ? ' · Vol ' + esc(compactNumber(p.volume)) : '') + '</span>' +
+        overlays.map(function (o) {
+          var v = o.values[activeIndex];
+          return Number.isFinite(v)
+            ? '<span style="color:' + (o.color || MUT) + '">' + esc(o.label || '') + ' ' + esc(money(v)) + '</span>'
+            : '';
+        }).join('');
     }
     function hidePoint() {
       cross.setAttribute('visibility', 'hidden'); dot.setAttribute('visibility', 'hidden'); tooltip.hidden = true;
@@ -455,12 +490,156 @@
     );
   }
 
+  // ---------- Obsidian-style vault graph ----------
+
+  /* A small force-directed graph, laid out synchronously (a few
+     hundred spring iterations, no animation loop) and rendered as SVG.
+     Nodes: {id, label, type ('hub'|'project'|'thought'|'note'), size?}
+     Links: {source, target}
+     Hover a node to highlight its neighbourhood; click fires
+     opts.onSelect(node). */
+  function graph(el, data, opts) {
+    opts = opts || {};
+    var nodes = (data && data.nodes || []).slice();
+    var links = (data && data.links || []).filter(function (l) { return l && l.source && l.target; });
+    if (!nodes.length) return empty(el, opts.emptyMessage || 'Nothing to map yet.');
+
+    var w = 760, h = 430, cx = w / 2, cy = h / 2;
+    var TYPE_COLOR = { hub: ACC, project: '#4CC9F0', thought: '#c084fc', note: '#8b95a5' };
+
+    var index = {};
+    nodes.forEach(function (n, i) {
+      index[n.id] = i;
+      var golden = i * 2.39996323;
+      n.x = cx + Math.cos(golden) * (60 + 24 * Math.sqrt(i));
+      n.y = cy + Math.sin(golden) * (42 + 17 * Math.sqrt(i));
+      n.vx = 0; n.vy = 0;
+      n.r = n.type === 'hub' ? 15 : n.type === 'project' ? 10 : 7;
+      if (n.size) n.r = Math.max(n.r, Math.min(17, n.r + n.size));
+    });
+    var edges = links.map(function (l) {
+      return { a: index[l.source], b: index[l.target] };
+    }).filter(function (e) { return e.a != null && e.b != null && e.a !== e.b; });
+
+    var degree = nodes.map(function () { return 0; });
+    edges.forEach(function (e) { degree[e.a]++; degree[e.b]++; });
+
+    for (var iter = 0; iter < 260; iter++) {
+      var t = 1 - iter / 260;
+      /* repulsion */
+      for (var i = 0; i < nodes.length; i++) {
+        for (var j = i + 1; j < nodes.length; j++) {
+          var dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
+          var d2 = dx * dx + dy * dy || 0.01, d = Math.sqrt(d2);
+          var f = Math.min(14, 2600 / d2) * t;
+          var fx = dx / d * f, fy = dy / d * f;
+          nodes[i].vx -= fx; nodes[i].vy -= fy;
+          nodes[j].vx += fx; nodes[j].vy += fy;
+        }
+      }
+      /* springs */
+      edges.forEach(function (e) {
+        var a = nodes[e.a], b = nodes[e.b];
+        var dx = b.x - a.x, dy = b.y - a.y;
+        var d = Math.sqrt(dx * dx + dy * dy) || 0.01;
+        var rest = 74 + (a.r + b.r);
+        var f = (d - rest) * 0.018 * t;
+        var fx = dx / d * f, fy = dy / d * f;
+        a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy;
+      });
+      /* mild gravity to the center + integrate */
+      nodes.forEach(function (n) {
+        n.vx += (cx - n.x) * 0.004 * t;
+        n.vy += (cy - n.y) * 0.004 * t;
+        n.x += Math.max(-9, Math.min(9, n.vx));
+        n.y += Math.max(-9, Math.min(9, n.vy));
+        n.vx *= 0.62; n.vy *= 0.62;
+        n.x = Math.max(26, Math.min(w - 26, n.x));
+        n.y = Math.max(24, Math.min(h - 24, n.y));
+      });
+    }
+
+    var edgeSvg = edges.map(function (e, i) {
+      var a = nodes[e.a], b = nodes[e.b];
+      return '<line class="vg-edge" data-a="' + e.a + '" data-b="' + e.b + '" x1="' + a.x.toFixed(1) +
+        '" y1="' + a.y.toFixed(1) + '" x2="' + b.x.toFixed(1) + '" y2="' + b.y.toFixed(1) +
+        '" stroke="' + LINE2 + '" stroke-width="1" opacity=".7"/>';
+    }).join('');
+
+    var nodeSvg = nodes.map(function (n, i) {
+      var color = TYPE_COLOR[n.type] || TYPE_COLOR.note;
+      var labelY = n.y + n.r + 13;
+      return '<g class="vg-node" data-i="' + i + '" tabindex="0" role="button" aria-label="' + esc(n.label) + '">' +
+        '<circle cx="' + n.x.toFixed(1) + '" cy="' + n.y.toFixed(1) + '" r="' + (n.r + 7) +
+          '" fill="' + color + '" opacity="0" class="vg-halo"/>' +
+        '<circle cx="' + n.x.toFixed(1) + '" cy="' + n.y.toFixed(1) + '" r="' + n.r +
+          '" fill="' + color + '" opacity="' + (n.type === 'note' ? '.66' : '.9') +
+          '" stroke="#0e1116" stroke-width="1.6"/>' +
+        '<text x="' + n.x.toFixed(1) + '" y="' + Math.min(h - 6, labelY).toFixed(1) +
+          '" text-anchor="middle" fill="' + (n.type === 'hub' ? INK : MUT) +
+          '" font-family="IBM Plex Mono,monospace" font-size="' + (n.type === 'hub' ? 11 : 9.5) + '">' +
+          esc(String(n.label).length > 22 ? String(n.label).slice(0, 21) + '…' : n.label) + '</text>' +
+        '</g>';
+    }).join('');
+
+    var id = ids();
+    id.title.text = opts.title || 'Vault graph';
+    id.desc.text = nodes.length + ' notes and projects, ' + edges.length + ' links.';
+
+    el.innerHTML = wrapSvg(edgeSvg + nodeSvg, w, h, id.title, id.desc, 'pnchart-graph') +
+      '<div class="vg-legend">' +
+      ['hub', 'project', 'thought', 'note'].map(function (k) {
+        var names = { hub: 'vault', project: 'project', thought: 'AI thought', note: 'note' };
+        return '<span><i style="background:' + TYPE_COLOR[k] + '"></i>' + names[k] + '</span>';
+      }).join('') + '</div>';
+
+    var svg = el.querySelector('.pnchart-graph');
+    var edgeEls = svg.querySelectorAll('.vg-edge');
+
+    function setFocus(i) {
+      var neighbours = {};
+      if (i != null) {
+        neighbours[i] = true;
+        edges.forEach(function (e) {
+          if (e.a === i) neighbours[e.b] = true;
+          if (e.b === i) neighbours[e.a] = true;
+        });
+      }
+      Array.prototype.forEach.call(svg.querySelectorAll('.vg-node'), function (g) {
+        var gi = +g.dataset.i;
+        g.style.opacity = (i == null || neighbours[gi]) ? '1' : '.22';
+        g.querySelector('.vg-halo').setAttribute('opacity', gi === i ? '.18' : '0');
+      });
+      Array.prototype.forEach.call(edgeEls, function (line) {
+        var on = i == null || +line.dataset.a === i || +line.dataset.b === i;
+        line.setAttribute('opacity', on ? (i == null ? '.7' : '1') : '.12');
+        line.setAttribute('stroke', on && i != null ? ACC : LINE2);
+      });
+    }
+
+    Array.prototype.forEach.call(svg.querySelectorAll('.vg-node'), function (g) {
+      var i = +g.dataset.i;
+      g.addEventListener('pointerenter', function () { setFocus(i); });
+      g.addEventListener('focus', function () { setFocus(i); });
+      g.addEventListener('pointerleave', function () { setFocus(null); });
+      g.addEventListener('blur', function () { setFocus(null); });
+      function pick(ev) {
+        if (opts.onSelect) { ev.preventDefault(); opts.onSelect(nodes[i]); }
+      }
+      g.addEventListener('click', pick);
+      g.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') pick(ev);
+      });
+    });
+  }
+
   global.PNCharts = {
     donut: donut,
     bars: bars,
     stack: stack,
     line: line,
     market: market,
+    graph: graph,
     spark: spark,
     money: money,
     pct: pct,

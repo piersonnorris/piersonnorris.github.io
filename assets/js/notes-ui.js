@@ -571,6 +571,16 @@
         renderAll();
         return true;
       },
+      /* used by the vault graph to jump straight to a note */
+      openNoteById: function (id) {
+        if (!vault.isUnlocked()) return false;
+        var hit = vault.get(id);
+        if (!hit) return false;
+        state.selected = hit.id;
+        state.preview = true;
+        renderAll();
+        return true;
+      },
       /* used by the tracker page to jump straight into a ticker's note */
       openTicker: function (ticker) {
         if (!vault.isUnlocked()) return false;

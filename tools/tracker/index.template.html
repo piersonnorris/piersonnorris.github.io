@@ -361,6 +361,9 @@
     var calendarAnchor = window.PNCalendar.anchorKey(new Date()), calendarSelectedDate = window.PNCalendar.dateKey(new Date()), calendarEditingId = null, privateCalendarEvents = [];
     var calendarFilters = { 'ex-dividend': true, payment: true, earnings: true, private: true };
     var projectGoals = [], projectEditingId = null, projectBoardReady = false;
+    var demoMode = false;
+    var EMA_PERIODS = [10, 20, 50, 200];
+    var EMA_COLORS = { 10: '#4CC9F0', 20: '#E8A33D', 50: '#c084fc', 200: '#f472b6' };
 
     // ------------------------------------------------------ helpers
 
@@ -444,18 +447,27 @@
     var form = $('lockcard'), pinEl = $('pin'), goEl = $('go'), msgEl = $('msg');
 
     if (!PAYLOAD) {
-      /* The committed build source never opens a stock surface. Only the
-         generated encrypted index can unlock. */
-      $('glyph').textContent = 'BUILD SOURCE';
+      /* Build source = demo page. Per Pierson (2026-09-05) the login here
+         is deliberately fake for now: pressing Unlock enters with NO PIN
+         and shows only the fabricated SAMPLE fixture. The generated
+         encrypted index (real holdings) still requires the real PIN —
+         this bypass only exists while PAYLOAD is null. */
+      $('glyph').textContent = 'DEMO MODE';
       pinEl.disabled = true;
-      goEl.disabled = true;
-      goEl.textContent = 'Unavailable';
-      msgEl.textContent = 'Open /tools/tracker/ to use the password-protected tracker.';
+      pinEl.placeholder = 'no PIN needed';
+      goEl.textContent = 'Enter demo';
+      msgEl.textContent = 'Demo page — the button just lets you in. Sample data only.';
     }
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      if (!PAYLOAD) return;
+      if (!PAYLOAD) {
+        /* fake login: straight through to the sample console */
+        $('lock').style.display = 'none';
+        $('vault').style.display = 'block';
+        boot(SAMPLE, null);
+        return;
+      }
       var pin = pinEl.value.trim();
       if (!pin) { pinEl.focus(); return; }
       goEl.disabled = true; msgEl.className = ''; msgEl.textContent = 'decrypting…';
@@ -474,7 +486,7 @@
     });
 
     $('relock').addEventListener('click', function () {
-      DATA = null; valued = []; sessionPin = null; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
+      DATA = null; valued = []; sessionPin = null; demoMode = false; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
       if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
       $('vault').style.display = 'none';
       $('lock').style.display = 'grid';
@@ -492,15 +504,37 @@
          this public template; browser edits stay only in this unlocked session. */
       dividendDefaults = data.dividendCalendar || {};
       sessionPin = pin;
+      demoMode = !!data.sample;
       activeMonth = 0;
       dividendSyncDone = false;
+
+      if (demoMode) {
+        /* Give the demo real-looking (but fabricated) dividend dates
+           relative to today, a seeded project board, and demo events, so
+           the calendar, chart, and board all have visuals to show off. */
+        if (!Object.keys(dividendDefaults).length) {
+          var soon = function (days) {
+            var d = new Date(); d.setDate(d.getDate() + days);
+            return d.toISOString().slice(0, 10);
+          };
+          dividendDefaults = {
+            AAPL: { status: 'payer', annual: 1.04, frequency: 'quarterly', exDate: soon(6), payDate: soon(13), payment: 0.26 },
+            VTI: { status: 'payer', annual: 3.58, frequency: 'quarterly', exDate: soon(17), payDate: soon(20), payment: 0.895 },
+            VDE: { status: 'payer', annual: 4.03, frequency: 'quarterly', exDate: soon(24), payDate: soon(26), payment: 1.0 }
+          };
+        }
+        projectBoardReady = true;
+        if (!projectGoals.length) projectGoals = window.PNTaskboard.seed();
+      }
+
       setupTrackerTabs();
       activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#projects' ? 'projects' : location.hash === '#calendar' ? 'calendar' : location.hash === '#dividends' ? 'dividends' : 'positions', false);
 
       if (data.sample) {
         $('samplebanner').innerHTML =
-          '<div class="banner"><b>Sample data.</b> This is the unbuilt template — every number below is fabricated. ' +
-          'The scheduled secure build bakes in real encrypted holdings; this preview remains fabricated.</div>';
+          '<div class="banner"><b>Demo mode.</b> The login was bypassed on purpose — every number, dividend date, and ' +
+          'board item below is fabricated sample data. The real tracker is a separate encrypted build that still ' +
+          'requires the PIN.</div>';
       }
 
       renderMonths();
@@ -746,6 +780,37 @@
       });
     }
 
+    function loadEmaState() {
+      var def = { 10: true, 20: true, 50: true, 200: true };
+      try {
+        var saved = JSON.parse(localStorage.getItem('pn.chart.ema') || '{}');
+        EMA_PERIODS.forEach(function (p) { if (typeof saved[p] === 'boolean') def[p] = saved[p]; });
+      } catch (e) { /* defaults */ }
+      return def;
+    }
+
+    function saveEmaState(state) {
+      try { localStorage.setItem('pn.chart.ema', JSON.stringify(state)); } catch (e) { /* ignore */ }
+    }
+
+    /* Build EMA overlay series for the market chart, honouring the
+       toggles. Periods longer than the loaded history are skipped and
+       reported so the status line can say why. */
+    function emaOverlays(series) {
+      var closes = series.map(function (p) { return p.value; });
+      var state = loadEmaState(), overlays = [], skipped = [];
+      EMA_PERIODS.forEach(function (period) {
+        if (!state[period]) return;
+        if (closes.length < period) { skipped.push(period); return; }
+        overlays.push({
+          label: 'EMA ' + period,
+          color: EMA_COLORS[period],
+          values: window.PNPrices.ema(closes, period)
+        });
+      });
+      return { overlays: overlays, skipped: skipped };
+    }
+
     function renderStockChart() {
       var symbols = {};
       valued.forEach(function (r) { if (r.kind === 'Equity' && r.symbol) symbols[r.symbol] = true; });
@@ -773,7 +838,11 @@
           return '<button type="button" class="chip" data-symbol="' + esc(symbol) + '" aria-pressed="' + (symbol === activeChartSymbol) + '">' + esc(symbol.replace('/USD', '')) + '</button>';
         }).join('') + '</div><div class="rangebar" aria-label="Chart range">' + ['1M', '3M', '6M', '1Y'].map(function (range) {
           return '<button type="button" class="rangebtn" data-range="' + range + '" aria-pressed="' + (range === activeChartRange) + '">' + range + '</button>';
-        }).join('') + '</div></div><div class="market-chart-shell" id="c-stock"></div><div class="market-kpis" id="marketkpis">' +
+        }).join('') + '</div><div class="emabar" role="group" aria-label="Moving-average overlays"><span class="lbl">EMA</span>' +
+        EMA_PERIODS.map(function (period) {
+          return '<button type="button" class="emabtn" data-ema="' + period + '" style="--ema:' + EMA_COLORS[period] +
+            '" aria-pressed="' + !!loadEmaState()[period] + '">' + period + '</button>';
+        }).join('') + '<button type="button" class="emabtn off" data-ema="off">Turn off</button></div></div><div class="market-chart-shell" id="c-stock"></div><div class="market-kpis" id="marketkpis">' +
         '<div class="market-kpi"><span>Range return</span><b>—</b></div><div class="market-kpi"><span>Range high</span><b>—</b></div><div class="market-kpi"><span>Range low</span><b>—</b></div><div class="market-kpi"><span>Average close</span><b>—</b></div><div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' shares</b></div>' +
         '</div><p class="stockchart-status" id="stockchartstatus"></p>';
       Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-symbol]'), function (button) {
@@ -782,16 +851,23 @@
       Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-range]'), function (button) {
         button.addEventListener('click', function () { activeChartRange = button.dataset.range; renderStockChart(); });
       });
-      var cfg = window.PNPrices.loadCfg();
-      if (!cfg.apikey || cfg.provider === 'manual') {
-        $('c-stock').innerHTML = '<div class="market-setup"><div><b>Connect a read-only market source</b><p>Open Price source above, choose Twelve Data or Finnhub, and add an API key. The chart requests history only after the tracker is unlocked.</p></div></div>';
-        $('stockchartstatus').textContent = 'No symbol leaves this browser until you configure a live source.';
-        return;
-      }
-      $('c-stock').innerHTML = '<div class="market-setup"><div><b>Loading ' + esc(activeChartSymbol) + '</b><p>Fetching ' + esc(activeChartRange) + ' of daily price and volume history…</p></div></div>';
-      $('stockchartstatus').textContent = 'Loading from ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + '…';
+      Array.prototype.forEach.call($('stockchart').querySelectorAll('[data-ema]'), function (button) {
+        button.addEventListener('click', function () {
+          var state = loadEmaState();
+          if (button.dataset.ema === 'off') {
+            EMA_PERIODS.forEach(function (period) { state[period] = false; });
+          } else {
+            var period = Number(button.dataset.ema);
+            state[period] = !state[period];
+          }
+          saveEmaState(state);
+          renderStockChart();
+        });
+      });
+
       var requestedSymbol = activeChartSymbol, requestedRange = activeChartRange;
-      window.PNPrices.history(requestedSymbol, { cfg: cfg, range: requestedRange }).then(function (series) {
+
+      function renderSeries(series, sourceLabel) {
         if (activeChartSymbol !== requestedSymbol || activeChartRange !== requestedRange) return;
         if (!Array.isArray(series) || series.length < 2) throw new Error('Not enough daily history was returned for this range.');
         var first = series[0].value, latest = series[series.length - 1].value;
@@ -807,11 +883,37 @@
           '<div class="market-kpi"><span>Range low</span><b>' + esc(money(low)) + '</b></div>' +
           '<div class="market-kpi"><span>Average close</span><b>' + esc(money(average)) + '</b></div>' +
           '<div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' sh · ' + (holding.value ? esc(money(holding.value)) : 'unpriced') + '</b></div>';
+        var indicators = emaOverlays(series);
         window.PNCharts.market($('c-stock'), series, {
           title: requestedSymbol + ' ' + requestedRange + ' price and volume',
+          overlays: indicators.overlays,
           emptyMessage: 'Not enough price history returned for this symbol.'
         });
-        $('stockchartstatus').textContent = series.length + ' sessions · ' + requestedSymbol + ' · ' + requestedRange + ' · ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + ' · cached for 15 minutes.';
+        var emaNote = indicators.skipped.length
+          ? ' · EMA ' + indicators.skipped.join('/') + ' needs a longer range than ' + requestedRange + '.'
+          : '';
+        $('stockchartstatus').textContent = series.length + ' sessions · ' + requestedSymbol + ' · ' + requestedRange + ' · ' + sourceLabel + emaNote;
+      }
+
+      if (demoMode) {
+        try {
+          renderSeries(window.PNPrices.sampleHistory(requestedSymbol, requestedRange), 'synthetic demo history — fabricated, not market data');
+        } catch (err) {
+          $('stockchartstatus').textContent = err && err.message ? err.message : 'Demo history failed.';
+        }
+        return;
+      }
+
+      var cfg = window.PNPrices.loadCfg();
+      if (!cfg.apikey || cfg.provider === 'manual') {
+        $('c-stock').innerHTML = '<div class="market-setup"><div><b>Connect a read-only market source</b><p>Open Price source above, choose Twelve Data or Finnhub, and add an API key. The chart requests history only after the tracker is unlocked.</p></div></div>';
+        $('stockchartstatus').textContent = 'No symbol leaves this browser until you configure a live source.';
+        return;
+      }
+      $('c-stock').innerHTML = '<div class="market-setup"><div><b>Loading ' + esc(activeChartSymbol) + '</b><p>Fetching ' + esc(activeChartRange) + ' of daily price and volume history…</p></div></div>';
+      $('stockchartstatus').textContent = 'Loading from ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + '…';
+      window.PNPrices.history(requestedSymbol, { cfg: cfg, range: requestedRange }).then(function (series) {
+        renderSeries(series, (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + ' · cached for 15 minutes');
       }).catch(function (err) {
         if (activeChartSymbol !== requestedSymbol || activeChartRange !== requestedRange) return;
         $('c-stock').innerHTML = '<div class="market-setup"><div><b>Chart unavailable</b><p>Could not load ' + esc(requestedSymbol) + ' history from the selected provider.</p></div></div>';
@@ -844,6 +946,7 @@
             '<td class="num">' + (payout ? esc(money(row.shares * payout)) : '—') + '</td><td><input class="dividend-date" data-symbol="' + esc(symbol) + '" data-field="exDate" type="date" value="' + esc(saved.exDate || '') + '" aria-label="Next ex-dividend date for ' + esc(symbol) + '"></td><td><input class="dividend-date" data-symbol="' + esc(symbol) + '" data-field="payDate" type="date" value="' + esc(saved.payDate || '') + '" aria-label="Dividend payment date for ' + esc(symbol) + '"></td></tr>';
         }).join('') + '</tbody></table></div>' +
         '<div class="dividend-chart"><h3>Estimated dividend income</h3><p class="sub">annual income by holding</p><div id="c-dividend"></div></div>' +
+        '<div class="dividend-chart"><h3>Projected payouts — next 12 months</h3><p class="sub">from confirmed pay dates and frequency</p><div id="c-divmonths"></div></div>' +
         '<div class="dividend-calendar" id="dividendcalendar"></div>' +
         '<div class="obsidian-sync"><button class="btn primary" type="button" id="syncdividends">Sync dividends to Obsidian</button><p class="sync-status" id="syncstatus">Creates encrypted ticker notes and a dividend calendar note.</p></div>';
       Array.prototype.forEach.call($('dividends').querySelectorAll('input'), function (input) {
@@ -876,6 +979,48 @@
       window.PNCharts.bars($('c-dividend'), rows, {
         valueKind: 'money', limit: 12, title: 'Estimated annual dividend income',
         emptyMessage: 'Dividend-paying holdings appear here after confirmed payouts are added.'
+      });
+      renderDividendMonths(summary, map);
+    }
+
+    /* Project each payer's payments forward 12 months from its confirmed
+       pay date at its stated frequency, and total the income per month.
+       This is when the money actually lands, not just how much per year. */
+    function renderDividendMonths(summary, map) {
+      var host = $('c-divmonths');
+      if (!host) return;
+      var FREQ = { monthly: 1, quarterly: 3, semiannual: 6, 'semi-annual': 6, annual: 12, yearly: 12 };
+      var today = new Date(); today.setHours(12, 0, 0, 0);
+      var horizon = new Date(today); horizon.setMonth(horizon.getMonth() + 12);
+      var byMonth = {};
+
+      Object.keys(summary.grouped).forEach(function (symbol) {
+        var item = map[symbol] || {};
+        var shares = summary.grouped[symbol].shares;
+        var stepMonths = FREQ[String(item.frequency || '').toLowerCase()] || 3;
+        var perShare = Number(item.payment) ||
+          (Number(item.annual) ? Number(item.annual) / (12 / stepMonths) : 0);
+        if (!perShare || !shares || !item.payDate) return;
+        var pay = new Date(item.payDate + 'T12:00:00');
+        if (!isFinite(pay.getTime())) return;
+        while (pay < today) pay.setMonth(pay.getMonth() + stepMonths);
+        while (pay <= horizon) {
+          var key = pay.getFullYear() + '-' + String(pay.getMonth() + 1).padStart(2, '0');
+          byMonth[key] = (byMonth[key] || 0) + perShare * shares;
+          pay.setMonth(pay.getMonth() + stepMonths);
+        }
+      });
+
+      var rows = Object.keys(byMonth).sort().map(function (key) {
+        var d = new Date(key + '-15T12:00:00');
+        return {
+          label: d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }),
+          value: byMonth[key], color: '#5FAE5A'
+        };
+      });
+      window.PNCharts.bars(host, rows, {
+        valueKind: 'money', keepOrder: true, title: 'Projected dividend payouts by month',
+        emptyMessage: 'Add a payment date and frequency (or annual payout) above and the payout months project here.'
       });
     }
 
@@ -970,6 +1115,12 @@
     }
 
     function savePrivateCalendar() {
+      if (demoMode && !(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked())) {
+        privateCalendarEvents = window.PNCalendar.normalize(privateCalendarEvents).map(function (event) {
+          event.readonly = false; event.source = 'private'; return event;
+        });
+        return Promise.resolve(true);
+      }
       if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) return Promise.resolve(false);
       privateCalendarEvents = window.PNCalendar.normalize(privateCalendarEvents).map(function (event) {
         event.readonly = false; event.source = 'private'; return event;
@@ -1072,6 +1223,13 @@
 
     function saveProjectGoals(statusText) {
       projectGoals = window.PNTaskboard.normalize(projectGoals);
+      if (demoMode && !(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked())) {
+        /* demo board: fully editable, lives only in this tab's memory */
+        renderProjectBoard();
+        var demoStatus = $('projstatus');
+        if (demoStatus && statusText) demoStatus.textContent = statusText + ' (demo — this tab only)';
+        return Promise.resolve(true);
+      }
       if (!stockNotes || !stockNotes.vault || !stockNotes.vault.isUnlocked()) return Promise.resolve(false);
       return stockNotes.saveProjectBoard(projectGoals).then(function (saved) {
         renderProjectBoard();
@@ -1092,7 +1250,8 @@
     function renderProjectBoard() {
       var host = $('portfolio-projects');
       if (!host) return;
-      var vaultReady = !!(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked() && projectBoardReady);
+      var obsidianReady = !!(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked() && projectBoardReady);
+      var vaultReady = obsidianReady || (demoMode && projectBoardReady);
       var goals = window.PNTaskboard.normalize(projectGoals);
       var stats = window.PNTaskboard.metrics(goals, new Date().toISOString().slice(0, 10));
       var today = new Date().toISOString().slice(0, 10);
@@ -1133,7 +1292,8 @@
 
       host.innerHTML = '<div class="proj-head"><div><h2>Portfolio project board</h2><p>Goals, milestones, blockers, and the next concrete action.</p></div><span class="cal-private">encrypted · Obsidian ready</span></div>' +
         '<div class="proj-summary"><div class="proj-stat"><b>' + stats.active + '</b><span>active goals</span></div><div class="proj-stat"><b>' + stats.dueSoon + '</b><span>due next 30 days</span></div><div class="proj-stat"><b>' + stats.blocked + '</b><span>blocked</span></div><div class="proj-stat"><b>' + stats.complete + '</b><span>complete</span></div></div>' +
-        '<div class="proj-toolbar"><p id="projstatus">' + (vaultReady ? 'Changes save into the encrypted stock vault.' : 'Unlocking the encrypted stock vault…') + '</p><div class="proj-actions"><button type="button" class="btn primary" id="projnew"' + (vaultReady ? '' : ' disabled') + '>+ New goal</button><button type="button" class="btn" id="projobsidian"' + (vaultReady ? '' : ' disabled') + '>Open in Obsidian</button></div></div>' + editorHtml + '<div class="proj-boardscroll"><div class="proj-board" aria-label="Portfolio project goals">' + boardHtml + '</div></div>';
+        '<div class="proj-toolbar"><p id="projstatus">' + (obsidianReady ? 'Changes save into the encrypted stock vault.' : vaultReady ? 'Demo board — edits stay in this tab only.' : 'Unlocking the encrypted stock vault…') + '</p><div class="proj-actions"><button type="button" class="btn primary" id="projnew"' + (vaultReady ? '' : ' disabled') + '>+ New goal</button><button type="button" class="btn" id="projobsidian"' + (obsidianReady ? '' : ' disabled') + '>Open in Obsidian</button></div></div>' + editorHtml + '<div class="proj-boardscroll"><div class="proj-board" aria-label="Portfolio project goals">' + boardHtml + '</div></div>' +
+        '<div class="vaultgraph"><h3>Vault graph</h3><p class="sub">projects · AI thoughts · linked notes</p><div id="projgraph"></div></div>';
 
       if ($('projnew')) $('projnew').addEventListener('click', function () { projectEditingId = '__new__'; renderProjectBoard(); var title = $('goalform') && $('goalform').elements.title; if (title) title.focus(); });
       if ($('projobsidian')) $('projobsidian').addEventListener('click', function () {
@@ -1168,6 +1328,96 @@
       });
       Array.prototype.forEach.call(host.querySelectorAll('.proj-link'), function (button) {
         button.addEventListener('click', function () { activateTrackerPanel(button.dataset.link.slice(1), true); });
+      });
+      renderVaultGraph(goals);
+    }
+
+    /* The Obsidian visual: a force-directed map of the board's projects,
+       AI-tagged thoughts, and linked notes. When the encrypted vault is
+       unlocked it draws the real notes and their [[wikilinks]]; in demo
+       mode it draws a fabricated showcase set instead. */
+    function renderVaultGraph(goals) {
+      var host = $('projgraph');
+      if (!host) return;
+
+      var nodes = [{ id: 'hub', label: 'Stock desk vault', type: 'hub' }];
+      var links = [];
+      var seen = { hub: true };
+
+      function addNode(id, label, type, size) {
+        if (seen[id]) return id;
+        seen[id] = true;
+        nodes.push({ id: id, label: label, type: type, size: size || 0 });
+        return id;
+      }
+      function addLink(a, b) { if (a && b && a !== b) links.push({ source: a, target: b }); }
+
+      (goals || []).forEach(function (goal) {
+        addNode('goal:' + goal.id, goal.title, 'project', Math.min(4, (goal.milestones || []).length));
+        addLink('goal:' + goal.id, 'hub');
+      });
+
+      var unlocked = !!(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked());
+      if (unlocked) {
+        var notes = stockNotes.vault.list();
+        var byTitle = {};
+        notes.forEach(function (n) { byTitle[(n.title || '').toLowerCase()] = n; });
+        notes.forEach(function (n) {
+          var tags = (n.tags || []).join(' ').toLowerCase();
+          var type = /\bai\b|thought|idea/.test(tags) ? 'thought' : 'note';
+          addNode('note:' + n.id, n.title || 'Untitled', type, Math.min(4, Math.round((n.body || '').length / 800)));
+        });
+        notes.forEach(function (n) {
+          var linked = false;
+          var re = /\[\[([^\]]+)\]\]/g, m;
+          while ((m = re.exec(n.body || ''))) {
+            var target = byTitle[m[1].toLowerCase()];
+            if (target && target.id !== n.id) { addLink('note:' + n.id, 'note:' + target.id); linked = true; }
+          }
+          /* tie ticker notes to a project that mentions the ticker */
+          (goals || []).forEach(function (goal) {
+            if (n.ticker && (goal.title + ' ' + goal.outcome).toUpperCase().indexOf(n.ticker) !== -1) {
+              addLink('note:' + n.id, 'goal:' + goal.id); linked = true;
+            }
+          });
+          if (!linked) addLink('note:' + n.id, 'hub');
+        });
+      } else if (demoMode) {
+        var thoughts = [
+          ['t1', 'Agent approval gates'], ['t2', 'One prompt, six departments'],
+          ['t3', 'Content waterfall'], ['t4', 'EMA crossover watch'],
+          ['t5', 'Dividend ladder idea'], ['t6', 'AI referral tracking']
+        ];
+        thoughts.forEach(function (t) { addNode(t[0], t[1], 'thought'); });
+        ['SOFI outlook', 'VDE dividend', 'ET distribution', 'Macro notes'].forEach(function (title, i) {
+          addNode('n' + i, title, 'note');
+        });
+        var goalIds = nodes.filter(function (n) { return n.type === 'project'; }).map(function (n) { return n.id; });
+        addLink('t1', goalIds[0] || 'hub'); addLink('t2', goalIds[0] || 'hub');
+        addLink('t3', goalIds[1] || 'hub'); addLink('t4', goalIds[1] || 'hub');
+        addLink('t5', 'n1'); addLink('t6', 'hub');
+        addLink('n0', 'hub'); addLink('n1', 'hub'); addLink('n2', 'n1'); addLink('n3', 'hub');
+        addLink('t4', 'n0');
+      }
+
+      if (nodes.length < 3) {
+        host.innerHTML = '<p class="chart-empty">Add project goals and notes — the graph draws itself from them.</p>';
+        return;
+      }
+
+      window.PNCharts.graph(host, { nodes: nodes, links: links }, {
+        title: 'Vault graph — projects, AI thoughts and notes',
+        onSelect: function (node) {
+          if (node.id.indexOf('note:') === 0 && stockNotes && stockNotes.vault.isUnlocked()) {
+            activateTrackerPanel('obsidian', false);
+            var noteId = node.id.slice(5);
+            if (stockNotes.openNoteById) stockNotes.openNoteById(noteId);
+            document.getElementById('stocknotes').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          } else if (node.id.indexOf('goal:') === 0) {
+            projectEditingId = node.id.slice(5);
+            renderProjectBoard();
+          }
+        }
       });
     }
 

@@ -341,6 +341,67 @@
     return (rows || []).filter(function (r) { return !isFinite(r.value); }).length;
   }
 
+  // ---------------------------------------------------------- indicators
+
+  /* Exponential moving average, aligned to the input: the first
+     (period − 1) slots are null (not enough data yet), slot period − 1
+     is the SMA seed, and every later slot applies the standard
+     k = 2 / (period + 1) smoothing. */
+  function ema(values, period) {
+    var out = new Array(values.length).fill(null);
+    if (!period || period < 1 || values.length < period) return out;
+    var seed = 0, i;
+    for (i = 0; i < period; i++) {
+      if (!isFinite(values[i])) return out;
+      seed += values[i];
+    }
+    var prev = seed / period;
+    out[period - 1] = prev;
+    var k = 2 / (period + 1);
+    for (i = period; i < values.length; i++) {
+      if (!isFinite(values[i])) { out[i] = prev; continue; }
+      prev = values[i] * k + prev * (1 - k);
+      out[i] = prev;
+    }
+    return out;
+  }
+
+  /* Deterministic fabricated OHLCV history for the demo page — a
+     seeded random walk, so the fake login shows a working chart with
+     EMAs without any API key and without any real market data. */
+  function sampleHistory(symbol, range) {
+    var points = historyPoints(range);
+    var seed = 0;
+    String(symbol || 'DEMO').split('').forEach(function (ch) {
+      seed = (seed * 31 + ch.charCodeAt(0)) % 2147483647;
+    });
+    if (seed < 2) seed = 12345;
+    function rand() { seed = (seed * 48271) % 2147483647; return seed / 2147483647; }
+
+    var price = 40 + rand() * 260;
+    var drift = (rand() - 0.42) * 0.0035;
+    var series = [];
+    var day = new Date();
+    day.setDate(day.getDate() - Math.round(points * 1.45));
+    for (var i = 0; i < points; i++) {
+      do { day.setDate(day.getDate() + 1); } while (day.getDay() === 0 || day.getDay() === 6);
+      var open = price;
+      var move = (rand() - 0.5) * 0.042 + drift;
+      price = Math.max(1, price * (1 + move));
+      var high = Math.max(open, price) * (1 + rand() * 0.012);
+      var low = Math.min(open, price) * (1 - rand() * 0.012);
+      var iso = day.toISOString().slice(0, 10);
+      series.push({
+        label: iso.slice(5), date: iso,
+        value: +price.toFixed(2), open: +open.toFixed(2),
+        high: +high.toFixed(2), low: +low.toFixed(2),
+        close: +price.toFixed(2),
+        volume: Math.round(400000 + rand() * 5200000)
+      });
+    }
+    return series;
+  }
+
   global.PNPrices = {
     loadCfg: loadCfg,
     saveCfg: saveCfg,
@@ -349,6 +410,8 @@
     symbolsNeeded: symbolsNeeded,
     resolve: resolve,
     history: history,
+    ema: ema,
+    sampleHistory: sampleHistory,
     valuate: valuate,
     sumBy: sumBy,
     total: total,

@@ -303,3 +303,39 @@ select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{
 .chartgrid{
   display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;
 }
+
+/* ---------- market chart overlays (EMA legend) ---------- */
+.market-overlaylegend{
+  display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 8px;
+  font-family:var(--mono);font-size:10.5px;color:var(--mut);
+}
+.market-overlaylegend span{display:inline-flex;align-items:center;gap:6px}
+.market-overlaylegend i{width:14px;height:2px;border-radius:2px;display:inline-block}
+
+.emabar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.emabar .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-right:2px}
+.emabtn{
+  appearance:none;cursor:pointer;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;
+  border:1px solid var(--line2);border-radius:999px;background:var(--bg);color:var(--dim);padding:6px 10px;
+  transition:color .15s,border-color .15s,box-shadow .15s;
+}
+.emabtn[aria-pressed="true"]{color:var(--ink);border-color:var(--ema,var(--acc));box-shadow:inset 0 0 0 1px var(--ema,var(--acc))}
+.emabtn:disabled{opacity:.4;cursor:not-allowed}
+.emabtn.off{margin-left:4px}
+
+/* ---------- Obsidian vault graph ---------- */
+.pnchart-graph{background:radial-gradient(ellipse at 50% 42%,rgba(95,174,90,.05),transparent 70%);border-radius:10px}
+.pnchart-graph .vg-node{cursor:pointer;transition:opacity .15s}
+.pnchart-graph .vg-node:focus{outline:none}
+.pnchart-graph .vg-edge{transition:opacity .15s,stroke .15s}
+.vg-legend{
+  display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;
+  font-family:var(--mono);font-size:10.5px;color:var(--dim);
+}
+.vg-legend span{display:inline-flex;align-items:center;gap:6px}
+.vg-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.vaultgraph{
+  margin-top:16px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:16px;
+}
+.vaultgraph h3{font-size:16px;margin:0 0 2px}
+.vaultgraph .sub{font:11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px}

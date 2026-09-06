@@ -217,6 +217,16 @@
     .rangebar{display:inline-flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
     .rangebtn{appearance:none;border:0;background:transparent;color:var(--dim);font:500 10px/1 var(--mono);padding:7px 8px;border-radius:5px;cursor:pointer}.rangebtn:hover{color:var(--ink)}.rangebtn[aria-pressed="true"]{background:var(--line2);color:var(--acc-hi)}
     .market-chart-shell{position:relative;min-height:300px}.market-frame{position:relative}.pnchart-market{min-height:260px}.pnchart-market:focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}.market-tooltip{position:absolute;z-index:3;min-width:156px;transform:translate(-50%,-110%);pointer-events:none;background:rgba(10,14,19,.96);border:1px solid var(--line2);border-radius:8px;padding:9px 10px;box-shadow:0 12px 30px rgba(0,0,0,.35);font:10.5px/1.45 var(--mono);color:var(--mut)}.market-tooltip b,.market-tooltip span{display:block}.market-tooltip b{color:var(--ink);margin-bottom:3px}.market-tooltip span:first-of-type{color:var(--acc-hi)}
+    /* comparison mode */
+    .compare-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 14px}
+    .compare-toolbar .btn[aria-pressed="true"]{background:var(--acc);color:#0e1116;border-color:var(--acc)}
+    .compare-picker{display:flex;flex-wrap:wrap;gap:6px;padding:12px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}
+    .compare-picker .chip{padding:7px 10px;font-size:11px}
+    .compare-picker .chip[aria-pressed="true"]{color:#0e1116}
+    .cmp-frame{position:relative}
+    .pnchart-compare{min-height:230px}
+    .pnchart-compare:focus{outline:2px solid var(--acc);outline-offset:4px;border-radius:8px}
+    .compare-empty{color:var(--dim);font-family:var(--mono);font-size:12px;padding:20px 4px}
     .market-kpis{display:grid;grid-template-columns:repeat(5,minmax(90px,1fr));gap:8px;margin-top:12px}.market-kpi{background:rgba(10,14,19,.5);border:1px solid var(--line);border-radius:8px;padding:9px 10px}.market-kpi span{display:block;font:9px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}.market-kpi b{font:600 13px/1.2 var(--mono);font-variant-numeric:tabular-nums}.market-kpi b.up{color:#75d477}.market-kpi b.down{color:#f0726b}
     .stockchart-status{font-family:var(--mono);font-size:11px;color:var(--dim);margin:12px 0 0}.market-setup{display:grid;place-items:center;min-height:285px;border:1px dashed var(--line2);border-radius:10px;background:rgba(9,12,16,.3);text-align:center;padding:28px}.market-setup b{display:block;font:700 17px var(--display);color:var(--ink);margin-bottom:6px}.market-setup p{max-width:52ch;margin:0;color:var(--mut);font-size:13px}
     .tracker-tabs{display:flex;gap:4px;padding:5px;margin:18px 0 22px;background:var(--panel);border:1px solid var(--line);border-radius:11px;overflow-x:auto}
@@ -350,7 +360,13 @@
         </section>
 
         <section class="tracker-panel" id="panel-charts" role="tabpanel" aria-labelledby="tab-charts" hidden>
+          <div class="compare-toolbar">
+            <button type="button" class="btn" id="chartmodesingle" aria-pressed="true">Single stock</button>
+            <button type="button" class="btn" id="chartmodecompare" aria-pressed="false">Compare</button>
+            <span class="finetext" style="margin-left:4px">Compare normalizes each stock to 100 at the start of the range — a price comparison, not a weighted portfolio return.</span>
+          </div>
           <section class="stockchart" id="stockchart"></section>
+          <section class="stockchart" id="comparechart" hidden></section>
           <div class="chartgrid" id="charts"></div>
         </section>
 
@@ -444,6 +460,8 @@
     var demoMode = false;
     var EMA_PERIODS = [10, 20, 50, 200];
     var EMA_COLORS = { 10: '#4CC9F0', 20: '#E8A33D', 50: '#c084fc', 200: '#f472b6' };
+    var chartMode = 'single', compareSelection = [], compareRange = '3M', compareFetchToken = 0;
+    var COMPARE_LIMIT = 5;
 
     // ------------------------------------------------------ helpers
 
@@ -688,7 +706,7 @@
           renderHeadline(res);
           renderScope();
           renderCharts();
-          renderStockChart();
+          renderActiveChartMode();
           renderPlatforms();
           renderDividends();
           renderCalendar();
@@ -702,7 +720,7 @@
           renderHeadline({ source: 'error', missing: [], needed: [] });
           renderScope();
           renderCharts();
-          renderStockChart();
+          renderActiveChartMode();
           renderPlatforms();
           renderDividends();
           renderCalendar();
@@ -901,6 +919,44 @@
       return { overlays: overlays, skipped: skipped };
     }
 
+    /* Confirmed exDate/payDate come straight from the researched
+       dividend map. Because a price chart is backward-looking (it ends
+       at today, not some future date), the only additional markers that
+       make sense are past ones — so estimated events are projected
+       BACKWARD from the confirmed payDate at this symbol's own
+       frequency, filling in prior quarters that fall inside the visible
+       range. Nothing here claims a date we don't have real support for:
+       "estimated" always means "inferred from this stock's own stated
+       frequency," never invented. */
+    function dividendChartEvents(symbol, series) {
+      var item = dividendMap()[symbol];
+      if (!item || (!item.exDate && !item.payDate)) return [];
+      var FREQ = { monthly: 1, quarterly: 3, semiannual: 6, 'semi-annual': 6, annual: 12, yearly: 12 };
+      var stepMonths = FREQ[String(item.frequency || '').toLowerCase()] || 3;
+      var rangeStart = new Date((series[0].date || series[0].label) + 'T12:00:00');
+      var rangeEnd = new Date((series[series.length - 1].date || series[series.length - 1].label) + 'T12:00:00');
+      var events = [];
+
+      if (item.exDate) events.push({ date: item.exDate, kind: 'ex-dividend', confirmed: true });
+      if (item.payDate) {
+        events.push({ date: item.payDate, kind: 'payment', confirmed: true, label: item.payment ? '$' + Number(item.payment).toFixed(4) + '/sh' : '' });
+        if (isFinite(rangeStart.getTime())) {
+          var cursor = new Date(item.payDate + 'T12:00:00');
+          for (var guard = 0; guard < 24; guard++) {
+            cursor.setMonth(cursor.getMonth() - stepMonths);
+            if (cursor < rangeStart) break;
+            if (cursor <= rangeEnd) {
+              events.push({
+                date: cursor.getFullYear() + '-' + String(cursor.getMonth() + 1).padStart(2, '0') + '-' + String(cursor.getDate()).padStart(2, '0'),
+                kind: 'payment', confirmed: false
+              });
+            }
+          }
+        }
+      }
+      return events;
+    }
+
     function renderStockChart() {
       var symbols = {};
       valued.forEach(function (r) { if (r.kind === 'Equity' && r.symbol) symbols[r.symbol] = true; });
@@ -977,15 +1033,18 @@
           '<div class="market-kpi"><span>Average close</span><b>' + esc(money(average)) + '</b></div>' +
           '<div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' sh · ' + (holding.value ? esc(money(holding.value)) : 'unpriced') + '</b></div>';
         var indicators = emaOverlays(series);
+        var divEvents = dividendChartEvents(requestedSymbol, series);
         window.PNCharts.market($('c-stock'), series, {
           title: requestedSymbol + ' ' + requestedRange + ' price and volume',
           overlays: indicators.overlays,
+          events: divEvents,
           emptyMessage: 'Not enough price history returned for this symbol.'
         });
         var emaNote = indicators.skipped.length
           ? ' · EMA ' + indicators.skipped.join('/') + ' needs a longer range than ' + requestedRange + '.'
           : '';
-        $('stockchartstatus').textContent = series.length + ' sessions · ' + requestedSymbol + ' · ' + requestedRange + ' · ' + sourceLabel + emaNote;
+        var divNote = divEvents.length ? ' · ' + divEvents.length + ' dividend event' + (divEvents.length === 1 ? '' : 's') + ' marked' : '';
+        $('stockchartstatus').textContent = series.length + ' sessions · ' + requestedSymbol + ' · ' + requestedRange + ' · ' + sourceLabel + emaNote + divNote;
       }
 
       if (demoMode) {
@@ -1011,6 +1070,114 @@
         if (activeChartSymbol !== requestedSymbol || activeChartRange !== requestedRange) return;
         $('c-stock').innerHTML = '<div class="market-setup"><div><b>Chart unavailable</b><p>Could not load ' + esc(requestedSymbol) + ' history from the selected provider.</p></div></div>';
         $('stockchartstatus').textContent = err && err.message ? err.message : 'Price history request failed.';
+      });
+    }
+
+    /* ---- Comparison mode (STOCK_CHART_PLAN.md Version 2, price-only) ---- */
+
+    function ownedEquitySymbols() {
+      var seen = {};
+      valued.forEach(function (r) { if (r.kind === 'Equity' && r.symbol) seen[r.symbol] = true; });
+      return Object.keys(seen).sort();
+    }
+
+    function renderActiveChartMode() {
+      if (chartMode === 'compare') renderCompareChart();
+      else renderStockChart();
+    }
+
+    function setChartMode(mode) {
+      chartMode = mode;
+      $('chartmodesingle').setAttribute('aria-pressed', String(mode === 'single'));
+      $('chartmodecompare').setAttribute('aria-pressed', String(mode === 'compare'));
+      $('stockchart').hidden = mode !== 'single';
+      $('comparechart').hidden = mode !== 'compare';
+      if (mode === 'single') renderStockChart();
+      else renderCompareChart();
+    }
+
+    $('chartmodesingle').addEventListener('click', function () { setChartMode('single'); });
+    $('chartmodecompare').addEventListener('click', function () { setChartMode('compare'); });
+
+    function renderCompareChart() {
+      var host = $('comparechart');
+      var symbols = ownedEquitySymbols();
+      if (!symbols.length) {
+        host.innerHTML = '<h2>Compare</h2><p class="chart-copy">No included stock positions are available to compare in this month.</p>';
+        return;
+      }
+      if (!compareSelection.length) {
+        compareSelection = symbols.slice(0, Math.min(3, symbols.length));
+      }
+      compareSelection = compareSelection.filter(function (s) { return symbols.indexOf(s) !== -1; });
+
+      host.innerHTML =
+        '<div class="market-head"><div class="market-title"><div class="market-symbol"><b>Compare</b><span>' +
+        compareSelection.length + ' selected</span></div><p class="chart-copy">Normalized price comparison — each series indexed to 100</p></div></div>' +
+        '<div class="compare-picker" role="group" aria-label="Choose stocks to compare">' + symbols.map(function (symbol) {
+          var on = compareSelection.indexOf(symbol) !== -1;
+          var disabled = !on && compareSelection.length >= COMPARE_LIMIT;
+          return '<button type="button" class="chip" data-compare-symbol="' + esc(symbol) + '" aria-pressed="' + on + '"' +
+            (disabled ? ' disabled title="Up to ' + COMPARE_LIMIT + ' at a time"' : '') + '>' + esc(symbol.replace('/USD', '')) + '</button>';
+        }).join('') + '</div>' +
+        '<div class="rangebar" aria-label="Comparison range" style="margin-bottom:14px">' + ['1M', '3M', '6M', '1Y'].map(function (range) {
+          return '<button type="button" class="rangebtn" data-compare-range="' + range + '" aria-pressed="' + (range === compareRange) + '">' + range + '</button>';
+        }).join('') + '</div>' +
+        '<div class="market-chart-shell" id="c-compare"></div><p class="stockchart-status" id="comparestatus"></p>';
+
+      Array.prototype.forEach.call(host.querySelectorAll('[data-compare-symbol]'), function (button) {
+        button.addEventListener('click', function () {
+          var symbol = button.dataset.compareSymbol;
+          var at = compareSelection.indexOf(symbol);
+          if (at === -1) { if (compareSelection.length < COMPARE_LIMIT) compareSelection.push(symbol); }
+          else compareSelection.splice(at, 1);
+          renderCompareChart();
+        });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('[data-compare-range]'), function (button) {
+        button.addEventListener('click', function () { compareRange = button.dataset.compareRange; renderCompareChart(); });
+      });
+
+      if (!compareSelection.length) {
+        $('c-compare').innerHTML = '<p class="compare-empty">Pick at least one stock above.</p>';
+        return;
+      }
+
+      var token = ++compareFetchToken;
+      var status = $('comparestatus');
+      var cfg = window.PNPrices.loadCfg();
+      var usingLive = !demoMode && cfg.apikey && cfg.provider !== 'manual';
+
+      if (!demoMode && !usingLive) {
+        $('c-compare').innerHTML = '<div class="market-setup"><div><b>Connect a read-only market source</b><p>Comparison mode needs the same Price source configured for the single-stock chart.</p></div></div>';
+        status.textContent = 'No symbol leaves this browser until a live source is configured.';
+        return;
+      }
+
+      status.textContent = 'Loading ' + compareSelection.join(', ') + '…';
+      var fetchers = compareSelection.map(function (symbol) {
+        var points = demoMode
+          ? Promise.resolve(window.PNPrices.sampleHistory(symbol, compareRange))
+          : window.PNPrices.history(symbol, { cfg: cfg, range: compareRange });
+        return points.then(function (pts) { return { symbol: symbol, points: pts }; })
+          .catch(function () { return { symbol: symbol, points: [] }; });
+      });
+
+      Promise.all(fetchers).then(function (results) {
+        if (token !== compareFetchToken) return;
+        var ok = results.filter(function (r) { return r.points && r.points.length >= 2; });
+        var failed = results.filter(function (r) { return !r.points || r.points.length < 2; }).map(function (r) { return r.symbol; });
+        if (!ok.length) {
+          $('c-compare').innerHTML = '<div class="market-setup"><div><b>No history available</b><p>None of the selected symbols returned enough data for this range.</p></div></div>';
+          status.textContent = 'Try a different range or provider.';
+          return;
+        }
+        window.PNCharts.compare($('c-compare'), ok.map(function (r) {
+          return { symbol: r.symbol, label: r.symbol, points: r.points };
+        }), { title: 'Normalized comparison — ' + compareRange, emptyMessage: 'Pick at least one stock to compare.' });
+        status.textContent = ok.length + ' of ' + compareSelection.length + ' loaded · ' + compareRange +
+          (demoMode ? ' · synthetic demo history — fabricated, not market data' : ' · ' + (cfg.provider === 'finnhub' ? 'Finnhub' : 'Twelve Data') + ' · cached for 15 minutes') +
+          (failed.length ? ' · could not load ' + failed.join(', ') : '');
       });
     }
 

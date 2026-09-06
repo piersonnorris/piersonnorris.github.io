@@ -161,6 +161,13 @@
         milestones: ['EMA overlays + toggles', 'Payout projection', 'Fake demo login', 'Vault graph'],
         dependencies: [], relatedLink: '#charts', created: now, updated: now
       },
+      {
+        id: 'goal-charts-v2', title: 'Charts v2 — dividend markers + comparison', status: 'complete',
+        outcome: 'Confirmed/estimated dividend markers on the price chart, plus a Compare toggle: up to 5 owned stocks, each normalized to 100 at the range start, with its own legend and hover tooltip.',
+        nextAction: 'Portfolio-aggregate line, total-return toggle, and a benchmark stay parked until a dated transaction ledger exists — faking one off today\'s shares would misrepresent performance (see STOCK_CHART_PLAN.md).',
+        milestones: ['Dividend markers (confirmed + backward-estimated)', 'PNCharts.compare()', 'Multi-select picker, 5-stock cap'],
+        dependencies: [], relatedLink: '#charts', created: now, updated: now
+      },
 
       /* ---- U1-U22: UI audit, 2026-09-06. Catalogued only — nothing
          here is built yet. Mirrors docs/ROADMAP.md "UI polish backlog".

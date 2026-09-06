@@ -401,14 +401,58 @@
     var id = ids();
     id.title.text = opts.title || 'Stock price history';
     id.desc.text = pts.length + ' daily closing prices from ' + pts[0].label + ' to ' + pts[pts.length - 1].label + ', with volume when available.';
-    var overlayLegend = overlays.length
+    /* Dividend markers. Each event date is snapped to the nearest
+       trading day actually in `pts` (ex/pay dates fall on weekends or
+       non-trading days as often as not) so it always lands on a real
+       point on the line rather than silently vanishing. Confirmed
+       events (from the private research JSON) render solid; estimated
+       ones (this symbol's own frequency projected backward/forward)
+       render hollow, per STOCK_CHART_PLAN.md's "styled differently." */
+    var events = (opts.events || []).filter(function (e) { return e && e.date; });
+    var eventMarks = events.map(function (e) {
+      var target = new Date(e.date + 'T12:00:00').getTime();
+      var bestI = 0, bestDiff = Infinity;
+      pts.forEach(function (p, i) {
+        var d = Math.abs(new Date((p.date || p.label) + 'T12:00:00').getTime() - target);
+        if (isFinite(d) && d < bestDiff) { bestDiff = d; bestI = i; }
+      });
+      /* only mark it if a trading day within ~4 days actually exists —
+         otherwise a stray date far outside the series would misleadingly
+         snap to an edge point */
+      if (bestDiff > 4 * 86400000) return null;
+      return { i: bestI, kind: e.kind, confirmed: !!e.confirmed, date: e.date, label: e.label || '' };
+    }).filter(Boolean);
+
+    var eventColor = { 'ex-dividend': '#4CC9F0', payment: '#5FAE5A' };
+    var eventSvg = eventMarks.map(function (m) {
+      var x = px(m.i), y = priceBottom + 9;
+      var color = eventColor[m.kind] || ACC;
+      var shape = m.confirmed
+        ? '<path d="M' + x.toFixed(1) + ' ' + (y - 5) + ' l5 5 -5 5 -5 -5 Z" fill="' + color + '"/>'
+        : '<path d="M' + x.toFixed(1) + ' ' + (y - 5) + ' l5 5 -5 5 -5 -5 Z" fill="none" stroke="' + color + '" stroke-width="1.4" stroke-dasharray="2 1.5"/>';
+      var title = esc(m.date + ' — ' + (m.confirmed ? 'confirmed ' : 'estimated ') +
+        (m.kind === 'ex-dividend' ? 'ex-dividend date' : 'dividend payment') + (m.label ? ' — ' + m.label : ''));
+      return '<g>' + shape + '<title>' + title + '</title></g>';
+    }).join('');
+
+    var overlayLegend = (overlays.length || eventMarks.length)
       ? '<div class="market-overlaylegend">' + overlays.map(function (o) {
           return '<span><i style="background:' + (o.color || MUT) + '"></i>' + esc(o.label || '') + '</span>';
-        }).join('') + '</div>'
+        }).join('') + (eventMarks.length ? (
+          '<span><i class="mk-diamond" style="background:' + eventColor.payment + '"></i>Confirmed dividend</span>' +
+          '<span><i class="mk-diamond mk-hollow" style="border-color:' + eventColor.payment + '"></i>Estimated (frequency pattern)</span>'
+        ) : '') + '</div>'
       : '';
 
-    el.innerHTML = '<div class="market-frame">' + overlayLegend + wrapSvg(inner, w, h, id.title, id.desc, 'pnchart-market') +
-      '<div class="market-tooltip" hidden></div></div>' + srTable(pts.map(function (p) { return { label: p.date || p.label, value: p.value }; }), 'money');
+    var eventList = eventMarks.length
+      ? '<ul class="visually-hidden">' + eventMarks.map(function (m) {
+          return '<li>' + esc(m.date) + ' — ' + (m.confirmed ? 'confirmed' : 'estimated') + ' ' +
+            (m.kind === 'ex-dividend' ? 'ex-dividend date' : 'dividend payment') + '</li>';
+        }).join('') + '</ul>'
+      : '';
+
+    el.innerHTML = '<div class="market-frame">' + overlayLegend + wrapSvg(inner + eventSvg, w, h, id.title, id.desc, 'pnchart-market') +
+      '<div class="market-tooltip" hidden></div></div>' + srTable(pts.map(function (p) { return { label: p.date || p.label, value: p.value }; }), 'money') + eventList;
 
     var svg = el.querySelector('.pnchart-market');
     var cross = el.querySelector('.pn-market-cross'), dot = el.querySelector('.pn-market-dot'), tooltip = el.querySelector('.market-tooltip');
@@ -633,12 +677,160 @@
     });
   }
 
+  // ---------- normalized multi-symbol comparison ----------
+
+  /* seriesList: [{ symbol, label, color, points: [{date,label,value}, …] }]
+     Each series is indexed to 100 at its own first point, per
+     STOCK_CHART_PLAN.md's Version 2 spec ("every series normalized to
+     100 at the range start"). This is a PRICE comparison only — no
+     portfolio weighting, no total return, since those need a dated
+     transaction ledger the tracker doesn't have yet. If series carry
+     different point counts (a data gap, a newer listing), each is
+     trimmed to the shortest length from its own end so every line
+     still spans the same number of trading sessions, aligned on the
+     x-axis by position rather than by exact date. */
+  function compare(el, seriesList, opts) {
+    opts = opts || {};
+    var lists = (seriesList || []).filter(function (s) {
+      return s && Array.isArray(s.points) && s.points.filter(function (p) { return isFinite(p.value); }).length >= 2;
+    });
+    if (!lists.length) return empty(el, opts.emptyMessage || 'Pick at least one stock to compare.');
+
+    var minLen = Math.min.apply(null, lists.map(function (s) { return s.points.length; }));
+    var series = lists.map(function (s, i) {
+      var pts = s.points.slice(-minLen);
+      var base = pts[0] && pts[0].value;
+      var idx = pts.map(function (p) {
+        return { date: p.date || p.label, label: p.label, value: (base && isFinite(p.value)) ? (p.value / base * 100) : null };
+      });
+      return { symbol: s.symbol, label: s.label || s.symbol, color: s.color || RAMP[i % RAMP.length], points: idx };
+    });
+
+    var w = 820, h = 300, padL = 50, padR = 20, padT = 18, padB = 30;
+    var plotW = w - padL - padR, plotH = h - padT - padB;
+    var n = minLen;
+
+    var allVals = [];
+    series.forEach(function (s) { s.points.forEach(function (p) { if (isFinite(p.value)) allVals.push(p.value); }); });
+    allVals.push(100); // the shared baseline is always in view even if every series only goes one direction
+    var min = Math.min.apply(null, allVals), max = Math.max.apply(null, allVals);
+    var breathing = Math.max((max - min) * 0.08, 1);
+    min -= breathing; max += breathing;
+    var span = max - min || 1;
+
+    function px(i) { return padL + (n > 1 ? (i / (n - 1)) * plotW : plotW / 2); }
+    function py(v) { return padT + plotH - ((v - min) / span) * plotH; }
+
+    var grid = '';
+    for (var g = 0; g < 4; g++) {
+      var val = max - span * (g / 3), y = padT + plotH * (g / 3);
+      grid += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (w - padR) + '" y2="' + y.toFixed(1) +
+        '" stroke="' + LINE + '" stroke-width="1"/><text x="' + (padL - 8) + '" y="' + (y + 4).toFixed(1) +
+        '" text-anchor="end" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="10">' + val.toFixed(0) + '</text>';
+    }
+    var baseY = py(100);
+    grid += '<line x1="' + padL + '" y1="' + baseY.toFixed(1) + '" x2="' + (w - padR) + '" y2="' + baseY.toFixed(1) +
+      '" stroke="' + MUT + '" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>';
+
+    var lines = series.map(function (s) {
+      var d = '', pen = false;
+      s.points.forEach(function (p, i) {
+        if (!isFinite(p.value)) { pen = false; return; }
+        d += (pen ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(p.value).toFixed(1);
+        pen = true;
+      });
+      return d ? '<path data-symbol="' + esc(s.symbol) + '" d="' + d + '" fill="none" stroke="' + s.color +
+        '" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>' : '';
+    }).join('');
+
+    var xMarks = Math.min(5, n), marks = [];
+    for (var m = 0; m < xMarks; m++) marks.push(Math.round(m * (n - 1) / Math.max(1, xMarks - 1)));
+    var xLabels = marks.map(function (i) {
+      return '<text x="' + px(i).toFixed(1) + '" y="' + (h - 8) + '" text-anchor="middle" fill="' + DIM +
+        '" font-family="IBM Plex Mono,monospace" font-size="10">' + esc(series[0].points[i].label || '') + '</text>';
+    }).join('');
+
+    var cross = '<line class="cmp-cross" x1="0" y1="' + padT + '" x2="0" y2="' + (padT + plotH) +
+      '" stroke="' + MUT + '" stroke-width="1" stroke-dasharray="3 4" visibility="hidden"/>';
+    var dots = series.map(function (s) {
+      return '<circle class="cmp-dot" data-symbol="' + esc(s.symbol) + '" cx="0" cy="0" r="4" fill="' + s.color +
+        '" stroke="#0e1116" stroke-width="2" visibility="hidden"/>';
+    }).join('');
+    var hit = '<rect class="cmp-hit" x="' + padL + '" y="' + padT + '" width="' + plotW + '" height="' + plotH + '" fill="transparent"/>';
+
+    var id = ids();
+    id.title.text = opts.title || 'Normalized price comparison';
+    id.desc.text = series.map(function (s) { return s.symbol; }).join(', ') + ', each indexed to 100 at the start of the range.';
+
+    var legend = '<ul class="chart-legend chart-legend-inline">' + series.map(function (s) {
+      var lastVal = s.points.filter(function (p) { return isFinite(p.value); }).slice(-1)[0];
+      var ret = lastVal ? (lastVal.value - 100) : null;
+      return '<li><span class="dot" style="background:' + s.color + '"></span>' +
+        '<span class="lg-label">' + esc(s.symbol) + '</span>' +
+        '<span class="lg-val" style="color:' + (ret >= 0 ? '#45c26b' : '#e5534b') + '">' +
+        (ret == null ? '—' : (ret >= 0 ? '+' : '') + ret.toFixed(1) + '%') + '</span></li>';
+    }).join('') + '</ul>';
+
+    el.innerHTML = '<div class="cmp-frame">' + wrapSvg(grid + lines + cross + dots + hit + xLabels, w, h, id.title, id.desc, 'pnchart-compare') +
+      '<div class="market-tooltip cmp-tooltip" hidden></div></div>' + legend +
+      series.map(function (s) { return srTable(s.points.map(function (p) { return { label: (p.date || p.label) + ' ' + s.symbol, value: p.value }; }), 'num'); }).join('');
+
+    var svg = el.querySelector('.pnchart-compare');
+    var crossEl = el.querySelector('.cmp-cross'), tooltip = el.querySelector('.cmp-tooltip');
+    var dotEls = {};
+    Array.prototype.forEach.call(el.querySelectorAll('.cmp-dot'), function (d) { dotEls[d.dataset.symbol] = d; });
+
+    function showAt(i) {
+      i = Math.max(0, Math.min(n - 1, i));
+      var x = px(i);
+      crossEl.setAttribute('x1', x); crossEl.setAttribute('x2', x); crossEl.setAttribute('visibility', 'visible');
+      var rows = series.map(function (s) {
+        var p = s.points[i];
+        var dot = dotEls[s.symbol];
+        if (p && isFinite(p.value)) {
+          dot.setAttribute('cx', x); dot.setAttribute('cy', py(p.value)); dot.setAttribute('visibility', 'visible');
+        } else { dot.setAttribute('visibility', 'hidden'); }
+        var ret = p && isFinite(p.value) ? p.value - 100 : null;
+        return '<span style="color:' + s.color + '">' + esc(s.symbol) + ' ' +
+          (ret == null ? '—' : (ret >= 0 ? '+' : '') + ret.toFixed(1) + '%') + '</span>';
+      }).join('');
+      var dateLabel = series[0].points[i] ? (series[0].points[i].date || series[0].points[i].label) : '';
+      tooltip.hidden = false;
+      tooltip.style.left = Math.max(10, Math.min(90, x / w * 100)) + '%';
+      tooltip.style.top = '6%';
+      tooltip.innerHTML = '<b>' + esc(dateLabel) + '</b>' + rows;
+    }
+    function hide() {
+      crossEl.setAttribute('visibility', 'hidden');
+      Object.keys(dotEls).forEach(function (k) { dotEls[k].setAttribute('visibility', 'hidden'); });
+      tooltip.hidden = true;
+    }
+    svg.setAttribute('tabindex', '0');
+    svg.addEventListener('pointermove', function (e) {
+      var rect = svg.getBoundingClientRect();
+      var sx = (e.clientX - rect.left) * (w / rect.width);
+      showAt(Math.round(((sx - padL) / plotW) * (n - 1)));
+    });
+    svg.addEventListener('pointerleave', hide);
+    svg.addEventListener('focus', function () { showAt(n - 1); });
+    svg.addEventListener('blur', hide);
+    var activeI = n - 1;
+    svg.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Home' && e.key !== 'End') return;
+      e.preventDefault();
+      activeI = e.key === 'Home' ? 0 : e.key === 'End' ? n - 1 : activeI + (e.key === 'ArrowRight' ? 1 : -1);
+      activeI = Math.max(0, Math.min(n - 1, activeI));
+      showAt(activeI);
+    });
+  }
+
   global.PNCharts = {
     donut: donut,
     bars: bars,
     stack: stack,
     line: line,
     market: market,
+    compare: compare,
     graph: graph,
     spark: spark,
     money: money,

@@ -333,6 +333,10 @@ select:focus-visible,summary:focus-visible,[tabindex]:focus-visible{
 }
 .market-overlaylegend span{display:inline-flex;align-items:center;gap:6px}
 .market-overlaylegend i{width:14px;height:2px;border-radius:2px;display:inline-block}
+.market-overlaylegend i.mk-diamond{
+  width:8px;height:8px;border-radius:2px;transform:rotate(45deg);background:var(--good);
+}
+.market-overlaylegend i.mk-hollow{background:transparent;border:1.4px dashed;border-color:var(--good)}
 
 .emabar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .emabar .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-right:2px}

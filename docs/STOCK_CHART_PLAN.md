@@ -66,14 +66,22 @@ Browser-only API key -----------------+
 
 ## Version 2 — portfolio comparison
 
-### Features
+### Status — 2026-09-06
 
-- Multi-select comparison mode with every series normalized to 100 at the range start.
+Two pieces shipped, price-only, with no invented data:
+
+- **Dividend event markers**, on the single-stock chart. Confirmed ex-date/pay-date (from the researched private JSON) render as solid diamonds; because a price chart is backward-looking, "estimated" markers are projected *backward* from the confirmed pay date at the symbol's own stated frequency, filling in prior quarters inside the visible range — never a forward guess, never a date without support. Hover/focus each marker for its date via a native `<title>`.
+- **Multi-select comparison mode**, a "Compare" toggle next to the single-stock view. Up to 5 owned equities at once, each series independently normalized to 100 at the start of the selected range, with a legend and hover tooltip showing each symbol's return. `PNCharts.compare()` in `assets/js/charts.js`.
+
+Deliberately **not** built yet, because they need data this session doesn't have honestly:
+- **Portfolio aggregate line** and the **Price return / Total return toggle** — both require the dated transaction ledger below. Building either off "today's shares, applied to the whole range" would misrepresent performance, which this plan already flags as a risk.
+- **Benchmark line** — reasonable to add once comparison mode has real use; skipped for now to keep scope tight.
+
+### Features (original spec, for what's still open)
+
 - Portfolio aggregate line built from dated share counts and historical closing prices.
 - Optional benchmark line, initially the user's chosen broad-market ETF.
 - A toggle between **Price return** and **Total return**.
-- Dividend event markers sourced from confirmed payment records, with estimated events styled differently.
-- A compact legend showing each series' return and contribution over the range.
 
 ### Data additions
 

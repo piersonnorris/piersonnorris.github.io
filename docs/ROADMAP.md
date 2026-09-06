@@ -53,7 +53,7 @@ Produce the PDF; it drops in at `/assets/resume/pierson-norris-resume.pdf`. The 
 - **R9. Two-way Google Calendar sync** — needs a private OAuth backend design that keeps tokens off the public site. One-way `.ics` export already works.
 - **R10. Obsidian visual style** — pick a direction from `notes/visual-options/` (local exploration) and apply it to `/notes/` and the tracker's Obsidian tab.
 - **R11. Real launch hardening** — before promoting the site: revisit the template page's deliberate demo login (`tools/tracker/index.template.html`, fake by design "for now" per Pierce 2026-09-05), run the BLUEPRINT §10 definition-of-done list, attach the `piersonnorris.com` domain (CNAME + absolute-URL sweep).
-- **R12. Chart indicators v2** — candlesticks, RSI/MACD, and EMA-crossover flags on the vault graph, only if Pierce actually uses v1.
+- **R12. Chart indicators v2** — candlesticks, RSI/MACD, and EMA-crossover flags on the *stock chart* (corrected 2026-09-06 — this previously said "vault graph," which is a different feature entirely), only if Pierce actually uses v1. Dividend markers and normalized comparison mode (the plan's own "recommended next milestone") shipped 2026-09-06 — see `docs/STOCK_CHART_PLAN.md` Version 2 status. Portfolio-aggregate line, total-return toggle, and a benchmark line stay parked until a dated transaction ledger exists — faking one off today's share counts would misrepresent performance.
 
 ## 3a. UI polish backlog — audited 2026-09-06, 14/22 built 2026-09-06
 

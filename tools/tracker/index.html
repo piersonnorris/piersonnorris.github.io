@@ -126,6 +126,39 @@
     }
     .banner b{color:var(--warn)}
 
+    /* updates tab */
+    .upd-fresh{background:linear-gradient(150deg,#171e28,var(--panel) 64%);border:1px solid var(--line2);border-radius:14px;padding:20px}
+    .upd-fresh h2{font-size:19px;margin:0 0 4px}
+    .upd-fresh > p{font-size:13.5px;color:var(--mut);margin:0 0 14px;max-width:70ch}
+    .upd-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:0 0 14px}
+    .upd-fact{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px 12px}
+    .upd-fact span{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+    .upd-fact b{font-family:var(--mono);font-size:13px;color:var(--ink);font-weight:500}
+    .upd-fact b.ok{color:var(--acc-hi)}
+    .upd-fact b.warn{color:var(--warn)}
+    .upd-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+    .upd-status{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin:10px 0 0;line-height:1.7;min-height:16px}
+    .upd-howto{font-family:var(--mono);font-size:11px;color:var(--dim);margin:12px 0 0;border-top:1px solid var(--line);padding-top:11px;line-height:1.9}
+    .upd-howto code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 6px;color:var(--acc)}
+
+    .timeline{position:relative;margin:6px 0 0;padding-left:24px}
+    .timeline::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:1px;background:linear-gradient(180deg,var(--warn),var(--acc) 30%,var(--line) 92%,transparent)}
+    .tl-item{position:relative;padding:0 0 18px 8px}
+    .tl-item::before{content:"";position:absolute;left:-24px;top:6px;width:11px;height:11px;border-radius:50%;border:3px solid var(--bg);background:var(--tl,var(--mut));box-shadow:0 0 0 1px var(--tl,var(--line2))}
+    .tl-item.shipped{--tl:#5FAE5A}
+    .tl-item.data{--tl:#4CC9F0}
+    .tl-item.planned{--tl:#E8A33D}
+    .tl-item.planned .tl-card{border-style:dashed}
+    .tl-meta{display:flex;gap:9px;align-items:center;margin:0 0 5px}
+    .tl-date{font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.05em;text-transform:uppercase}
+    .tl-tag{font-family:var(--mono);font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--tl,var(--line2));color:var(--tl,var(--mut));border-radius:4px;padding:1px 6px}
+    .tl-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 15px;transition:border-color .15s}
+    .tl-card:hover{border-color:var(--line2)}
+    .tl-card h3{font-size:14.5px;margin:0 0 3px}
+    .tl-card p{font-size:13px;color:var(--mut);margin:0;line-height:1.55}
+    .tl-link{display:inline-block;margin-top:7px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);background:none;border:0;padding:0;cursor:pointer}
+    .tl-link:hover{color:var(--acc-hi)}
+
     .dividends{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;margin:0 0 24px}
     .dividends h2{font-size:19px;margin:0 0 4px}
     .dividends > p{font-size:13.5px;color:var(--mut);margin:0 0 14px}
@@ -258,6 +291,7 @@
           <button class="tracker-tab" type="button" role="tab" id="tab-calendar" data-panel="calendar" aria-controls="panel-calendar" aria-selected="false">Calendar</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-projects" data-panel="projects" aria-controls="panel-projects" aria-selected="false">Projects</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-charts" data-panel="charts" aria-controls="panel-charts" aria-selected="false">Charts</button>
+          <button class="tracker-tab" type="button" role="tab" id="tab-updates" data-panel="updates" aria-controls="panel-updates" aria-selected="false">Updates</button>
           <button class="tracker-tab" type="button" role="tab" id="tab-obsidian" data-panel="obsidian" aria-controls="panel-obsidian" aria-selected="false">Obsidian</button>
         </div>
 
@@ -287,6 +321,18 @@
           <div class="chartgrid" id="charts"></div>
         </section>
 
+        <section class="tracker-panel" id="panel-updates" role="tabpanel" aria-labelledby="tab-updates" hidden>
+          <div class="upd-fresh" id="updates-freshness"></div>
+          <div class="upd-timelinewrap">
+            <div class="sectionhead" style="margin-top:26px">
+              <p class="eyebrow">Timeline</p>
+              <h2>Updates &amp; what's coming</h2>
+              <p>The shared changelog for Pierce, Claude, and ChatGPT. Depth lives in <span class="mono">docs/ROADMAP.md</span>; append new entries in <span class="mono">assets/js/updates.js</span>.</p>
+            </div>
+            <div id="updates-timeline"></div>
+          </div>
+        </section>
+
         <section class="tracker-panel" id="panel-obsidian" role="tabpanel" aria-labelledby="tab-obsidian" hidden>
           <div class="sectionhead" id="stocknotes">
             <p class="eyebrow">Obsidian — stock desk</p>
@@ -308,6 +354,7 @@
     </div>
   </main>
 
+  <script src="/assets/js/updates.js"></script>
   <script src="/assets/js/charts.js"></script>
   <script src="/assets/js/prices.js"></script>
   <script src="/assets/js/calendar.js"></script>
@@ -528,7 +575,7 @@
       }
 
       setupTrackerTabs();
-      activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#projects' ? 'projects' : location.hash === '#calendar' ? 'calendar' : location.hash === '#dividends' ? 'dividends' : 'positions', false);
+      activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#projects' ? 'projects' : location.hash === '#calendar' ? 'calendar' : location.hash === '#dividends' ? 'dividends' : location.hash === '#updates' ? 'updates' : location.hash === '#charts' ? 'charts' : 'positions', false);
 
       if (data.sample) {
         $('samplebanner').innerHTML =
@@ -538,6 +585,7 @@
       }
 
       renderMonths();
+      renderUpdates();
       restorePriceCfg();
       mountStockNotes(pin);
       refresh(false);
@@ -1290,11 +1338,12 @@
         return '<section class="proj-column" data-status="' + column.id + '"><div class="proj-colhead"><h3>' + column.label + '</h3><span>' + columnGoals.length + '</span></div><div class="proj-cards">' + cards + '</div></section>';
       }).join('');
 
-      host.innerHTML = '<div class="proj-head"><div><h2>Portfolio project board</h2><p>Goals, milestones, blockers, and the next concrete action.</p></div><span class="cal-private">encrypted · Obsidian ready</span></div>' +
+      host.innerHTML = '<div class="proj-head"><div><h2>Portfolio project board</h2><p>Goals, milestones, blockers, and the next concrete action.</p></div><button type="button" class="btn" id="projupdates" style="margin-left:auto">Updates &amp; timeline →</button><span class="cal-private">encrypted · Obsidian ready</span></div>' +
         '<div class="proj-summary"><div class="proj-stat"><b>' + stats.active + '</b><span>active goals</span></div><div class="proj-stat"><b>' + stats.dueSoon + '</b><span>due next 30 days</span></div><div class="proj-stat"><b>' + stats.blocked + '</b><span>blocked</span></div><div class="proj-stat"><b>' + stats.complete + '</b><span>complete</span></div></div>' +
         '<div class="proj-toolbar"><p id="projstatus">' + (obsidianReady ? 'Changes save into the encrypted stock vault.' : vaultReady ? 'Demo board — edits stay in this tab only.' : 'Unlocking the encrypted stock vault…') + '</p><div class="proj-actions"><button type="button" class="btn primary" id="projnew"' + (vaultReady ? '' : ' disabled') + '>+ New goal</button><button type="button" class="btn" id="projobsidian"' + (obsidianReady ? '' : ' disabled') + '>Open in Obsidian</button></div></div>' + editorHtml + '<div class="proj-boardscroll"><div class="proj-board" aria-label="Portfolio project goals">' + boardHtml + '</div></div>' +
         '<div class="vaultgraph"><h3>Vault graph</h3><p class="sub">projects · AI thoughts · linked notes</p><div id="projgraph"></div></div>';
 
+      if ($('projupdates')) $('projupdates').addEventListener('click', function () { activateTrackerPanel('updates', true); });
       if ($('projnew')) $('projnew').addEventListener('click', function () { projectEditingId = '__new__'; renderProjectBoard(); var title = $('goalform') && $('goalform').elements.title; if (title) title.focus(); });
       if ($('projobsidian')) $('projobsidian').addEventListener('click', function () {
         saveProjectGoals().then(function () { if (stockNotes.openProjectBoard()) { activateTrackerPanel('obsidian', false); document.getElementById('stocknotes').scrollIntoView({ behavior: 'smooth', block: 'start' }); } });
@@ -1590,6 +1639,98 @@
     }
 
     // ------------------------------------------------------ stock notes
+
+    /* ---- Updates tab: data freshness + shared changelog timeline ---- */
+
+    function renderUpdates() {
+      var host = $('updates-freshness');
+      if (!host || !DATA) return;
+
+      var sealed = DATA.generatedAt ? new Date(DATA.generatedAt) : null;
+      var ageHours = sealed && isFinite(sealed.getTime()) ? (Date.now() - sealed.getTime()) / 36e5 : null;
+      var ageText = ageHours == null ? '—'
+        : ageHours < 1 ? 'under an hour ago'
+        : ageHours < 48 ? Math.round(ageHours) + 'h ago'
+        : Math.round(ageHours / 24) + ' days ago';
+      var stale = ageHours != null && ageHours > 26;
+      var monthNames = (DATA.months || []).map(function (m) { return m.tab; }).join(' · ') || '—';
+      var quoteCount = Object.keys(DATA.quotes || {}).length;
+
+      host.innerHTML =
+        '<h2>Data freshness</h2>' +
+        '<p>This page is a sealed snapshot of the Asset Tracking Sheet — it cannot read the Sheet live. ' +
+        '"Refresh" here means: rebuild from the Sheet, then this button tells you when the newer build is published.</p>' +
+        '<div class="upd-facts">' +
+          '<div class="upd-fact"><span>Sealed</span><b class="' + (stale ? 'warn' : 'ok') + '">' +
+            (sealed ? esc(sealed.toLocaleString('en-US')) : '—') + '</b></div>' +
+          '<div class="upd-fact"><span>Age</span><b class="' + (stale ? 'warn' : 'ok') + '">' + esc(ageText) +
+            (stale ? ' · stale' : '') + '</b></div>' +
+          '<div class="upd-fact"><span>Month tabs included</span><b>' + esc(monthNames) + '</b></div>' +
+          '<div class="upd-fact"><span>Baked quotes</span><b>' + (quoteCount ? quoteCount + ' symbols' : 'none') + '</b></div>' +
+          '<div class="upd-fact"><span>Mode</span><b>' + (demoMode ? 'demo — fabricated' : 'encrypted build') + '</b></div>' +
+        '</div>' +
+        '<div class="upd-actions">' +
+          '<button type="button" class="btn primary" id="checkbuild">Check for a newer build</button>' +
+          '<button type="button" class="btn" id="reloadbuild" hidden>Reload to newest</button>' +
+        '</div>' +
+        '<p class="upd-status" id="updstatus">' +
+          (stale ? 'Sealed more than a day ago — the scheduled refresh may not be running yet (ROADMAP R2).' : '') + '</p>' +
+        '<div class="upd-howto">Refresh path today: run <code>node tools/tracker/build.js --local-snapshot</code> and push. ' +
+        'Once the Actions secrets are set (R2), the build reseals itself daily and this button is how you catch it.</div>';
+
+      $('checkbuild').addEventListener('click', checkForNewerBuild);
+      $('reloadbuild').addEventListener('click', function () { location.reload(); });
+
+      renderTimeline();
+    }
+
+    function checkForNewerBuild() {
+      var status = $('updstatus');
+      status.textContent = 'checking the published tracker…';
+      fetch('/tools/tracker/index.html', { cache: 'no-store' })
+        .then(function (res) {
+          if (!res.ok) throw new Error('The published tracker returned ' + res.status + '.');
+          return res.text();
+        })
+        .then(function (text) {
+          var match = text.match(/var PAYLOAD = \/\*__PAYLOAD__\*\/(\{[\s\S]*?\})\/\*__END__\*\//);
+          if (!match) {
+            status.textContent = 'No encrypted build is published at /tools/tracker/ yet — run the build and push.';
+            return;
+          }
+          var remote = JSON.parse(match[1]);
+          if (PAYLOAD && remote.ct === PAYLOAD.ct) {
+            status.textContent = 'You are on the latest published build. To pull newer Sheet data, rebuild first — see the note below.';
+          } else if (PAYLOAD) {
+            status.textContent = 'A newer build is published. Reload, unlock again, and you have the fresh data.';
+            $('reloadbuild').hidden = false;
+          } else {
+            status.textContent = 'An encrypted build is published at /tools/tracker/ — this demo page never shows it. Open the real tracker and unlock with the PIN.';
+          }
+        })
+        .catch(function (err) {
+          status.textContent = 'Could not check — ' + (err && err.message ? err.message : 'request failed') +
+            ' (offline, or this page is not being served over HTTP).';
+        });
+    }
+
+    function renderTimeline() {
+      var host = $('updates-timeline');
+      if (!host || !window.PNUpdates) return;
+      host.innerHTML = '<div class="timeline">' + window.PNUpdates.entries.map(function (entry) {
+        return '<div class="tl-item ' + esc(entry.tag) + '">' +
+          '<div class="tl-meta"><span class="tl-date">' + esc(window.PNUpdates.fmtDate(entry)) + '</span>' +
+          '<span class="tl-tag">' + esc(entry.tag) + '</span></div>' +
+          '<div class="tl-card"><h3>' + esc(entry.title) + '</h3><p>' + esc(entry.detail) + '</p>' +
+          (entry.link && entry.link.charAt(0) === '#'
+            ? '<button type="button" class="tl-link" data-panel-link="' + esc(entry.link.slice(1)) + '">Open ' + esc(entry.link.slice(1)) + ' →</button>'
+            : '') +
+          '</div></div>';
+      }).join('') + '</div>';
+      Array.prototype.forEach.call(host.querySelectorAll('[data-panel-link]'), function (button) {
+        button.addEventListener('click', function () { activateTrackerPanel(button.dataset.panelLink, true); });
+      });
+    }
 
     function mountStockNotes(pin) {
       if (stockNotes) { stockNotes.refresh(); return; }

@@ -159,11 +159,16 @@ async function buildFromLocalSnapshot() {
   let snapshot;
   try { snapshot = JSON.parse(match[1]); }
   catch { fail('Private local tracker snapshot is invalid JSON.'); }
-  if (!snapshot || !Array.isArray(snapshot.holdings) || !snapshot.holdings.length) fail('Private local tracker snapshot has no holdings.');
+  /* The snapshot block is either one month object or {months: [...]}
+     (newest first) once history exists. */
+  const months = Array.isArray(snapshot && snapshot.months) ? snapshot.months : [snapshot];
+  for (const month of months) {
+    if (!month || !Array.isArray(month.holdings) || !month.holdings.length) fail('A private local tracker month has no holdings.');
+  }
   const password = fs.readFileSync(pinPath, 'utf8').trim();
   if (!password) fail('Private local tracker PIN is empty.');
-  const quotes = await fetchQuotes([snapshot]);
-  render(seal({ generatedAt: new Date().toISOString(), months: [snapshot], quotes, dividendCalendar: loadCalendar() }, password));
+  const quotes = await fetchQuotes(months);
+  render(seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar() }, password));
 }
 
 async function fetchMonths() {

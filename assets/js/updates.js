@@ -19,9 +19,9 @@
 
   var entries = [
     {
-      date: '', when: 'next', tag: 'planned',
-      title: 'September 2026 tab → tracker',
-      detail: 'The Sheet got fresh numbers on Sep 5, but they landed in the legacy first tab. Once they are confirmed into a "September 2026" tab, the next build picks them up and the month switcher + value-over-time chart light up.',
+      date: '2026-09-06', tag: 'data',
+      title: 'September 2026 tab is live in the tracker',
+      detail: 'Rebuilt from Pierce\'s "Early September" dictation — 48 positions, several trims and adds confirmed (DEFT 949→100, RR up, new EIX/VPG, NVDA call closed). Month switcher and value-over-time chart now show two points.',
       link: '#positions'
     },
     {

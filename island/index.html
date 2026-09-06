@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>To-Do Island — Pierson Norris</title>
+  <meta name="description" content="The website roadmap, washed up on a deserted island. Same tasks as docs/ROADMAP.md, read as a wooden sign board.">
+  <link rel="canonical" href="https://piersonnorris.github.io/island/">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=IBM+Plex+Sans:wght@400;450;600&family=IBM+Plex+Mono:wght@400;500&family=Kalam:wght@400;700&display=swap">
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/island.css">
+  <style>
+    /* page-only overrides so the shared .wrap/.hero rules don't fight the scene */
+    main{padding:0}
+  </style>
+</head>
+<body class="island-page">
+  <header class="sitehead">
+    <div class="wrap">
+      <nav class="sitenav" aria-label="Primary">
+        <a class="brand" href="/">Pierson Norris</a>
+        <div class="navlinks">
+          <a href="/">Home</a>
+          <a href="/experience/">Experience</a>
+          <a href="/notes/">Notes <span class="lockicon">·pin</span></a>
+          <a href="/tools/tracker/">Tracker <span class="lockicon">·pin</span></a>
+          <a href="/island/" aria-current="page">🏝 Island</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="skyband" aria-hidden="true">
+      <div class="sun"></div>
+      <div class="sunray"></div>
+
+      <div class="cloud c1">
+        <svg viewBox="0 0 150 60"><ellipse cx="35" cy="38" rx="35" ry="20" fill="#fff"/><ellipse cx="75" cy="26" rx="42" ry="24" fill="#fff"/><ellipse cx="118" cy="38" rx="30" ry="18" fill="#fff"/></svg>
+      </div>
+      <div class="cloud c2">
+        <svg viewBox="0 0 150 60"><ellipse cx="35" cy="38" rx="30" ry="17" fill="#fff"/><ellipse cx="75" cy="28" rx="34" ry="20" fill="#fff"/><ellipse cx="112" cy="38" rx="24" ry="15" fill="#fff"/></svg>
+      </div>
+      <div class="cloud c3">
+        <svg viewBox="0 0 150 60"><ellipse cx="35" cy="38" rx="32" ry="18" fill="#fff"/><ellipse cx="75" cy="27" rx="36" ry="21" fill="#fff"/><ellipse cx="114" cy="38" rx="26" ry="16" fill="#fff"/></svg>
+      </div>
+
+      <div class="gulls">
+        <svg viewBox="0 0 120 24"><path d="M4 14q6-10 12 0q6-10 12 0" stroke="#4a3117" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M54 8q6-10 12 0q6-10 12 0" stroke="#4a3117" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M84 16q6-10 12 0q6-10 12 0" stroke="#4a3117" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      </div>
+    </div>
+
+    <div class="seaband" aria-hidden="true">
+      <div class="wave-row w1"><svg viewBox="0 0 200 22" preserveAspectRatio="none"><path d="M0 12 Q10 4 20 12 T40 12 T60 12 T80 12 T100 12 T120 12 T140 12 T160 12 T180 12 T200 12 V22 H0 Z" fill="#eaf7f4" opacity=".55"/></svg></div>
+      <div class="wave-row w2"><svg viewBox="0 0 200 22" preserveAspectRatio="none"><path d="M0 14 Q10 8 20 14 T40 14 T60 14 T80 14 T100 14 T120 14 T140 14 T160 14 T180 14 T200 14 V22 H0 Z" fill="#eaf7f4" opacity=".6"/></svg></div>
+    </div>
+
+    <div class="sandband">
+      <span class="shell" aria-hidden="true" style="left:12%;top:150px">🐚</span>
+      <span class="shell" aria-hidden="true" style="left:82%;top:210px">⭐</span>
+      <span class="shell" aria-hidden="true" style="left:6%;top:280px;font-size:14px">🦀</span>
+
+      <div class="palm left" aria-hidden="true">
+        <svg viewBox="0 0 190 260">
+          <path d="M96 260 C92 190 100 140 108 100" fill="none" stroke="#8a5a34" stroke-width="12" stroke-linecap="round"/>
+          <path d="M96 260 C92 190 100 140 108 100" fill="none" stroke="#a97544" stroke-width="5" stroke-linecap="round"/>
+          <g class="leaves">
+            <path d="M108 100 C60 90 20 60 0 20 C50 30 90 55 108 100 Z" fill="#3f8f5c"/>
+            <path d="M108 100 C150 75 190 60 190 15 C140 20 115 55 108 100 Z" fill="#4aa568"/>
+            <path d="M108 100 C70 70 40 40 45 0 C85 15 105 55 108 100 Z" fill="#4aa568"/>
+            <path d="M108 100 C130 60 150 30 140 0 C110 20 100 60 108 100 Z" fill="#3f8f5c"/>
+            <path d="M108 100 C110 55 130 20 175 10 C155 45 130 70 108 100 Z" fill="#5cb87a"/>
+          </g>
+        </svg>
+      </div>
+      <div class="palm right" aria-hidden="true">
+        <svg viewBox="0 0 190 260">
+          <path d="M96 260 C92 190 100 140 108 100" fill="none" stroke="#8a5a34" stroke-width="12" stroke-linecap="round"/>
+          <path d="M96 260 C92 190 100 140 108 100" fill="none" stroke="#a97544" stroke-width="5" stroke-linecap="round"/>
+          <g class="leaves">
+            <path d="M108 100 C60 90 20 60 0 20 C50 30 90 55 108 100 Z" fill="#3f8f5c"/>
+            <path d="M108 100 C150 75 190 60 190 15 C140 20 115 55 108 100 Z" fill="#4aa568"/>
+            <path d="M108 100 C70 70 40 40 45 0 C85 15 105 55 108 100 Z" fill="#4aa568"/>
+            <path d="M108 100 C130 60 150 30 140 0 C110 20 100 60 108 100 Z" fill="#3f8f5c"/>
+            <path d="M108 100 C110 55 130 20 175 10 C155 45 130 70 108 100 Z" fill="#5cb87a"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="postwrap">
+        <p class="castaway">washed up on the shore, 2026-09-06</p>
+        <h1 class="island-h1">To-Do Island</h1>
+        <p class="island-lede">Same task list as <span class="mono" style="font-family:'IBM Plex Mono',monospace">docs/ROADMAP.md</span> and the tracker's Projects board — just read off a plank instead of a spreadsheet. Nothing sensitive lives here, so no PIN needed.</p>
+
+        <div class="posts">
+          <span class="postleg pl" aria-hidden="true"></span>
+          <span class="postleg pr" aria-hidden="true"></span>
+          <div class="board" id="board">
+            <span class="nail tl"></span><span class="nail tr"></span>
+            <span class="nail bl"></span><span class="nail br"></span>
+            <h2>Captain's board</h2>
+            <p class="count" id="board-count">loading the crate…</p>
+            <div class="filters" id="board-filters" role="group" aria-label="Filter by stage"></div>
+            <div class="planks" id="board-planks"></div>
+          </div>
+        </div>
+
+        <p class="driftnote">Board content comes straight from <span class="mono" style="font-family:'IBM Plex Mono',monospace">assets/js/taskboard.js</span>'s shared seed — update it (or <span class="mono" style="font-family:'IBM Plex Mono',monospace">docs/ROADMAP.md</span>) and this page changes too. The real, editable private board — with your own goals, milestones and dependencies — lives behind the PIN in the tracker's Projects tab.</p>
+
+        <a class="bottlelink" href="/tools/tracker/#projects">✉️ Message in a bottle — open the private board →</a>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <footer class="sitefoot">
+        <address>
+          <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a><br>
+          Built by hand — plain HTML, no framework.
+        </address>
+      </footer>
+    </div>
+  </main>
+
+  <script src="/assets/js/taskboard.js"></script>
+  <script>
+  (function () {
+    'use strict';
+    var STATUS_LABEL = { backlog: 'Backlog', planned: 'Planned', 'in-progress': 'In progress', blocked: 'Blocked', complete: 'Complete' };
+    var goals = window.PNTaskboard.normalize(window.PNTaskboard.seed());
+    var active = 'all';
+
+    function esc(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function renderFilters() {
+      var counts = { all: goals.length };
+      window.PNTaskboard.columns.forEach(function (c) {
+        counts[c.id] = goals.filter(function (g) { return g.status === c.id; }).length;
+      });
+      var chips = [{ id: 'all', label: 'All hands' }].concat(window.PNTaskboard.columns);
+      document.getElementById('board-filters').innerHTML = chips.map(function (c) {
+        return '<button type="button" class="ffilter" data-status="' + c.id + '" aria-pressed="' +
+          (active === c.id) + '">' + esc(c.label) + ' · ' + counts[c.id] + '</button>';
+      }).join('');
+      Array.prototype.forEach.call(document.querySelectorAll('.ffilter'), function (btn) {
+        btn.addEventListener('click', function () { active = btn.dataset.status; render(); });
+      });
+    }
+
+    function render() {
+      renderFilters();
+      var shown = active === 'all' ? goals : goals.filter(function (g) { return g.status === active; });
+      document.getElementById('board-count').textContent =
+        shown.length + ' item' + (shown.length === 1 ? '' : 's') + ' nailed up · ' +
+        goals.filter(function (g) { return g.status === 'complete'; }).length + ' washed away complete';
+
+      document.getElementById('board-planks').innerHTML = shown.map(function (g) {
+        return '<article class="plank" data-status="' + g.status + '">' +
+          '<div class="plankhead">' +
+            '<span class="planktag">' + esc(STATUS_LABEL[g.status] || g.status) + '</span>' +
+            '<span class="planktitle">' + esc(g.title) + '</span>' +
+            (g.targetDate ? '<span class="plankwho">by ' + esc(g.targetDate) + '</span>' : '') +
+          '</div>' +
+          (g.nextAction ? '<p class="planknext"><b>Next:</b> ' + esc(g.nextAction) + '</p>' : '') +
+        '</article>';
+      }).join('') || '<p class="planknext">Nothing in this pile — good problem to have.</p>';
+    }
+
+    render();
+  })();
+  </script>
+</body>
+</html>

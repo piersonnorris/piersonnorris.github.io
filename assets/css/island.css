@@ -1,0 +1,213 @@
+/* ============================================================
+   /island/ — the to-do list, styled as a deserted island.
+   Deliberately its own palette (sand/sky/ocean), not the dark
+   site theme — this page is a fun departure by design.
+   Depends on site.css only for resets shared across the whole site.
+   ============================================================ */
+
+:root{
+  --sky-top:#8fd8f0; --sky-bot:#d7f0e6;
+  --sea-far:#2f8fb0; --sea-near:#1c6f8e; --sea-foam:#eaf7f4;
+  --sand-lt:#f4e0af; --sand-md:#e7c88a; --sand-dk:#caa462;
+  --wood:#8a5a34; --wood-dk:#6a4426; --wood-lt:#a97544;
+  --rope:#c8a15c;
+  --ink:#4a3117; --ink-soft:#6b4a26;
+  --done:#3f8f5c; --progress:#3f7fb0; --blocked:#c0553f; --planned:#a8843a; --backlog:#7a6a55;
+  --paper:#fbf2d9;
+}
+
+html:has(.island-page){ background:var(--sky-bot) }
+body.island-page{
+  background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-top) 38%,var(--sky-bot) 62%,var(--sand-lt) 62%);
+  color:var(--ink);
+  font-family:'IBM Plex Sans',system-ui,sans-serif;
+  overflow-x:hidden;
+}
+.island-page ::selection{background:var(--sand-dk);color:var(--ink)}
+
+/* header restyled to sit on sky */
+.island-page .sitehead{border-bottom:1px solid rgba(74,49,23,.18);background:transparent}
+.island-page .brand{color:var(--ink-soft)}
+.island-page .navlinks a{color:rgba(74,49,23,.65)}
+.island-page .navlinks a:hover{color:var(--ink)}
+.island-page .navlinks a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--wood)}
+.island-page .lockicon{color:rgba(74,49,23,.45)}
+
+/* ---------------- scene ----------------
+   Three stacked bands in normal document flow — sky (fixed height),
+   sea (fixed height), sand (auto height, grows with the board/list).
+   Nothing here is positioned as a percentage of total page height, so
+   a long task list just extends the sand band instead of dragging the
+   sun/sea down with it. */
+
+.skyband{position:relative;height:220px;overflow:hidden}
+.seaband{position:relative;height:56px;overflow:hidden;background:linear-gradient(180deg,var(--sea-far),var(--sea-near) 85%)}
+.sandband{
+  position:relative;padding:34px 0 60px;overflow:hidden;
+  background:
+    radial-gradient(ellipse 60% 30% at 18% 6%,rgba(202,164,98,.5),transparent 60%),
+    radial-gradient(ellipse 50% 26% at 82% 10%,rgba(202,164,98,.35),transparent 60%),
+    linear-gradient(180deg,var(--sand-lt),var(--sand-md) 45%,var(--sand-dk) 100%);
+}
+
+.sun{
+  position:absolute;top:38px;right:9%;width:74px;height:74px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff6d6,#ffd873 55%,#ffbf4d 100%);
+  box-shadow:0 0 60px 18px rgba(255,216,115,.55);
+}
+.sunray{
+  position:absolute;top:38px;right:9%;width:74px;height:74px;
+  animation:spin 90s linear infinite;
+}
+.sunray::before{
+  content:"";position:absolute;inset:-34px;
+  background:
+    repeating-conic-gradient(from 0deg,rgba(255,216,115,.35) 0 4deg,transparent 4deg 18deg);
+  border-radius:50%;
+  mask:radial-gradient(circle,transparent 40px,#000 41px);
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.cloud{position:absolute;opacity:.9}
+.cloud svg{display:block;filter:drop-shadow(0 6px 8px rgba(74,49,23,.08))}
+.cloud.c1{top:44px;left:8%;width:150px;animation:drift 70s linear infinite}
+.cloud.c2{top:14px;left:42%;width:110px;animation:drift 95s linear infinite reverse}
+.cloud.c3{top:78px;left:70%;width:130px;animation:drift 80s linear infinite}
+@keyframes drift{from{transform:translateX(-6vw)}to{transform:translateX(106vw)}}
+
+.gulls{position:absolute;top:60px;left:20%;width:120px;opacity:.55;animation:drift 130s linear infinite}
+.gulls svg{display:block}
+
+.wave-row{position:absolute;left:0;width:200%;height:22px}
+.wave-row svg{display:block;height:100%;width:100%}
+.wave-row.w1{top:2px;animation:wave 9s linear infinite}
+.wave-row.w2{top:20px;opacity:.7;animation:wave 13s linear infinite reverse}
+@keyframes wave{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+.shell{position:absolute;font-size:20px;opacity:.85;filter:drop-shadow(0 1px 1px rgba(74,49,23,.25))}
+
+/* palms sit at the top of the (growing) sand band, right at the
+   waterline — never repositioned by how long the board gets */
+.palm{position:absolute;top:-6px;width:170px;transform-origin:bottom center;z-index:1}
+.palm.left{left:1%}
+.palm.right{right:1%;transform:scaleX(-1)}
+.palm svg{display:block;overflow:visible}
+.palm .leaves{transform-origin:180px 70px;animation:sway 5.5s ease-in-out infinite}
+.palm.right .leaves{animation-duration:6.4s}
+@keyframes sway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+@media (prefers-reduced-motion:reduce){
+  .sunray,.cloud,.gulls,.wave-row,.palm .leaves{animation:none !important}
+}
+
+/* ---------------- signpost + board ---------------- */
+.postwrap{position:relative;z-index:2;max-width:900px;margin:0 auto;padding:0 20px 0 20px;text-align:center}
+.castaway{
+  font-family:'Kalam',cursive;color:var(--ink-soft);font-size:15px;
+  margin:26px 0 6px;letter-spacing:.02em;
+}
+.island-h1{
+  font-family:'Kalam',cursive;font-weight:700;font-size:clamp(30px,6vw,46px);
+  color:var(--ink);margin:0 0 8px;text-shadow:0 2px 0 rgba(255,255,255,.35);
+}
+.island-lede{color:var(--ink-soft);max-width:56ch;margin:0 auto 30px;font-size:15px}
+
+.posts{position:relative;display:inline-block;margin:0 auto}
+.postleg{
+  position:absolute;bottom:-46px;width:16px;height:60px;background:linear-gradient(180deg,var(--wood-lt),var(--wood-dk));
+  border-radius:3px;box-shadow:inset -3px 0 0 rgba(0,0,0,.15);
+}
+.postleg.pl{left:34px} .postleg.pr{right:34px}
+
+.board{
+  position:relative;background:linear-gradient(180deg,var(--wood-lt),var(--wood) 55%,var(--wood-dk));
+  border:6px solid var(--wood-dk);border-radius:10px;
+  padding:26px 26px 30px;box-shadow:0 18px 34px rgba(74,49,23,.28),inset 0 0 0 2px rgba(255,255,255,.06);
+  text-align:left;
+}
+.board::before{
+  content:"";position:absolute;inset:8px;border:1px dashed rgba(0,0,0,.18);border-radius:6px;pointer-events:none;
+}
+.nail{
+  position:absolute;width:10px;height:10px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#e8e2d0,#8a8474 60%,#5a5548);
+  box-shadow:0 1px 2px rgba(0,0,0,.4);
+}
+.nail.tl{top:10px;left:10px} .nail.tr{top:10px;right:10px}
+.nail.bl{bottom:10px;left:10px} .nail.br{bottom:10px;right:10px}
+
+.board h2{
+  font-family:'Kalam',cursive;color:var(--paper);font-size:22px;margin:0 0 4px;
+  text-shadow:0 1px 0 rgba(0,0,0,.3);
+}
+.board .count{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(251,242,217,.75);
+  letter-spacing:.08em;text-transform:uppercase;margin:0 0 16px;
+}
+
+/* rope-tied status filters */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px}
+.ffilter{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;
+  color:var(--paper);background:rgba(0,0,0,.18);border:1px solid rgba(251,242,217,.3);
+  border-radius:999px;padding:5px 11px;cursor:pointer;transition:background .15s,border-color .15s;
+}
+.ffilter[aria-pressed="true"]{background:var(--fc,var(--sand-dk));border-color:var(--fc,var(--sand-dk));color:var(--ink)}
+.ffilter[data-status="backlog"]{--fc:var(--backlog)}
+.ffilter[data-status="planned"]{--fc:var(--planned)}
+.ffilter[data-status="in-progress"]{--fc:var(--progress)}
+.ffilter[data-status="blocked"]{--fc:var(--blocked)}
+.ffilter[data-status="complete"]{--fc:var(--done)}
+
+/* planks = individual tasks, hung with a nail + rope loop */
+.planks{display:grid;gap:12px}
+.plank{
+  position:relative;background:var(--paper);border-radius:5px;padding:12px 16px 12px 20px;
+  box-shadow:0 4px 0 rgba(0,0,0,.18),0 8px 14px rgba(0,0,0,.22);
+  border-left:6px solid var(--sc,var(--backlog));
+  transform:rotate(var(--tilt,0deg));
+}
+.plank:nth-child(odd){--tilt:-0.4deg}
+.plank:nth-child(even){--tilt:0.5deg}
+.plank[data-status="backlog"]{--sc:var(--backlog)}
+.plank[data-status="planned"]{--sc:var(--planned)}
+.plank[data-status="in-progress"]{--sc:var(--progress)}
+.plank[data-status="blocked"]{--sc:var(--blocked)}
+.plank[data-status="complete"]{--sc:var(--done)}
+.plank[data-status="complete"] .planktitle{text-decoration:line-through;text-decoration-color:rgba(74,49,23,.5)}
+
+.plankhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.planktag{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--sc,var(--backlog));border:1px solid var(--sc,var(--backlog));border-radius:4px;padding:1px 6px;
+}
+.planktitle{font-family:'Kalam',cursive;font-size:17px;color:var(--ink);font-weight:700}
+.plankwho{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-soft);opacity:.8}
+.planknext{margin:5px 0 0;font-size:13px;color:var(--ink-soft);line-height:1.5}
+.planknext b{color:var(--ink)}
+
+.driftnote{
+  margin:26px auto 0;max-width:640px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+  color:var(--ink-soft);background:rgba(255,255,255,.35);border:1px dashed rgba(74,49,23,.3);
+  border-radius:8px;padding:11px 14px;
+}
+
+.bottlelink{
+  display:inline-flex;align-items:center;gap:8px;margin:30px 0 6px;text-decoration:none;
+  color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;font-size:12.5px;
+  border:1px solid rgba(74,49,23,.3);border-radius:999px;padding:9px 16px;background:rgba(255,255,255,.3);
+  transition:background .15s,color .15s;
+}
+.bottlelink:hover{background:rgba(255,255,255,.55);color:var(--ink)}
+
+.island-page .sitefoot{border-top-color:rgba(74,49,23,.18)}
+.island-page .sitefoot address{color:var(--ink-soft)}
+.island-page .sitefoot address a{border-bottom-color:rgba(74,49,23,.35)}
+.island-page .sitefoot address a:hover{color:var(--ink)}
+
+@media (max-width:640px){
+  .palm{width:120px}
+  .board{padding:20px 16px 24px}
+  .postleg{display:none}
+  .plankhead{flex-direction:column;align-items:flex-start;gap:4px}
+  .plankwho{margin-left:0}
+}

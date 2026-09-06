@@ -34,8 +34,10 @@ Open questions that block copy on the public pages (details in `CONTENT.md` `[OP
 
 ## 2. Next — ready to build
 
-### R5. Live price key (bridge until R1) — **Pierce**, 5 minutes
-Get a free Twelve Data key (covers stocks + crypto in one call), open the unlocked tracker → **Price source**, paste it. Key lives in the browser only. This turns on the allocation/mix/largest-position charts and real price history under the EMA overlays.
+### R5. Live prices — **mostly done 2026-09-05**
+Pierce supplied a Twelve Data key; it now lives in `private/.twelvedata-key` (gitignored) and `build.js` bakes a spot price for every holding symbol into the encrypted payload (chunked 8/minute for the free tier — a local build takes ~4 minutes). All value charts work with zero browser API calls. Remaining:
+- **Pierce:** paste the same key into the unlocked tracker's **Price source** panel once — that's what powers the Charts tab's *history* fetches (EMA lines on real candles), which happen client-side.
+- **Pierce, with R2:** add the key as the optional `TWELVEDATA_API_KEY` repo secret so scheduled CI builds bake fresh quotes too.
 
 ### R6. Dividend research refresh — **Claude**, quarterly
 `private/tracker/dividend-calendar.json` holds researched ex/pay dates for ET, VDE, VZ, UPS, SGOV, NEE, VST, BOTZ. Dates go stale each quarter — re-verify against issuer IR pages, update the JSON, rebuild. Always recheck with the issuer before trading around a date.

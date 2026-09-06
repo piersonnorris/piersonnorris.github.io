@@ -23,6 +23,8 @@ jobs:
           SHEET_ID: ${{ secrets.SHEET_ID }}
           TRACKER_PASSWORD: ${{ secrets.TRACKER_PASSWORD }}
           DIVIDEND_CALENDAR_JSON: ${{ secrets.DIVIDEND_CALENDAR_JSON }}
+          # optional: bakes live spot prices into the encrypted payload
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
       - run: |
           git config user.name "tracker-bot"
           git config user.email "actions@users.noreply.github.com"

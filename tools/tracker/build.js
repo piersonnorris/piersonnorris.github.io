@@ -52,6 +52,70 @@ function loadCalendar() {
   } catch { fail('DIVIDEND_CALENDAR_JSON is not valid JSON.'); }
 }
 
+/* ---- baked quotes (ROADMAP R5) -------------------------------------
+   If a Twelve Data key is available (env TWELVEDATA_API_KEY, or the
+   ignored local file private/.twelvedata-key), fetch a spot price for
+   every holding symbol and bake the map into the encrypted payload as
+   `quotes`. The page then values itself with zero browser API calls.
+   The key is never printed and never written to the output. Failures
+   degrade to an empty map — counts still render, values wait. */
+
+function loadQuoteKey() {
+  const env = text(process.env.TWELVEDATA_API_KEY);
+  if (env) return env;
+  const keyFile = path.join(ROOT, 'private', '.twelvedata-key');
+  if (fs.existsSync(keyFile)) return fs.readFileSync(keyFile, 'utf8').trim();
+  return '';
+}
+
+function quoteSymbols(months) {
+  const seen = new Set();
+  for (const month of months) {
+    for (const holding of month.holdings || []) {
+      const unit = text(holding.unit).toLowerCase();
+      if (unit !== 'shares' && unit !== 'units') continue;
+      const sym = text(holding.label).replace(/\([^)]*\)/g, '').trim().toUpperCase().replace(/[^A-Z0-9.\-]/g, '');
+      if (!sym) continue;
+      seen.add(unit === 'units' ? `${sym}/USD` : sym);
+    }
+  }
+  return [...seen];
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function fetchQuotes(months) {
+  const key = loadQuoteKey();
+  if (!key) return {};
+  const symbols = quoteSymbols(months);
+  if (!symbols.length) return {};
+  const quotes = {};
+  const CHUNK = 8; // free tier: 8 API credits per minute
+  for (let i = 0; i < symbols.length; i += CHUNK) {
+    const chunk = symbols.slice(i, i + CHUNK);
+    if (i > 0) {
+      console.log(`Waiting out the per-minute quote limit (${i}/${symbols.length} fetched)…`);
+      await sleep(62000);
+    }
+    try {
+      const res = await fetch(`https://api.twelvedata.com/price?symbol=${encodeURIComponent(chunk.join(','))}&apikey=${encodeURIComponent(key)}`);
+      if (!res.ok) continue;
+      const json = await res.json();
+      if (chunk.length === 1) {
+        const price = Number(json && json.price);
+        if (Number.isFinite(price) && price > 0) quotes[chunk[0]] = price;
+      } else {
+        for (const sym of chunk) {
+          const price = Number(json && json[sym] && json[sym].price);
+          if (Number.isFinite(price) && price > 0) quotes[sym] = price;
+        }
+      }
+    } catch { /* leave this chunk unpriced; manual entry still works */ }
+  }
+  console.log(`Baked quotes for ${Object.keys(quotes).length} of ${symbols.length} symbols.`);
+  return quotes;
+}
+
 function seal(data, password) {
   const salt = crypto.randomBytes(16);
   const iv = crypto.randomBytes(12);
@@ -85,7 +149,7 @@ function reuseEncryptedPayload() {
   render(payload);
 }
 
-function buildFromLocalSnapshot() {
+async function buildFromLocalSnapshot() {
   const handoffPath = path.join(ROOT, 'private', 'STOCK_HANDOFF.md');
   const pinPath = path.join(ROOT, 'private', '.tracker-pin');
   if (!fs.existsSync(handoffPath) || !fs.existsSync(pinPath)) fail('Private local tracker inputs were not found.');
@@ -98,7 +162,8 @@ function buildFromLocalSnapshot() {
   if (!snapshot || !Array.isArray(snapshot.holdings) || !snapshot.holdings.length) fail('Private local tracker snapshot has no holdings.');
   const password = fs.readFileSync(pinPath, 'utf8').trim();
   if (!password) fail('Private local tracker PIN is empty.');
-  render(seal({ generatedAt: new Date().toISOString(), months: [snapshot], quotes: {}, dividendCalendar: loadCalendar() }, password));
+  const quotes = await fetchQuotes([snapshot]);
+  render(seal({ generatedAt: new Date().toISOString(), months: [snapshot], quotes, dividendCalendar: loadCalendar() }, password));
 }
 
 async function fetchMonths() {
@@ -121,7 +186,7 @@ async function fetchMonths() {
 
 async function main() {
   if (process.argv.includes('--local-snapshot')) {
-    buildFromLocalSnapshot();
+    await buildFromLocalSnapshot();
     return;
   }
   if (process.argv.includes('--reuse-payload')) {
@@ -132,7 +197,8 @@ async function main() {
   if (!password) fail('TRACKER_PASSWORD is required.');
   const months = await fetchMonths();
   if (!months.length) fail('No month-named tabs were found.');
-  const payload = seal({ generatedAt: new Date().toISOString(), months, quotes: {}, dividendCalendar: loadCalendar() }, password);
+  const quotes = await fetchQuotes(months);
+  const payload = seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar() }, password);
   render(payload);
 }
 

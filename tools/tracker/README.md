@@ -15,7 +15,7 @@ node tools/tracker/build.js --reuse-payload    # re-render template changes arou
 node tools/tracker/build.js                    # CI mode: Google Sheet via env secrets (see workflow)
 ```
 
-Inputs that must NEVER be committed: `private/STOCK_HANDOFF.md` (holdings), `private/.tracker-pin`, `private/tracker/dividend-calendar.json` (researched ex/pay dates — baked into the encrypted payload as `dividendCalendar`). After every build, grep the output for known tickers/amounts to confirm nothing leaked in plaintext.
+Inputs that must NEVER be committed: `private/STOCK_HANDOFF.md` (holdings), `private/.tracker-pin`, `private/tracker/dividend-calendar.json` (researched ex/pay dates — baked into the encrypted payload as `dividendCalendar`), and `private/.twelvedata-key` (market-data key; when present, `build.js` fetches a spot price per symbol — chunked 8/minute for the free tier, so a build waits ~1 min per 8 symbols — and bakes the map into the payload as `quotes`; env `TWELVEDATA_API_KEY` does the same in CI). After every build, grep the output for known tickers/amounts **and the API key** to confirm nothing leaked in plaintext.
 
 ## Data flow after unlock
 

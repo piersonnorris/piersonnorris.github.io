@@ -20,6 +20,12 @@
   var entries = [
     {
       date: '2026-09-07', tag: 'shipped',
+      title: 'Obsidian connectivity: vault graph + a real-vault sync (R15)',
+      detail: 'A Graph button in the notes toolbar draws the vault as a force-directed map — orphans and unresolved [[wikilinks]] are counted separately, and clicking an unresolved node writes that note. tools/obsidian-sync.js reads a real Obsidian folder into one importable bundle that updates notes by vault path instead of duplicating them; build.js can bake it into the encrypted payload.',
+      link: '#stocknotes'
+    },
+    {
+      date: '2026-09-07', tag: 'shipped',
       title: 'Stay unlocked on this device',
       detail: 'Opt-in checkbox on the PIN screen. The PIN is the decryption key, so it is remembered rather than removed: a non-extractable AES-GCM key generated in the browser lives in IndexedDB, and the PIN is stored encrypted under it — never in the clear, never off this device. A data rebuild reseals the payload under a new salt and retires the saved unlock; pressing Lock deletes it.'
     },

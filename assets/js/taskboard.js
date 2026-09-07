@@ -139,6 +139,13 @@
         dependencies: ['Pierce'], relatedLink: '#projects', created: now, updated: now
       },
       {
+        id: 'goal-obsidian-graph', title: 'R15 · Obsidian connectivity — graph view + vault sync', status: 'complete',
+        outcome: 'PNGraphify (assets/js/notes-graph.js) draws the vault as a force-directed graph behind a Graph button on /notes/ and this Obsidian tab — orphans and unresolved [[wikilinks]] counted as two separate numbers, clicking an unresolved node writes that note, and sharing a #tag deliberately does not count as a link. tools/obsidian-sync.js reads a real Obsidian vault folder into a gitignored pn-vault-bundle JSON plus a connectivity report, reusing PNVault.fromMarkdown rather than reimplementing the parser. Import now takes that bundle and upserts by vault path (source_path survives an export round trip) instead of skipping duplicates, and build.js loadObsidianVault() bakes it into the encrypted payload for a one-click merge here.',
+        nextAction: 'Point it at the real vault: node tools/obsidian-sync.js --vault "<folder>", then Import the bundle on /notes/. Still a snapshot, not live sync — refreshing means re-running the script. Nobody has clicked the merge banner on this tab yet; it needs a real build to appear.',
+        milestones: ['PNGraphify build() + unit tests', 'Graph view in the notes UI', 'obsidian-sync.js vault reader', 'importBundle() upsert by path', 'build.js obsidianVault seam'],
+        dependencies: [], relatedLink: '#stocknotes', created: now, updated: now
+      },
+      {
         id: 'goal-calendar-sync', title: 'R9 · Google Calendar — one-way pull done, two-way parked', status: 'complete',
         outcome: 'A session-side Google Calendar connector pulled 130 real confirmed events (next ~3 months) into private/tracker/google-calendar.json; build.js bakes them into the encrypted payload (googleEvents) alongside dividend dates. The Calendar tab merges them in with their own filter, and the Projects tab now has a compact "main calendar" (renderBoardCalendar()) directly under the board, combining board target dates + dividends + private plans + Google events. The board itself now sorts by stage then target date (PNTaskboard.sortGoals()) instead of raw insertion order, on both this board and /island/. Island got its own public-safe "tide chart" of board target dates only — no personal or portfolio data on the public page.',
         nextAction: 'Refresh the Google snapshot periodically: a Claude session re-pulls via the connector and reruns --local-snapshot. True two-way sync (write-back, self-refreshing) still needs a private OAuth backend — tracked separately as R9b, parked on purpose.',

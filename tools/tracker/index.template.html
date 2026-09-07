@@ -592,6 +592,7 @@
             <h2>Ticker notes &amp; outlooks</h2>
             <p>A separate vault from <a href="/notes/" style="color:var(--acc)">general notes</a>. Dividend-paying positions and the calendar can be synchronized here as encrypted Markdown, then exported straight into Obsidian.</p>
           </div>
+          <div id="obsidiansync" class="obsync" hidden></div>
           <div id="stockvault"></div>
         </section>
       </section>
@@ -614,6 +615,7 @@
   <script src="/assets/js/calendar.js"></script>
   <script src="/assets/js/taskboard.js"></script>
   <script src="/assets/js/vault.js"></script>
+  <script src="/assets/js/notes-graph.js"></script>
   <script src="/assets/js/notes-ui.js"></script>
   <script>
   (function () {
@@ -2677,6 +2679,46 @@
       });
     }
 
+    /* An Obsidian bundle baked into this build by tools/tracker/build.js
+       (loadObsidianVault). It rides inside the encrypted payload, so it
+       only exists once the tracker is unlocked. Merging is a button and
+       never automatic: it overwrites notes that came from the same vault
+       paths, and silently rewriting the vault on unlock would be a
+       surprising thing for a page to do. */
+    function renderObsidianSync() {
+      var host = $('obsidiansync');
+      if (!host) return;
+      var bundle = DATA && DATA.obsidianVault;
+      var unlocked = !!(stockNotes && stockNotes.vault && stockNotes.vault.isUnlocked());
+      if (!bundle || !bundle.count || !unlocked) { host.hidden = true; host.innerHTML = ''; return; }
+
+      var when = bundle.generatedAt ? new Date(bundle.generatedAt) : null;
+      host.hidden = false;
+      host.innerHTML =
+        '<p><b>' + bundle.count + ' note' + (bundle.count === 1 ? '' : 's') + '</b> from the Obsidian vault ' +
+        '“' + esc(bundle.source || 'vault') + '” were baked into this build' +
+        (when && !isNaN(when) ? ', snapshotted ' + esc(when.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })) : '') +
+        '. Merging updates whatever came from the same vault paths last time and adds the rest — nothing is deleted, and notes written here are left alone.</p>' +
+        '<div class="obsync-row"><button type="button" class="btn primary" id="obsync-go">Merge into this vault</button>' +
+        '<span class="obsync-msg" aria-live="polite"></span></div>';
+
+      var msg = host.querySelector('.obsync-msg');
+      $('obsync-go').addEventListener('click', function () {
+        var button = $('obsync-go');
+        button.disabled = true;
+        msg.textContent = 'merging…';
+        stockNotes.vault.importBundle(bundle).then(function (r) {
+          msg.textContent = r.added + ' added · ' + r.updated + ' updated' +
+            (r.skipped ? ' · ' + r.skipped + ' skipped' : '');
+          button.disabled = false;
+          stockNotes.refresh();
+        }).catch(function () {
+          msg.textContent = 'Merge failed.';
+          button.disabled = false;
+        });
+      });
+    }
+
     function mountStockNotes(pin) {
       if (stockNotes) { stockNotes.refresh(); return; }
       var tickers = {};
@@ -2718,6 +2760,7 @@
           renderDividends();
           renderCalendar();
           renderProjectBoard();
+          renderObsidianSync();
         });
       }
     }

@@ -74,6 +74,42 @@ function loadGoogleEvents() {
   } catch { return []; }
 }
 
+/* ---- Obsidian vault snapshot (ROADMAP R15) -------------------------
+   Same shape as the Google Calendar seam above and the same boundary:
+   the site can't read a folder on disk, so tools/obsidian-sync.js reads
+   the real vault once and writes a bundle. Drop that bundle at
+   private/tracker/obsidian-vault.json (gitignored) and it rides along
+   inside the encrypted payload, so the tracker can offer to merge those
+   notes into its vault without a file to hand-pick.
+
+   Only titles, tags and bodies travel, and only inside the AES payload —
+   nothing here lands in the repo in the clear. Missing or malformed
+   input degrades to null; the build never fails over vault data. */
+function loadObsidianVault() {
+  let source = process.env.OBSIDIAN_VAULT_JSON;
+  const privateFile = path.join(ROOT, 'private', 'tracker', 'obsidian-vault.json');
+  if (!source && fs.existsSync(privateFile)) source = fs.readFileSync(privateFile, 'utf8');
+  if (!source) return null;
+  try {
+    const bundle = JSON.parse(source);
+    if (!bundle || bundle.format !== 'pn-vault-bundle' || !Array.isArray(bundle.notes)) return null;
+    const notes = bundle.notes
+      .filter((note) => note && text(note.title))
+      .map((note) => ({
+        path: text(note.path),
+        title: text(note.title),
+        body: String(note.body == null ? '' : note.body),
+        tags: Array.isArray(note.tags) ? note.tags.map(text).filter(Boolean) : [],
+        ticker: text(note.ticker).toUpperCase() || null,
+        created: text(note.created),
+        updated: text(note.updated)
+      }));
+    if (!notes.length) return null;
+    console.log(`Baked an Obsidian bundle of ${notes.length} note${notes.length === 1 ? '' : 's'} into the payload.`);
+    return { format: 'pn-vault-bundle', version: 1, generatedAt: text(bundle.generatedAt), source: text(bundle.source), count: notes.length, notes };
+  } catch { return null; }
+}
+
 /* ---- baked quotes (ROADMAP R5) -------------------------------------
    If a Twelve Data key is available (env TWELVEDATA_API_KEY, or the
    ignored local file private/.twelvedata-key), fetch a spot price for
@@ -190,7 +226,7 @@ async function buildFromLocalSnapshot() {
   const password = fs.readFileSync(pinPath, 'utf8').trim();
   if (!password) fail('Private local tracker PIN is empty.');
   const quotes = await fetchQuotes(months);
-  render(seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents() }, password));
+  render(seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(), obsidianVault: loadObsidianVault() }, password));
 }
 
 async function fetchMonths() {
@@ -225,8 +261,14 @@ async function main() {
   const months = await fetchMonths();
   if (!months.length) fail('No month-named tabs were found.');
   const quotes = await fetchQuotes(months);
-  const payload = seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents() }, password);
+  const payload = seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(), obsidianVault: loadObsidianVault() }, password);
   render(payload);
 }
 
-main().catch((error) => { console.error('Tracker build failed:', error.message); process.exitCode = 1; });
+/* Exported so the payload seams can be tested without running a build
+   (notes-graph.test.js). Running the file still builds, as CI does. */
+module.exports = { parseTab, loadCalendar, loadGoogleEvents, loadObsidianVault, quoteSymbols };
+
+if (require.main === module) {
+  main().catch((error) => { console.error('Tracker build failed:', error.message); process.exitCode = 1; });
+}

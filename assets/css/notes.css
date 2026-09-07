@@ -171,3 +171,78 @@
   background:var(--bg);border:1px solid var(--line);border-radius:9px;
   padding:18px 20px;min-height:260px;
 }
+
+/* ============================================================
+   PNGraphify — the vault connectivity graph (assets/js/notes-graph.js).
+   Lives inside .nv-main when the Graph view is on.
+   ============================================================ */
+.pg{display:block}
+
+.pg-bar{
+  display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 12px;
+}
+.pg-find{flex:1 1 190px;min-width:150px;padding:8px 12px;font-size:13px}
+.pg-toggles,.pg-zoom{display:flex;gap:5px;flex:none}
+.pg-t,.pg-zoom button{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--mut);cursor:pointer;
+  background:var(--bg);border:1px solid var(--line2);border-radius:999px;padding:6px 11px;
+  transition:color .15s,border-color .15s,background .15s;
+}
+.pg-t:hover,.pg-zoom button:hover{color:var(--ink);border-color:var(--mut)}
+.pg-t.on{color:#0e1116;background:var(--acc);border-color:var(--acc)}
+.pg-zoom button{min-width:32px;border-radius:7px}
+
+.pg-stage{
+  position:relative;overflow:hidden;touch-action:none;cursor:grab;
+  background:var(--bg) radial-gradient(ellipse at 50% 42%,rgba(95,174,90,.06),transparent 70%);
+  border:1px solid var(--line);border-radius:10px;
+}
+.pg-stage.grabbing{cursor:grabbing}
+.pg-svg{display:block;width:100%;height:auto}
+
+.pg-edge{stroke:var(--line2);stroke-width:1;opacity:.75;transition:opacity .15s,stroke .15s}
+.pg-edge.k-tag,.pg-edge.k-missing{stroke-dasharray:3 3;opacity:.45}
+.pg-edge.dim{opacity:.1}
+.pg-edge.lit{stroke:var(--acc);opacity:1}
+
+.pg-node{cursor:pointer;transition:opacity .15s}
+.pg-node.dim{opacity:.2}
+.pg-node .pg-halo{opacity:0;transition:opacity .15s}
+.pg-node.lit .pg-halo,.pg-node.hit .pg-halo{opacity:.18}
+.pg-node .pg-label{font-family:var(--mono);pointer-events:none}
+.pg-node.k-missing .pg-dot{stroke-dasharray:2.5 2.5}
+/* Same specificity trap U2 hit on .pnchart-graph: a two-class selector
+   here would outrank the generic [tabindex]:focus-visible ring, so the
+   ring is restated rather than removed. */
+.pg-node:focus{outline:none}
+.pg-node:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+
+.pg-stats{
+  display:flex;flex-wrap:wrap;gap:6px 16px;margin:11px 0 0;
+  font-family:var(--mono);font-size:11px;color:var(--dim);
+}
+.pg-stats b{color:var(--ink);font-weight:500}
+.pg-stats .warn b{color:var(--warn)}
+.pg-stats .miss b{color:#c084fc}
+.pg-stats .pg-hub b{color:var(--acc)}
+.pg-empty{color:var(--dim)}
+
+.pg-legend{
+  display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;
+  font-family:var(--mono);font-size:10.5px;color:var(--dim);
+}
+.pg-legend span{display:inline-flex;align-items:center;gap:6px}
+.pg-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+@media (max-width:640px){
+  .pg-bar{gap:6px}
+  .pg-find{flex-basis:100%}
+}
+@media (prefers-reduced-motion:reduce){
+  .pg-node,.pg-edge,.pg-node .pg-halo{transition:none}
+}
+
+.nv-graphhead{margin:0 0 14px}
+.nv-graphhead h3{margin:6px 0 6px}
+.nv-graphhead p{margin:0;font-size:13px;color:var(--mut);max-width:78ch;line-height:1.6}
+.nv-graphhead b{color:var(--ink);font-weight:500}

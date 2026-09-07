@@ -10,7 +10,7 @@ Built by three collaborators: **Pierce** (owner — decisions, secrets, content 
 |---|---|
 | `index.html` | Home — the "live console" landing page |
 | `experience/` | Public experience timeline (2023 → now, newest first) |
-| `notes/` | "Obsidian — general vault": PIN-encrypted in-browser notes, `.md` export/import |
+| `notes/` | "Obsidian — general vault": PIN-encrypted in-browser notes, `.md` export/import, and a connectivity **graph view** of the vault’s `[[wikilinks]]` |
 | `tools/tracker/` | The portfolio tracker. `index.html` is the **generated, encrypted** page; `index.template.html` is the source (and a fake-login demo with sample data); `build.js` seals real holdings in. See its README. |
 | `assets/` | Shared CSS + the JS modules (charts, prices, vault, notes UI, calendar, taskboard). See its README. |
 | `docs/` | The paper trail: `ROADMAP.md` (tasks), `BLUEPRINT.md` (spec), `CONTENT.md` (copy), tracker/calendar/chart/taskboard plans |
@@ -27,9 +27,14 @@ The repo is public, so nothing sensitive is ever tracked. This folder doubles as
 # rebuild the encrypted tracker from the private snapshot
 node tools/tracker/build.js --local-snapshot
 
+# snapshot a real Obsidian vault into an importable bundle (see docs/OBSIDIAN_SYNC.md)
+node tools/obsidian-sync.js --vault "C:path	oVault"
+
 # run the unit tests
 node tools/tracker/calendar.test.js
 node tools/tracker/taskboard.test.js
+node tools/tracker/charts.test.js
+node tools/tracker/notes-graph.test.js
 ```
 
 Preview by serving the folder root over HTTP (root-absolute paths — opening files directly won't resolve `/assets/…`). Any static server works. The template page at `/tools/tracker/index.template.html` opens as a **demo**: the login button deliberately bypasses the PIN and shows fabricated sample data, so every feature can be clicked through safely.

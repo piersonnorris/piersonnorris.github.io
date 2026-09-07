@@ -35,6 +35,8 @@
 !/tools/tracker/calendar.test.js
 !/tools/tracker/taskboard.test.js
 !/tools/tracker/charts.test.js
+!/tools/tracker/notes-graph.test.js
+!/tools/obsidian-sync.js
 !/.github/
 !/.github/workflows/
 !/.github/workflows/refresh-tracker.yml

@@ -61,7 +61,7 @@
     var root = opts.el;
     var mode = opts.mode || 'general';
     var vault = new global.PNVault.Vault(opts.scope || mode);
-    var state = { selected: null, query: '', tag: null, preview: false, saveTimer: null };
+    var state = { selected: null, query: '', tag: null, preview: false, view: 'notes', saveTimer: null };
 
     if (!vault.storageAvailable()) {
       root.innerHTML =
@@ -136,7 +136,7 @@
 
     // ---------------- app shell ----------------
 
-    var side, listEl, tagsEl, searchEl, mainEl, countEl;
+    var side, listEl, tagsEl, searchEl, mainEl, countEl, graphView = null;
 
     function buildApp() {
       if (app.dataset.built) return;
@@ -146,9 +146,12 @@
         '<aside class="nv-side">' +
           '<div class="nv-toolbar">' +
             '<button type="button" class="btn primary nv-new">+ New</button>' +
+            (global.PNGraphify
+              ? '<button type="button" class="btn nv-graphbtn" title="Map how these notes link to each other">Graph</button>'
+              : '') +
             '<button type="button" class="btn nv-export" title="Download every note as .md files in a zip">Export</button>' +
-            '<label class="btn nv-importlbl" title="Import .md files from your Obsidian vault">Import' +
-              '<input type="file" class="nv-import" accept=".md,.markdown,.txt" multiple hidden></label>' +
+            '<label class="btn nv-importlbl" title="Import .md files from your Obsidian vault, or one .json bundle from tools/obsidian-sync.js">Import' +
+              '<input type="file" class="nv-import" accept=".md,.markdown,.txt,.json" multiple hidden></label>' +
             '<button type="button" class="btn nv-lockbtn" title="Lock this vault">Lock</button>' +
           '</div>' +
           '<input type="search" class="nv-search" placeholder="Search notes…" aria-label="Search notes">' +
@@ -174,6 +177,16 @@
         });
       });
 
+      var graphBtn = app.querySelector('.nv-graphbtn');
+      if (graphBtn) {
+        graphBtn.addEventListener('click', function () {
+          state.view = (state.view === 'graph') ? 'notes' : 'graph';
+          graphBtn.classList.toggle('primary', state.view === 'graph');
+          graphBtn.textContent = state.view === 'graph' ? 'Notes' : 'Graph';
+          renderMain();
+        });
+      }
+
       app.querySelector('.nv-export').addEventListener('click', function () {
         var out = vault.exportZip();
         if (!out) { flash('Nothing to export yet.'); return; }
@@ -185,15 +198,24 @@
         if (!files || !files.length) return;
         vault.importMarkdown(files).then(function (r) {
           flash('Imported ' + r.added + ' note' + (r.added === 1 ? '' : 's') +
+                (r.updated ? ' · ' + r.updated + ' updated' : '') +
                 (r.skipped ? ' · ' + r.skipped + ' skipped' : ''));
-          renderAll();
-        }).catch(function () { flash('Import failed.'); });
+          if (state.view === 'graph' && graphView) { renderTags(); renderList(); graphView.refresh(); }
+          else renderAll();
+        }).catch(function (err) {
+          flash((err && err.message === 'bad-bundle')
+            ? 'That .json is not an obsidian-sync bundle.'
+            : 'Import failed.');
+        });
         e.target.value = '';
       });
 
       app.querySelector('.nv-lockbtn').addEventListener('click', function () {
         vault.lock();
+        dropGraph();
         state.selected = null;
+        state.view = 'notes';
+        if (graphBtn) { graphBtn.classList.remove('primary'); graphBtn.textContent = 'Graph'; }
         app.hidden = true;
         lock.hidden = false;
         lock.querySelector('.nv-glyph').textContent = 'ENCRYPTED';
@@ -217,7 +239,12 @@
 
     // ---------------- rendering ----------------
 
-    function renderAll() { renderTags(); renderList(); renderMain(); }
+    /* renderAll() means "show me a note", so it always drops out of the
+       graph — every open-a-note path (list click, backlink, wikilink,
+       the public open* helpers) ends here and would otherwise redraw the
+       graph instead of the note it just selected. Staying in the graph
+       while the vault changes underneath is what refresh() below is for. */
+    function renderAll() { leaveGraph(); renderTags(); renderList(); renderMain(); }
 
     function renderTags() {
       var tags = vault.tags();
@@ -261,6 +288,7 @@
 
       Array.prototype.forEach.call(listEl.querySelectorAll('.nv-item'), function (b) {
         b.addEventListener('click', function () {
+          leaveGraph();
           state.selected = b.dataset.id;
           state.preview = false;
           renderList(); renderMain();
@@ -268,7 +296,58 @@
       });
     }
 
+    function dropGraph() {
+      if (graphView) { graphView.destroy(); graphView = null; }
+    }
+
+    /* The Graph view takes over the main pane. The sidebar stays put, so
+       search, the tag chips and the note list keep working beside it. */
+    function renderGraph() {
+      dropGraph();
+      mainEl.innerHTML =
+        '<div class="nv-graphhead">' +
+          '<p class="eyebrow">Connectivity</p>' +
+          '<h3>Vault graph</h3>' +
+          '<p class="muted">Every note, every <b>[[wikilink]]</b>. Drag a node, scroll to zoom, click to open. ' +
+          'Amber nodes link to nothing yet; dashed purple ones are links pointing at notes that don’t exist ' +
+          '— click one and it gets written.</p>' +
+        '</div>' +
+        '<div class="nv-graphhost"></div>';
+
+      graphView = global.PNGraphify.mount(mainEl.querySelector('.nv-graphhost'), {
+        title: (mode === 'stocks' ? 'Stock vault graph' : 'Notes vault graph'),
+        getNotes: function () { return vault.list(); },
+        onOpen: function (noteId) {
+          state.selected = noteId;
+          state.preview = true;
+          renderAll();          /* leaves the graph on its way to the editor */
+        },
+        onCreate: function (title) {
+          vault.create_note({ title: title }).then(function (n) {
+            flash('Created “' + n.title + '” — that link resolves now.');
+            if (graphView) graphView.refresh();
+            renderList(); renderTags();
+          });
+        },
+        onTag: function (tag) {
+          state.tag = tag;
+          renderTags(); renderList();
+          flash('List filtered to #' + tag + '.');
+        }
+      });
+    }
+
+    function leaveGraph() {
+      state.view = 'notes';
+      var b = app.querySelector('.nv-graphbtn');
+      if (b) { b.classList.remove('primary'); b.textContent = 'Graph'; }
+      dropGraph();
+    }
+
     function renderMain() {
+      if (state.view === 'graph' && global.PNGraphify) { renderGraph(); return; }
+      dropGraph();
+
       var note = state.selected ? vault.get(state.selected) : null;
 
       if (!note) {
@@ -459,7 +538,13 @@
       vault: vault,
       ready: ready,
       unlockWith: doUnlock,
-      refresh: function () { if (vault.isUnlocked()) renderAll(); },
+      /* A vault change from elsewhere on the page. Redraw in place --
+         unlike renderAll(), this keeps whichever view is open. */
+      refresh: function () {
+        if (!vault.isUnlocked()) return;
+        if (state.view === 'graph' && graphView) { renderTags(); renderList(); graphView.refresh(); return; }
+        renderAll();
+      },
       /* Upsert generated tracker notes without exposing them outside the
          encrypted stock vault. The caller supplies ordinary Markdown. */
       upsertNote: function (fields) {

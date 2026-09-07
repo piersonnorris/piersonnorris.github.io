@@ -183,6 +183,7 @@
       positionKey: (fields && fields.positionKey) || null,
       purchases: (fields && fields.purchases) || [],
       noteType: (fields && fields.noteType) || null,
+      sourcePath: (fields && fields.sourcePath) || null,
       calendarEvents: (fields && fields.calendarEvents) || [],
       dividendOverrides: (fields && fields.dividendOverrides) || {},
       projectGoals: (fields && fields.projectGoals) || [],
@@ -264,6 +265,7 @@
       fm.push('purchases_json: ' + yamlStr(JSON.stringify(note.purchases)));
     }
     if (note.noteType) fm.push('note_type: ' + yamlStr(note.noteType));
+    if (note.sourcePath) fm.push('source_path: ' + yamlStr(note.sourcePath));
     if (note.calendarEvents && note.calendarEvents.length) {
       fm.push('calendar_events_json: ' + yamlStr(JSON.stringify(note.calendarEvents)));
     }
@@ -358,7 +360,7 @@
     var note = {
       title: fallbackTitle || 'Imported note',
       body: text || '',
-      tags: [], ticker: null, outlook: null, positionKey: null, purchases: [], noteType: null, calendarEvents: [], dividendOverrides: {}, projectGoals: [],
+      tags: [], ticker: null, outlook: null, positionKey: null, purchases: [], noteType: null, sourcePath: null, calendarEvents: [], dividendOverrides: {}, projectGoals: [],
       created: new Date().toISOString(),
       updated: new Date().toISOString()
     };
@@ -388,6 +390,7 @@
           } catch (e) { note.purchases = []; }
         }
         else if (k === 'note_type') note.noteType = unq(v) || null;
+        else if (k === 'source_path') note.sourcePath = unq(v) || null;
         else if (k === 'calendar_events_json') {
           try {
             var calendarEvents = JSON.parse(unq(v));
@@ -593,7 +596,7 @@
 
   Vault.prototype.importMarkdown = async function (fileList) {
     var self = this;
-    var added = 0, skipped = 0;
+    var added = 0, updated = 0, skipped = 0;
     var existing = {};
     this.list().forEach(function (n) {
       existing[(n.title || '').toLowerCase() + '|' + (n.ticker || '')] = true;
@@ -601,6 +604,15 @@
 
     for (var i = 0; i < fileList.length; i++) {
       var file = fileList[i];
+      /* A bundle from tools/obsidian-sync.js: one file, a whole vault. */
+      if (/\.json$/i.test(file.name)) {
+        var result = await self.importBundle(await file.text());
+        added += result.added; updated += result.updated; skipped += result.skipped;
+        this.list().forEach(function (n) {
+          existing[(n.title || '').toLowerCase() + '|' + (n.ticker || '')] = true;
+        });
+        continue;
+      }
       if (!/\.(md|markdown|txt)$/i.test(file.name)) { skipped++; continue; }
       var text = await file.text();
       var fallback = file.name.replace(/\.(md|markdown|txt)$/i, '');
@@ -612,8 +624,75 @@
       self.data.notes.unshift(note);
       added++;
     }
-    if (added) await this.persist();
-    return { added: added, skipped: skipped };
+    if (added || updated) await this.persist();
+    return { added: added, updated: updated, skipped: skipped };
+  };
+
+  /* Import a bundle produced by tools/obsidian-sync.js — the whole
+     Obsidian vault as one JSON file.
+
+     Unlike the .md path above, this upserts. Every bundle note carries
+     its vault-relative `path`, so re-running the sync after editing in
+     Obsidian updates the notes already here instead of skipping them as
+     duplicates (which is what made repeat imports useless before).
+     Notes written in the browser have no sourcePath and are never
+     touched. Nothing is ever deleted: a note removed from the vault
+     folder stays here until you delete it yourself. */
+  Vault.prototype.importBundle = async function (input) {
+    if (!this.isUnlocked()) throw new Error('locked');
+    var bundle = input;
+    if (typeof bundle === 'string') {
+      try { bundle = JSON.parse(bundle); }
+      catch (e) { throw new Error('bad-bundle'); }
+    }
+    if (!bundle || bundle.format !== 'pn-vault-bundle' || !Array.isArray(bundle.notes)) {
+      throw new Error('bad-bundle');
+    }
+
+    var byPath = {}, byTitle = {};
+    this.list().forEach(function (n) {
+      if (n.sourcePath) byPath[n.sourcePath.toLowerCase()] = n;
+      var k = (n.title || '').toLowerCase() + '|' + (n.ticker || '');
+      if (byTitle[k] == null) byTitle[k] = n;
+    });
+
+    var added = 0, updated = 0, skipped = 0;
+    for (var i = 0; i < bundle.notes.length; i++) {
+      var incoming = bundle.notes[i];
+      if (!incoming || !String(incoming.title || '').trim()) { skipped++; continue; }
+      var fields = {
+        title: String(incoming.title),
+        body: String(incoming.body || ''),
+        tags: Array.isArray(incoming.tags) ? incoming.tags : [],
+        ticker: incoming.ticker ? String(incoming.ticker).toUpperCase() : null,
+        outlook: incoming.outlook || null,
+        sourcePath: incoming.path ? String(incoming.path) : null,
+        created: incoming.created || new Date().toISOString(),
+        updated: incoming.updated || new Date().toISOString()
+      };
+      var hit = (fields.sourcePath && byPath[fields.sourcePath.toLowerCase()]) ||
+                byTitle[fields.title.toLowerCase() + '|' + (fields.ticker || '')];
+
+      if (hit) {
+        Object.keys(fields).forEach(function (k) { hit[k] = fields[k]; });
+        if (fields.sourcePath) byPath[fields.sourcePath.toLowerCase()] = hit;
+        updated++;
+      } else {
+        var note = {
+          id: newId(), title: fields.title, body: fields.body, tags: fields.tags,
+          ticker: fields.ticker, outlook: fields.outlook, positionKey: null, purchases: [],
+          noteType: null, sourcePath: fields.sourcePath, calendarEvents: [],
+          dividendOverrides: {}, projectGoals: [],
+          created: fields.created, updated: fields.updated
+        };
+        this.data.notes.unshift(note);
+        if (fields.sourcePath) byPath[fields.sourcePath.toLowerCase()] = note;
+        byTitle[fields.title.toLowerCase() + '|' + (fields.ticker || '')] = note;
+        added++;
+      }
+    }
+    if (added || updated) await this.persist();
+    return { added: added, updated: updated, skipped: skipped };
   };
 
   // ---------------------------------------------------------- export

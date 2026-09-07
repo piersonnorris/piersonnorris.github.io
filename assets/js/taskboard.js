@@ -351,11 +351,11 @@
          need his decision before anyone builds them. Mirrors
          docs/ROADMAP.md §5. ---- */
       {
-        id: 'goal-pn-easter-egg', title: 'PN Tasks · Ship-in-a-bottle Obsidian Easter egg', status: 'backlog',
-        outcome: 'A bottle-and-ship graphic (home and/or /notes/) pops its cork and frees the ship on click; clicking the ship opens a genuinely polished embedded Obsidian-vault viewer -- plus a similarly small-footprint, high-impact touch on the home page. Source: Pierce, Cowork chat with Claude, 2026-09-06.',
-        nextAction: "Pierce picks a design direction (this overlaps R10 -- the viewer's look answers both) before Claude or ChatGPT builds anything.",
-        milestones: ['Design direction chosen (ties to R10)', 'Bottle/cork/ship click interaction', 'Embedded Obsidian viewer UI', 'Matching home-page touch'],
-        dependencies: ['R10 · Obsidian visual style', 'Pierce design direction'], relatedLink: '#projects', created: now, updated: now
+        id: 'goal-pn-easter-egg', title: 'PN Tasks · Ship-in-a-bottle Obsidian Easter egg', status: 'in-progress',
+        outcome: 'Entrance built 2026-09-07: PNBottle (assets/js/bottle.js + bottle.css) mounted twice -- under the Currently card on Home and washed up in the sand on /island/ -- one component wearing each page\'s palette. Cork pops, ship sails out, and a porthole dialog opens on the vault\'s front door: a generated constellation sketch, a lamp reading whether a vault exists on this device (key presence only, never content), and links into /notes/ and the stock desk. The viewer half is deliberately NOT built: a public page cannot show encrypted notes, so faking one would misrepresent the site.',
+        nextAction: 'Pierce picks an R10 direction from notes/visual-options/ (Slate command center / Paper canvas / Research studio) -- that is what makes the real viewer at /notes/ polished; the bottle already points at it.',
+        milestones: ['Bottle/cork/ship click interaction', 'Home-page entrance', 'Island entrance', 'R10 direction picked', 'Polished /notes/ viewer'],
+        dependencies: ['R10 · Obsidian visual style'], relatedLink: '#projects', created: now, updated: now
       },
       {
         id: 'goal-pn-chart-v2-picks', title: 'PN Tasks · Chart V2 -- the two options left on the table', status: 'backlog',

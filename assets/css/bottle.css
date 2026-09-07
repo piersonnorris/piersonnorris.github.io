@@ -1,0 +1,175 @@
+/* ============================================================
+   Ship in a bottle — the Obsidian vault's front door.
+   ROADMAP §5 "Ship-in-a-bottle Easter egg" (overlaps R10).
+
+   One component, two very different grounds: the dark site theme
+   (home) and the island's sand/wood palette. Everything colored
+   here reads from --pnb-* variables so a host page can re-skin it
+   without touching this file; the defaults below are the dark
+   theme, and .island-page overrides them at the bottom.
+
+   It is an ENTRANCE, not a viewer: nothing in here ever reads,
+   decrypts, or displays note content. The porthole drawing is a
+   deliberate sketch, and the copy says so.
+   ============================================================ */
+
+:root{
+  --pnb-ink:var(--ink,#e9edf3);
+  --pnb-mut:var(--mut,#8b95a5);
+  --pnb-dim:var(--dim,#7a8392);
+  --pnb-panel:var(--panel,#151b23);
+  --pnb-panel2:var(--panel2,#1a222d);
+  --pnb-line:var(--line,#232d39);
+  --pnb-acc:var(--acc,#5FAE5A);
+  --pnb-acc-hi:var(--acc-hi,#8ED18A);
+  --pnb-glass:rgba(142,209,138,.16);
+  --pnb-glassline:rgba(142,209,138,.5);
+  --pnb-cork:#c08a4a;
+  --pnb-scrim:rgba(6,9,13,.72);
+  --pnb-radius:14px;
+  --pnb-mono:var(--mono,'IBM Plex Mono',ui-monospace,monospace);
+  --pnb-sans:var(--sans,'IBM Plex Sans',system-ui,sans-serif);
+  --pnb-display:var(--display,'Archivo',system-ui,sans-serif);
+}
+
+/* ---------------- the bottle itself ---------------- */
+.pnb-bottle{
+  display:block;padding:0;border:0;background:none;cursor:pointer;line-height:0;
+  color:var(--pnb-acc-hi);
+  filter:drop-shadow(0 6px 10px rgba(0,0,0,.35));
+  animation:pnb-bob 6s ease-in-out infinite;
+  transition:transform .2s ease;
+}
+.pnb-bottle svg{display:block;width:var(--pnb-size,132px);height:auto;overflow:visible}
+.pnb-bottle:hover{transform:translateY(-2px) rotate(-1.5deg)}
+.pnb-bottle:focus-visible{outline:2px solid var(--pnb-acc-hi);outline-offset:6px;border-radius:8px}
+
+@keyframes pnb-bob{
+  0%,100%{transform:translateY(0) rotate(-2deg)}
+  50%{transform:translateY(-5px) rotate(1deg)}
+}
+
+/* the hint only shows up once you're near it — an Easter egg that
+   still tells you it is clickable when you go looking */
+.pnb-hint{
+  display:block;margin-top:6px;font-family:var(--pnb-mono);font-size:9.5px;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--pnb-dim);
+  opacity:0;transition:opacity .2s ease;text-align:center;
+}
+.pnb-bottle:hover + .pnb-hint,
+.pnb-bottle:focus-visible + .pnb-hint{opacity:1}
+
+.pnb-cork{transition:transform .42s cubic-bezier(.32,1.6,.5,1)}
+.pnb-ship{transition:transform .5s ease-out,opacity .5s ease-out}
+.pnb-bottle.is-open .pnb-cork{transform:translate(-16px,-9px) rotate(-38deg)}
+.pnb-bottle.is-open .pnb-ship{transform:translate(-30px,-6px) scale(.82);opacity:0}
+
+/* ---------------- the overlay ---------------- */
+.pnb-overlay{
+  position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:20px;
+}
+.pnb-overlay[hidden]{display:none}
+.pnb-scrim{position:absolute;inset:0;background:var(--pnb-scrim);backdrop-filter:blur(3px);border:0;padding:0;cursor:pointer}
+.pnb-panel{
+  position:relative;width:min(520px,100%);max-height:calc(100vh - 40px);overflow:auto;
+  background:var(--pnb-panel);border:1px solid var(--pnb-line);border-radius:var(--pnb-radius);
+  padding:26px 26px 22px;box-shadow:0 26px 60px rgba(0,0,0,.5);
+  font-family:var(--pnb-sans);color:var(--pnb-ink);
+  animation:pnb-rise .28s ease-out;
+}
+@keyframes pnb-rise{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+
+.pnb-close{
+  position:absolute;top:12px;right:12px;width:30px;height:30px;line-height:1;
+  background:none;border:1px solid var(--pnb-line);border-radius:8px;color:var(--pnb-mut);
+  font-size:17px;cursor:pointer;transition:color .15s,border-color .15s;
+}
+.pnb-close:hover{color:var(--pnb-ink);border-color:var(--pnb-acc)}
+
+.pnb-eyebrow{
+  font-family:var(--pnb-mono);font-size:10px;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--pnb-acc-hi);margin:0 0 8px;
+}
+.pnb-panel h2{font-family:var(--pnb-display);font-size:22px;line-height:1.2;margin:0 0 12px;color:var(--pnb-ink)}
+
+/* the porthole: a sketch of a linked vault, drawn from nothing */
+.pnb-porthole{
+  position:relative;border:1px solid var(--pnb-line);border-radius:10px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 120%,var(--pnb-glass),var(--pnb-panel2) 70%);
+}
+.pnb-porthole svg{display:block;width:100%;height:auto}
+.pnb-edge{stroke:var(--pnb-glassline);stroke-width:1;opacity:.45;stroke-dasharray:3 4;animation:pnb-flow 9s linear infinite}
+.pnb-node{fill:var(--pnb-acc);opacity:.9;animation:pnb-breathe 4.5s ease-in-out infinite}
+.pnb-node.hub{fill:var(--pnb-acc-hi)}
+.pnb-halo{fill:none;stroke:var(--pnb-acc-hi);stroke-width:1;opacity:.28}
+.pnb-sail{fill:var(--pnb-ink);opacity:.9}
+.pnb-hull{fill:var(--pnb-acc-hi)}
+.pnb-boat{animation:pnb-sail 14s linear infinite}
+@keyframes pnb-flow{to{stroke-dashoffset:-70}}
+@keyframes pnb-breathe{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pnb-sail{
+  0%{transform:translateX(-40px)}
+  100%{transform:translateX(300px)}
+}
+
+.pnb-state{
+  display:flex;align-items:center;gap:8px;margin:14px 0 0;
+  font-family:var(--pnb-mono);font-size:11px;letter-spacing:.04em;color:var(--pnb-mut);
+}
+.pnb-lamp{width:7px;height:7px;border-radius:50%;background:var(--pnb-dim);flex:none}
+.pnb-state.sealed .pnb-lamp{background:var(--pnb-acc);box-shadow:0 0 10px var(--pnb-acc)}
+.pnb-state.empty .pnb-lamp{background:var(--pnb-dim)}
+
+.pnb-note{margin:10px 0 0;font-size:13px;line-height:1.6;color:var(--pnb-mut)}
+.pnb-note b{color:var(--pnb-ink);font-weight:600}
+
+.pnb-actions{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0 0}
+.pnb-btn{
+  display:inline-flex;align-items:center;gap:8px;text-decoration:none;
+  font-family:var(--pnb-mono);font-size:12px;letter-spacing:.04em;
+  border:1px solid var(--pnb-line);border-radius:999px;padding:9px 16px;
+  color:var(--pnb-ink);background:var(--pnb-panel2);transition:border-color .15s,background .15s;
+}
+.pnb-btn:hover{border-color:var(--pnb-acc)}
+.pnb-btn.primary{background:var(--pnb-acc);border-color:var(--pnb-acc);color:#0b1410;font-weight:500}
+.pnb-btn.primary:hover{background:var(--pnb-acc-hi);border-color:var(--pnb-acc-hi)}
+
+@media (prefers-reduced-motion:reduce){
+  .pnb-bottle,.pnb-edge,.pnb-node,.pnb-boat,.pnb-panel{animation:none !important}
+  .pnb-cork,.pnb-ship{transition:none !important}
+}
+
+/* ---------------- island skin ----------------
+   Same component, wood and paper instead of panel and ink. The
+   island page is public and PIN-free, so the bottle sits in the
+   sand next to the message-in-a-bottle link it belongs with. */
+.island-page{
+  --pnb-ink:var(--ink);
+  --pnb-mut:var(--ink-soft);
+  --pnb-dim:rgba(74,49,23,.6);
+  --pnb-panel:var(--paper);
+  --pnb-panel2:rgba(255,255,255,.5);
+  --pnb-line:rgba(74,49,23,.28);
+  --pnb-acc:var(--sea-near);
+  --pnb-acc-hi:var(--sea-far);
+  --pnb-glass:rgba(47,143,176,.14);
+  --pnb-glassline:rgba(28,111,142,.55);
+  --pnb-scrim:rgba(74,49,23,.55);
+  --pnb-radius:10px;
+  --pnb-sans:'IBM Plex Sans',system-ui,sans-serif;
+  --pnb-display:'Kalam',cursive;
+  --pnb-mono:'IBM Plex Mono',monospace;
+}
+.island-page .pnb-panel{
+  border-width:5px;border-style:solid;border-color:var(--wood-dk);
+  box-shadow:0 20px 40px rgba(74,49,23,.35);
+}
+.island-page .pnb-panel h2{font-size:26px}
+.island-page .pnb-btn.primary{color:var(--paper)}
+/* the island's grounds (glass and porthole alike) are light, so the
+   sails keep the default dark ink — a paper-white sail would vanish */
+
+/* the island bottle lies half-buried in the sand, angled with the
+   shells rather than upright like the home-page one */
+.island-page .pnb-bottle{filter:drop-shadow(0 4px 6px rgba(74,49,23,.35))}
+.island-page .pnb-hint{color:var(--ink-soft)}

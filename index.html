@@ -17,6 +17,7 @@
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="/assets/css/site.css">
+  <link rel="stylesheet" href="/assets/css/bottle.css">
 
   <script type="application/ld+json">
   {
@@ -63,6 +64,12 @@
     .now-list li{display:grid;grid-template-columns:9px 1fr;gap:10px;align-items:start;padding-top:12px;border-top:1px solid rgba(255,255,255,.075);font-size:13.5px;line-height:1.45;color:var(--mut)}
     .now-list .dot{width:7px;height:7px;margin-top:6px;background:var(--acc);box-shadow:0 0 12px rgba(95,174,90,.7)}
     .now-list b{color:var(--ink);font-weight:600}
+
+    /* the ship-in-a-bottle vault entrance (ROADMAP §5) — small on
+       purpose: it sits on the shelf under the Currently card and only
+       announces itself on hover/focus. */
+    .hero-bottle{display:flex;justify-content:flex-end;margin:14px 6px 0 0}
+    .hero-bottle .pnb-mount{width:132px}
 
     /* status strip */
     .statusbar{
@@ -208,6 +215,7 @@
               <li><span class="dot" aria-hidden="true"></span><span><b>AI &amp; Emerging Tech Club</b><br>Incoming president</span></li>
             </ul>
           </div>
+          <div class="hero-bottle" id="homebottle"></div>
         </aside>
       </div>
 
@@ -318,6 +326,16 @@
   </main>
 
   <script src="/assets/js/nav.js"></script>
+  <script src="/assets/js/bottle.js"></script>
+  <script>
+    /* ROADMAP §5: the vault's front door, hidden in plain sight under
+       the Currently card. Same honesty rule as the console below — it
+       checks whether a vault EXISTS here, never what is in it. */
+    window.PNBottle.mount(document.getElementById('homebottle'), {
+      size: 132,
+      hint: 'pull the cork'
+    });
+  </script>
   <script>
     /* The console is honest about what it can and can't see.
        Nothing here decrypts anything — it only checks whether a vault

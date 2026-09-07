@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=IBM+Plex+Sans:wght@400;450;600&family=IBM+Plex+Mono:wght@400;500&family=Kalam:wght@400;700&display=swap">
   <link rel="stylesheet" href="/assets/css/site.css">
   <link rel="stylesheet" href="/assets/css/island.css">
+  <link rel="stylesheet" href="/assets/css/bottle.css">
   <style>
     /* page-only overrides so the shared .wrap/.hero rules don't fight the scene */
     main{padding:0}
@@ -115,8 +116,26 @@
             <span class="nail bl"></span><span class="nail br"></span>
             <h2>Captain's board</h2>
             <p class="count" id="board-count">loading the crate…</p>
-            <div class="filters" id="board-filters" role="group" aria-label="Filter by stage"></div>
-            <div class="planks" id="board-planks"></div>
+            <div class="boardtabs" role="tablist" aria-label="Board view">
+              <button type="button" class="btab" id="tab-top" role="tab" aria-selected="true" aria-controls="panel-top">Top 5</button>
+              <button type="button" class="btab" id="tab-rank" role="tab" aria-selected="false" aria-controls="panel-rank" tabindex="-1">Set priority</button>
+              <button type="button" class="btab" id="tab-all" role="tab" aria-selected="false" aria-controls="panel-all" tabindex="-1">All hands</button>
+            </div>
+
+            <div class="boardpanel" id="panel-top" role="tabpanel" aria-labelledby="tab-top">
+              <div class="planks" id="board-top"></div>
+            </div>
+
+            <div class="boardpanel" id="panel-rank" role="tabpanel" aria-labelledby="tab-rank" hidden>
+              <p class="ranknote">Drag a plank — or use ↑ ↓ — to set the pecking order. The first five wash up on the <b>Top 5</b> tab. Finished work is left off this list. The order is saved in this browser only; every other visitor sees the automatic one.</p>
+              <ol class="ranklist" id="board-rank"></ol>
+              <button type="button" class="rankreset" id="rankreset">Reset to automatic order</button>
+            </div>
+
+            <div class="boardpanel" id="panel-all" role="tabpanel" aria-labelledby="tab-all" hidden>
+              <div class="filters" id="board-filters" role="group" aria-label="Filter by stage"></div>
+              <div class="planks" id="board-planks"></div>
+            </div>
           </div>
         </div>
 
@@ -141,6 +160,11 @@
         </div>
         <p class="driftnote">The tide chart plots every plank's target date — same public data as the board above, just read as a calendar. No personal or portfolio dates ever wash up here.</p>
 
+        <!-- ROADMAP §5: the ship in a bottle, washed up in the sand.
+             Unannounced on purpose — it is an Easter egg; the hover hint
+             is the only thing that calls it out. -->
+        <div class="castbottle" id="islandbottle"></div>
+
         <a class="bottlelink" href="/tools/tracker/#projects">✉️ Message in a bottle — open the private board →</a>
       </div>
     </div>
@@ -156,18 +180,159 @@
   </main>
 
   <script src="/assets/js/nav.js"></script>
+  <script src="/assets/js/bottle.js"></script>
   <script src="/assets/js/taskboard.js"></script>
   <script src="/assets/js/calendar.js"></script>
   <script>
+  /* The washed-up bottle: same component as the home page, wearing the
+     island's palette (see .island-page overrides in bottle.css). It is
+     an entrance only — this page is public and PIN-free, and nothing
+     here can read a vault. */
+  /* guarded: if bottle.js ever fails to load, the board below still runs */
+  if (window.PNBottle) window.PNBottle.mount(document.getElementById('islandbottle'), {
+    size: 150,
+    hint: 'pop the cork',
+    title: 'A vault, sealed in glass',
+    note: 'That drawing is a <b>sketch of a linked vault</b>, not real notes — this page is public and could not read them if it tried. ' +
+      'The notes themselves are encrypted behind a PIN and only ever decrypt in the owner’s own browser.'
+  });
+
   (function () {
     'use strict';
     var STATUS_LABEL = { backlog: 'Backlog', planned: 'Planned', 'in-progress': 'In progress', blocked: 'Blocked', complete: 'Complete' };
+    /* Which stage counts as most urgent when nobody has hand-ranked the
+       board: what's underway first, then what's stuck, then what's queued. */
+    var STAGE_URGENCY = { 'in-progress': 0, blocked: 1, planned: 2, backlog: 3, complete: 4 };
+    var RANK_KEY = 'pn-island-rank-v1';
+    var TOP_N = 5;
+
     var goals = window.PNTaskboard.sortGoals(window.PNTaskboard.seed());
     var active = 'all';
+    var tab = 'top';
+    var customOrder = loadOrder();
 
     function esc(s) {
       return String(s == null ? '' : s)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    /* ---- priority order ------------------------------------------------
+       Open work only: a finished plank never takes a Top 5 slot. A
+       hand-picked order (Set priority tab) wins; anything not ranked by
+       hand falls in behind it in stage-then-date order. The order lives in
+       localStorage, so it is this browser's opinion, not page content. */
+    function openGoals() {
+      return goals.filter(function (g) { return g.status !== 'complete'; });
+    }
+
+    function loadOrder() {
+      try {
+        var raw = JSON.parse(localStorage.getItem(RANK_KEY) || '[]');
+        return Array.isArray(raw) ? raw.filter(function (id) { return typeof id === 'string'; }) : [];
+      } catch (err) { return []; }
+    }
+
+    function saveOrder(ids) {
+      customOrder = ids;
+      try { localStorage.setItem(RANK_KEY, JSON.stringify(ids)); } catch (err) { /* private mode: order just won't stick */ }
+    }
+
+    function autoOrder() {
+      return openGoals().slice().sort(function (a, b) {
+        return (STAGE_URGENCY[a.status] || 0) - (STAGE_URGENCY[b.status] || 0) ||
+          (a.targetDate || '9999-99-99').localeCompare(b.targetDate || '9999-99-99') ||
+          a.title.localeCompare(b.title);
+      });
+    }
+
+    function priorityList() {
+      var byId = {};
+      openGoals().forEach(function (g) { byId[g.id] = g; });
+      var seen = {};
+      var ranked = [];
+      customOrder.forEach(function (id) {
+        if (byId[id] && !seen[id]) { seen[id] = true; ranked.push(byId[id]); }
+      });
+      autoOrder().forEach(function (g) { if (!seen[g.id]) ranked.push(g); });
+      return ranked;
+    }
+
+    /* Reordering writes the WHOLE list back, so a move near the bottom
+       can't be quietly undone later by an auto-order tie-break. */
+    function reorder(fromIndex, toIndex) {
+      var ids = priorityList().map(function (g) { return g.id; });
+      if (fromIndex < 0 || fromIndex >= ids.length || toIndex < 0 || toIndex >= ids.length || fromIndex === toIndex) return;
+      ids.splice(toIndex, 0, ids.splice(fromIndex, 1)[0]);
+      saveOrder(ids);
+      render();
+      var landed = document.querySelector('.rankrow[data-index="' + toIndex + '"] .rankbtn:not([disabled])');
+      if (landed && tab === 'rank') landed.focus();
+    }
+
+    /* ---- rendering ---------------------------------------------------- */
+    function plankHTML(g, rank) {
+      return '<article class="plank" data-status="' + g.status + '">' +
+        (rank ? '<span class="plankrank" aria-hidden="true">' + rank + '</span>' : '') +
+        '<div class="plankhead">' +
+          '<span class="planktag">' + esc(STATUS_LABEL[g.status] || g.status) + '</span>' +
+          '<span class="planktitle">' + esc(g.title) + '</span>' +
+          (g.targetDate ? '<span class="plankwho">by ' + esc(g.targetDate) + '</span>' : '') +
+        '</div>' +
+        (g.nextAction ? '<p class="planknext"><b>Next:</b> ' + esc(g.nextAction) + '</p>' : '') +
+      '</article>';
+    }
+
+    function renderTop() {
+      var top = priorityList().slice(0, TOP_N);
+      document.getElementById('board-top').innerHTML = top.map(function (g, i) {
+        return plankHTML(g, i + 1);
+      }).join('') || '<p class="planknext">Every plank is done — nothing left on the pile.</p>';
+    }
+
+    function renderRank() {
+      var list = priorityList();
+      document.getElementById('board-rank').innerHTML = list.map(function (g, i) {
+        return '<li class="rankrow' + (i < TOP_N ? ' istop' : '') + '" data-index="' + i + '" data-status="' + g.status + '" draggable="true">' +
+          '<span class="ranknum">' + (i + 1) + '</span>' +
+          '<span class="rankgrip" aria-hidden="true">⠿</span>' +
+          '<span class="ranktitle">' + esc(g.title) + '</span>' +
+          '<span class="rankstage">' + esc(STATUS_LABEL[g.status] || g.status) + '</span>' +
+          '<span class="rankbtns">' +
+            '<button type="button" class="rankbtn" data-move="up" data-index="' + i + '" aria-label="Move ' + esc(g.title) + ' up"' + (i === 0 ? ' disabled' : '') + '>↑</button>' +
+            '<button type="button" class="rankbtn" data-move="down" data-index="' + i + '" aria-label="Move ' + esc(g.title) + ' down"' + (i === list.length - 1 ? ' disabled' : '') + '>↓</button>' +
+          '</span>' +
+        '</li>';
+      }).join('') || '<li class="rankrow"><span class="ranktitle">Nothing open to rank.</span></li>';
+
+      Array.prototype.forEach.call(document.querySelectorAll('.rankbtn'), function (btn) {
+        btn.addEventListener('click', function () {
+          var from = Number(btn.dataset.index);
+          reorder(from, from + (btn.dataset.move === 'up' ? -1 : 1));
+        });
+      });
+
+      var dragFrom = null;
+      Array.prototype.forEach.call(document.querySelectorAll('.rankrow[draggable]'), function (row) {
+        row.addEventListener('dragstart', function (e) {
+          dragFrom = Number(row.dataset.index);
+          row.classList.add('dragging');
+          if (e.dataTransfer) {
+            e.dataTransfer.effectAllowed = 'move';
+            try { e.dataTransfer.setData('text/plain', String(dragFrom)); } catch (err) { /* older browsers */ }
+          }
+        });
+        row.addEventListener('dragend', function () { row.classList.remove('dragging'); dragFrom = null; });
+        row.addEventListener('dragover', function (e) { e.preventDefault(); row.classList.add('dragover'); });
+        row.addEventListener('dragleave', function () { row.classList.remove('dragover'); });
+        row.addEventListener('drop', function (e) {
+          e.preventDefault();
+          row.classList.remove('dragover');
+          var from = dragFrom;
+          if (from === null && e.dataTransfer) from = Number(e.dataTransfer.getData('text/plain'));
+          if (from === null || isNaN(from)) return;
+          reorder(from, Number(row.dataset.index));
+        });
+      });
     }
 
     function renderFilters() {
@@ -181,30 +346,78 @@
           (active === c.id) + '">' + esc(c.label) + ' · ' + counts[c.id] + '</button>';
       }).join('');
       Array.prototype.forEach.call(document.querySelectorAll('.ffilter'), function (btn) {
-        btn.addEventListener('click', function () { active = btn.dataset.status; render(); });
+        btn.addEventListener('click', function () { active = btn.dataset.status; renderAll(); });
       });
     }
 
-    function render() {
+    function renderAll() {
       renderFilters();
       var shown = active === 'all' ? goals : goals.filter(function (g) { return g.status === active; });
-      document.getElementById('board-count').textContent =
-        shown.length + ' item' + (shown.length === 1 ? '' : 's') + ' nailed up · ' +
-        goals.filter(function (g) { return g.status === 'complete'; }).length + ' washed away complete';
-
       document.getElementById('board-planks').innerHTML = shown.map(function (g) {
-        return '<article class="plank" data-status="' + g.status + '">' +
-          '<div class="plankhead">' +
-            '<span class="planktag">' + esc(STATUS_LABEL[g.status] || g.status) + '</span>' +
-            '<span class="planktitle">' + esc(g.title) + '</span>' +
-            (g.targetDate ? '<span class="plankwho">by ' + esc(g.targetDate) + '</span>' : '') +
-          '</div>' +
-          (g.nextAction ? '<p class="planknext"><b>Next:</b> ' + esc(g.nextAction) + '</p>' : '') +
-        '</article>';
+        return plankHTML(g, 0);
       }).join('') || '<p class="planknext">Nothing in this pile — good problem to have.</p>';
+      renderCount(shown.length);
     }
 
+    function renderCount(shownCount) {
+      var open = openGoals().length;
+      var done = goals.length - open;
+      var text;
+      if (tab === 'top') {
+        text = 'top ' + Math.min(TOP_N, open) + ' of ' + open + ' open · ' +
+          (customOrder.length ? 'your order' : 'auto order') + ' · ' + done + ' washed away complete';
+      } else if (tab === 'rank') {
+        text = 'drag to rank · ' + open + ' open item' + (open === 1 ? '' : 's');
+      } else {
+        text = shownCount + ' item' + (shownCount === 1 ? '' : 's') + ' nailed up · ' + done + ' washed away complete';
+      }
+      document.getElementById('board-count').textContent = text;
+    }
+
+    function render() {
+      renderTop();
+      renderRank();
+      renderAll();
+    }
+
+    /* ---- tabs: Top 5 / Set priority / All hands.
+       Top 5 is the default so the board stays short and the tide chart
+       below stays on screen without scrolling past thirty planks. */
+    var TABS = ['top', 'rank', 'all'];
+
+    function selectTab(next, focus) {
+      tab = next;
+      TABS.forEach(function (id) {
+        var btn = document.getElementById('tab-' + id);
+        var panel = document.getElementById('panel-' + id);
+        var on = id === next;
+        btn.setAttribute('aria-selected', String(on));
+        btn.tabIndex = on ? 0 : -1;
+        panel.hidden = !on;
+      });
+      if (focus) document.getElementById('tab-' + next).focus();
+      renderCount(active === 'all' ? goals.length : goals.filter(function (g) { return g.status === active; }).length);
+    }
+
+    TABS.forEach(function (id, i) {
+      var btn = document.getElementById('tab-' + id);
+      btn.addEventListener('click', function () { selectTab(id, false); });
+      btn.addEventListener('keydown', function (e) {
+        var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!step) return;
+        e.preventDefault();
+        selectTab(TABS[(i + step + TABS.length) % TABS.length], true);
+      });
+    });
+
+    document.getElementById('rankreset').addEventListener('click', function () {
+      saveOrder([]);
+      render();
+      renderCount(goals.length);
+    });
+
     render();
+    selectTab('top', false);
 
     /* ---- Tide chart: a month grid of the same board's target dates.
        Public data only (targetDate already prints on each plank above) —

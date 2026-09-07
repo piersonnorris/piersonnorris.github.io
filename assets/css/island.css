@@ -197,6 +197,82 @@ body.island-page{
 .planknext{margin:5px 0 0;font-size:13px;color:var(--ink-soft);line-height:1.5}
 .planknext b{color:var(--ink)}
 
+
+/* ---------------- board tabs: Top 5 / Set priority / All hands ----------------
+   The full list runs ~35 planks, which pushed the tide chart a screen and a
+   half down the sand. Top 5 is the default view so the calendar below stays
+   in sight; the long list is one tab away, not gone. */
+.boardtabs{display:flex;gap:6px;margin:0 0 16px;border-bottom:1px solid rgba(251,242,217,.22);padding-bottom:8px}
+.btab{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:rgba(251,242,217,.7);background:rgba(0,0,0,.18);border:1px solid rgba(251,242,217,.22);
+  border-radius:7px 7px 0 0;padding:7px 13px;cursor:pointer;transition:background .15s,color .15s,border-color .15s;
+}
+.btab:hover{background:rgba(0,0,0,.32);color:var(--paper)}
+.btab[aria-selected="true"]{background:var(--paper);border-color:var(--paper);color:var(--ink);font-weight:500}
+
+/* rank badge on the Top 5 planks — the nail number, hung off the left edge */
+.plankrank{
+  position:absolute;left:-13px;top:50%;transform:translateY(-50%);
+  width:26px;height:26px;border-radius:50%;display:grid;place-items:center;
+  font-family:'Kalam',cursive;font-weight:700;font-size:14px;
+  background:var(--sc,var(--backlog));color:var(--paper);
+  box-shadow:0 2px 4px rgba(0,0,0,.35);
+}
+
+/* ---------------- Set priority: the ranked list ---------------- */
+.ranknote{
+  margin:0 0 14px;font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:1.6;
+  color:rgba(251,242,217,.72);
+}
+.ranknote b{color:var(--paper)}
+.ranklist{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px}
+.rankrow{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(251,242,217,.9);border-radius:5px;padding:7px 11px;
+  border-left:5px solid var(--sc,var(--backlog));cursor:grab;
+}
+.rankrow[data-status="backlog"]{--sc:var(--backlog)}
+.rankrow[data-status="planned"]{--sc:var(--planned)}
+.rankrow[data-status="in-progress"]{--sc:var(--progress)}
+.rankrow[data-status="blocked"]{--sc:var(--blocked)}
+.rankrow.istop{background:var(--paper);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.rankrow.dragging{opacity:.45;cursor:grabbing}
+.rankrow.dragover{outline:2px dashed var(--sand-lt);outline-offset:2px}
+.ranknum{
+  flex:0 0 22px;font-family:'IBM Plex Mono',monospace;font-size:11px;text-align:right;
+  color:var(--ink-soft);opacity:.7;
+}
+.rankrow.istop .ranknum{color:var(--ink);opacity:1;font-weight:500}
+.rankgrip{color:rgba(74,49,23,.4);font-size:13px;line-height:1;cursor:grab}
+.ranktitle{flex:1 1 auto;font-family:'Kalam',cursive;font-size:15px;color:var(--ink);min-width:0}
+.rankstage{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--sc,var(--backlog));border:1px solid var(--sc,var(--backlog));border-radius:4px;padding:1px 6px;white-space:nowrap;
+}
+.rankbtns{display:flex;gap:4px;flex:0 0 auto}
+.rankbtn{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:1;
+  color:var(--ink-soft);background:rgba(74,49,23,.08);border:1px solid rgba(74,49,23,.25);
+  border-radius:5px;padding:4px 8px;cursor:pointer;transition:background .15s;
+}
+.rankbtn:hover:not(:disabled){background:rgba(74,49,23,.2)}
+.rankbtn:disabled{opacity:.3;cursor:default}
+.rankreset{
+  font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.05em;
+  color:var(--paper);background:rgba(0,0,0,.18);border:1px solid rgba(251,242,217,.3);
+  border-radius:999px;padding:6px 13px;cursor:pointer;transition:background .15s;
+}
+.rankreset:hover{background:rgba(0,0,0,.32)}
+
+@media (max-width:640px){
+  .boardtabs{flex-wrap:wrap;gap:4px}
+  .btab{font-size:10px;padding:6px 9px}
+  .rankrow{flex-wrap:wrap;gap:6px}
+  .ranktitle{flex:1 1 100%;order:3}
+  .rankbtns{margin-left:auto}
+}
+
 /* ---------------- tide chart (calendar under the board) ---------------- */
 .tideposts{margin-top:60px}
 .tideboard{padding:22px 24px 26px}
@@ -232,6 +308,16 @@ body.island-page{
   margin:26px auto 0;max-width:640px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
   color:var(--ink-soft);background:rgba(255,255,255,.35);border:1px dashed rgba(74,49,23,.3);
   border-radius:8px;padding:11px 14px;
+}
+
+/* the ship in a bottle, half-buried in the sand above the message-in-a-
+   bottle link (ROADMAP §5). Tilted like the shells, with a wet-sand
+   shadow under it so it sits IN the beach rather than on top of it. */
+.castbottle{display:flex;justify-content:center;margin:34px 0 0}
+.castbottle .pnb-mount{position:relative;transform:rotate(-7deg)}
+.castbottle .pnb-mount::after{
+  content:"";position:absolute;left:12%;right:12%;bottom:-10px;height:12px;
+  background:radial-gradient(ellipse,rgba(74,49,23,.3),transparent 70%);
 }
 
 .bottlelink{

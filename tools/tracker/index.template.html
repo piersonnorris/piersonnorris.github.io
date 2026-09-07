@@ -337,7 +337,6 @@
       background-attachment:fixed;
     }
     body.theme-underwater .panel,
-    body.theme-underwater .platform,
     body.theme-underwater .prices,
     body.theme-underwater .dividends,
     body.theme-underwater .portfolio-calendar,
@@ -347,6 +346,11 @@
       border-color:rgba(120,196,232,.24);
       box-shadow:0 20px 46px rgba(0,0,0,.3),inset 0 1px 0 rgba(126,214,255,.1);
     }
+    /* Platform cards stay FLAT var(--panel), not a gradient: the sticky
+       first column (U10) paints itself with var(--panel) and has to be
+       opaque to occlude the row scrolling under it, so a gradient parent
+       leaves a visible mismatched block behind every holding name. */
+    body.theme-underwater .platform{background:var(--panel);border-color:rgba(120,196,232,.24);box-shadow:0 20px 46px rgba(0,0,0,.3)}
     body.theme-underwater .tracker-tabs{background:rgba(9,37,57,.72);border-color:rgba(120,196,232,.24)}
     body.theme-underwater .tracker-tab[aria-selected="true"]{background:var(--acc);color:#08202f}
     body.theme-underwater thead th{color:#9dc4d8}

@@ -1288,10 +1288,14 @@
           });
         });
       }
+      /* Number.isFinite, not isFinite: these are null when nothing is
+         logged, and isFinite(null) is TRUE (Number(null) === 0), which
+         sent null straight into .toFixed() and threw — taking the whole
+         chart render down with it, since this runs before market(). */
       var avgBuy = trackedShares ? cost / trackedShares : null;
-      var trackedValue = trackedShares && isFinite(stats.latest) ? trackedShares * stats.latest : null;
-      var gain = isFinite(trackedValue) ? trackedValue - cost : null;
-      var gainPct = cost && isFinite(gain) ? gain / cost * 100 : null;
+      var trackedValue = trackedShares && Number.isFinite(stats.latest) ? trackedShares * stats.latest : null;
+      var gain = Number.isFinite(trackedValue) ? trackedValue - cost : null;
+      var gainPct = cost && Number.isFinite(gain) ? gain / cost * 100 : null;
       var gainDir = gain > 0 ? 'up' : gain < 0 ? 'down' : '';
 
       function cell(label, body, cls) {
@@ -1303,14 +1307,14 @@
         '<div class="hoard-grid">' +
         cell('Shares held', esc(shares.toLocaleString('en-US', { maximumFractionDigits: 6 }))) +
         cell('Position value', value ? esc(money(value)) : '—') +
-        cell('Last close', isFinite(stats.latest) ? esc(money(stats.latest)) : '—') +
-        cell('Average close', isFinite(stats.average) ? esc(money(stats.average)) : '—') +
+        cell('Last close', Number.isFinite(stats.latest) ? esc(money(stats.latest)) : '—') +
+        cell('Average close', Number.isFinite(stats.average) ? esc(money(stats.average)) : '—') +
         cell('Range high / low', esc(money(stats.high)) + ' · ' + esc(money(stats.low))) +
         cell('Held at', esc(Object.keys(platforms).join(', ') || '—')) +
         cell('Tracked buys', trackedShares ? esc(trackedShares.toLocaleString('en-US', { maximumFractionDigits: 6 })) + ' sh' : (unlocked ? 'none logged' : 'vault locked')) +
-        cell('Average buy', isFinite(avgBuy) ? esc(money(avgBuy)) : '—') +
-        cell('Tracked P/L', isFinite(gain)
-          ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (isFinite(gainPct) ? ' · ' + (gainPct >= 0 ? '+' : '') + gainPct.toFixed(1) + '%' : '')
+        cell('Average buy', Number.isFinite(avgBuy) ? esc(money(avgBuy)) : '—') +
+        cell('Tracked P/L', Number.isFinite(gain)
+          ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (Number.isFinite(gainPct) ? ' · ' + (gainPct >= 0 ? '+' : '') + gainPct.toFixed(1) + '%' : '')
           : '—', gainDir) +
         '</div>' +
         '<p class="hoard-note">' + esc(stats.sessions + ' sessions · ' + stats.source) +
@@ -2310,10 +2314,12 @@
       }) : [];
       var trackedShares = purchases.reduce(function (sum, purchase) { return sum + Number(purchase.shares); }, 0);
       var cost = purchases.reduce(function (sum, purchase) { return sum + Number(purchase.shares) * Number(purchase.price); }, 0);
-      var average = trackedShares ? cost / trackedShares : null;
-      var trackedValue = trackedShares && isFinite(row.price) ? trackedShares * row.price : null;
-      var gain = isFinite(trackedValue) ? trackedValue - cost : null;
-      var gainPct = cost && isFinite(gain) ? gain / cost * 100 : null;
+      var average = trackedShares ? cost / trackedShares : null;  /* null-safe below via Number.isFinite */
+      /* Same isFinite(null) === true trap as renderHoard: a position
+         with no buys logged yet would otherwise call .toFixed() on null. */
+      var trackedValue = trackedShares && Number.isFinite(row.price) ? trackedShares * row.price : null;
+      var gain = Number.isFinite(trackedValue) ? trackedValue - cost : null;
+      var gainPct = cost && Number.isFinite(gain) ? gain / cost * 100 : null;
       var direction = gain > 0 ? 'up' : gain < 0 ? 'down' : '';
       var lotRows = purchases.length ? '<div class="pj-lots">' + purchases.slice().sort(function (a, b) {
         return String(b.date || '').localeCompare(String(a.date || ''));
@@ -2327,8 +2333,8 @@
       return '<tr class="position-detail" id="' + detailId + '"><td colspan="8"><section class="purchase-journal" aria-label="' + esc(ticker) + ' purchase journal">' +
         '<div class="pj-top"><div><h4>' + esc(ticker) + ' purchase journal</h4><p>' + esc(row.platform) + ' · saved inside your encrypted stock vault</p></div><span class="pj-badge">private · this device</span></div>' +
         '<div class="pj-metrics"><div class="pj-metric"><span>Tracked shares</span><b>' + (trackedShares ? esc(trackedShares.toLocaleString('en-US', { maximumFractionDigits: 6 })) : '—') + '</b></div>' +
-        '<div class="pj-metric"><span>Average buy</span><b>' + (isFinite(average) ? esc(money(average)) : '—') + '</b></div><div class="pj-metric"><span>Tracked cost</span><b>' + (cost ? esc(money(cost)) : '—') + '</b></div>' +
-        '<div class="pj-metric"><span>Tracked P/L</span><b class="' + direction + '">' + (isFinite(gain) ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (isFinite(gainPct) ? ' · ' + (gainPct >= 0 ? '+' : '') + gainPct.toFixed(1) + '%' : '') : '—') + '</b></div></div>' +
+        '<div class="pj-metric"><span>Average buy</span><b>' + (Number.isFinite(average) ? esc(money(average)) : '—') + '</b></div><div class="pj-metric"><span>Tracked cost</span><b>' + (cost ? esc(money(cost)) : '—') + '</b></div>' +
+        '<div class="pj-metric"><span>Tracked P/L</span><b class="' + direction + '">' + (Number.isFinite(gain) ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (Number.isFinite(gainPct) ? ' · ' + (gainPct >= 0 ? '+' : '') + gainPct.toFixed(1) + '%' : '') : '—') + '</b></div></div>' +
         lotRows + '<form class="pj-entry" data-key="' + esc(key) + '"><label class="fld"><span>Buy date</span><input type="date" name="date"></label>' +
         '<label class="fld"><span>Shares bought</span><input type="number" name="shares" inputmode="decimal" min="0" step="any" placeholder="0.00" required></label>' +
         '<label class="fld"><span>Buy price</span><input type="number" name="price" inputmode="decimal" min="0" step="any" placeholder="$0.00" required></label><button class="btn primary" type="submit">Add buy</button></form>' +

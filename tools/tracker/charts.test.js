@@ -124,6 +124,7 @@ function main() {
   }
 
   markup();
+  hoard();
   console.log('Chart indicator tests: OK');
 }
 
@@ -193,6 +194,58 @@ function markup() {
     assert.equal(html.includes('treasure-chest'), themed, 'chest belongs to the underwater theme only');
     assert.equal(html.includes('uw-bubbles'), themed, 'bubbles belong to the underwater theme only');
   }
+}
+
+/* renderHoard() runs BEFORE PNCharts.market() in the render path, so a
+   throw in it takes the whole chart down with it — which is exactly what
+   happened live: isFinite(null) is true (Number(null) === 0), so a symbol
+   with no purchase lots logged sent null into .toFixed(). Most holdings
+   have no lots logged, so this was the common case, not the edge one.
+   This runs the real function out of the template against a stub DOM. */
+function hoard() {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const src = fs.readFileSync(path.join(__dirname, 'index.template.html'), 'utf8');
+
+  const i = src.indexOf('function renderHoard(');
+  assert.ok(i >= 0, 'renderHoard() not found in the template');
+  const body = src.slice(i, src.indexOf('\n    }', i) + 6);
+
+  const build = (rows, journals, unlocked) => new Function(`
+    var host = { innerHTML: '' };
+    var $ = function (id) { return id === 'hoardpanel' ? host : null; };
+    var esc = function (s) { return String(s); };
+    var money = function (n) { return '$' + Number(n).toFixed(2); };
+    var hoardGoldSvg = function () { return '<svg></svg>'; };
+    var valued = ${JSON.stringify(rows)};
+    var journalMap = ${JSON.stringify(journals)};
+    var journalFor = function (r) { return journalMap[r.platform] || null; };
+    var stockNotes = { vault: { isUnlocked: function () { return ${!!unlocked}; } } };
+    ${body}
+    return function (symbol, stats) { renderHoard(symbol, stats); return host.innerHTML; };
+  `)();
+
+  const stats = { latest: 121.27, high: 124.94, low: 105.71, average: 114.4, sessions: 64, source: 'demo' };
+  const rows = [{ kind: 'Equity', symbol: 'VDE', platform: 'Sofi', amount: 1.5, value: 198.4 }];
+
+  /* The case that actually broke: vault unlocked, zero lots logged. */
+  const none = build(rows, {}, true)('VDE', stats);
+  assert.ok(none.includes('none logged'), 'says no buys are logged');
+  assert.ok(!/NaN|null|undefined|\$0\.00/.test(none), `no-lots hoard leaked a bad value: ${none.slice(0, 400)}`);
+  assert.ok(none.includes('—'), 'unknown figures render as an em dash, not a fabricated zero');
+
+  /* Vault locked — same path, nothing logged, must not throw either. */
+  const locked = build(rows, {}, false)('VDE', stats);
+  assert.ok(locked.includes('vault locked'), 'says the vault is locked');
+  assert.ok(!/NaN|undefined/.test(locked), 'locked hoard leaked a bad value');
+
+  /* With real lots, the arithmetic still has to be right. */
+  const withLots = build(rows, { Sofi: { purchases: [{ shares: 1, price: 100 }] } }, true)('VDE', stats);
+  assert.ok(withLots.includes('$100.00'), 'average buy shows');
+  assert.ok(withLots.includes('+$21.27'), `P/L of 121.27 - 100 should show: ${withLots.slice(0, 400)}`);
+  assert.ok(withLots.includes('+21.3%'), 'P/L percentage shows');
+  /* 1 lot against 1.5 shares held — say so rather than implying full cover. */
+  assert.ok(withLots.includes('partial'), 'flags that tracked buys only partly cover the position');
 }
 
 main();

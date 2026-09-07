@@ -19,6 +19,41 @@
 
   var entries = [
     {
+      date: '2026-09-06', tag: 'shipped',
+      title: 'Underwater theme for the Charts tab',
+      detail: 'Opt-in skin (Theme: Deep / Underwater). Ocean ground with drifting caustics and bubbles, an open treasure chest presiding over the range figures, and a gold-backed "hoard" panel below carrying what the KPI row has no room for — including cost basis and P/L summed from that symbol\'s purchase journals. Repaints only; it never changes a number.',
+      link: '#charts'
+    },
+    {
+      date: '2026-09-06', tag: 'shipped',
+      title: 'Chart V2 — candles, RSI/MACD, sort, remembered prefs (R14)',
+      detail: 'Candlestick chart type (falls back to the line when a provider returns closes only), RSI 14 and MACD 12/26/9 sub-panels under the volume strip, an A-Z / Value sidebar sort, and display prefs that survive a re-lock. Closes out R12\'s "chart indicators v2."',
+      link: '#charts'
+    },
+    {
+      date: '2026-09-06', tag: 'shipped',
+      title: 'Chart-tab stock sidebar with inline notes (R13)',
+      detail: 'The stock picker became a left-hand vertical list; each row has a notes icon that inline-expands a private per-ticker outlook note — the same note the Positions tab and the Obsidian vault already reach, just one more door into it.',
+      link: '#charts'
+    },
+    {
+      date: '2026-09-06', tag: 'shipped',
+      title: 'First tests for the chart maths and markup',
+      detail: 'tools/tracker/charts.test.js covers EMA/RSI/MACD alignment and identities, plus a guard that walks the Charts panel\'s div depth in both themes. BLUEPRINT §10 asked for chart fixtures and there were none; it immediately caught a real bug where the remembered range silently fell back to 3M.',
+      link: '#charts'
+    },
+    {
+      date: '2026-09-06', tag: 'shipped',
+      title: 'Crawl kit: sitemap.xml, OG tags, honest llms.txt',
+      detail: 'robots.txt had promised a sitemap that never existed — added one for the three live pages. Experience and Island got the OG/Twitter tags Home already had, and llms.txt now separates live pages from the ones still pending R4/R7 instead of listing them as if they shipped.'
+    },
+    {
+      date: '2026-09-06', tag: 'shipped',
+      title: 'PN Tasks — a standing queue for Pierce\'s calls',
+      detail: 'docs/ROADMAP.md §5 collects open questions Claude or ChatGPT can\'t resolve alone, plus ideas needing his decision, each with a Source line. Mirrored to TASKS.md and the board seed.',
+      link: '#projects'
+    },
+    {
       date: '2026-09-06', tag: 'data',
       title: 'September 2026 tab is live in the tracker',
       detail: 'Rebuilt from Pierce\'s "Early September" dictation — 48 positions, several trims and adds confirmed (DEFT 949→100, RR up, new EIX/VPG, NVDA call closed). Month switcher and value-over-time chart now show two points.',

@@ -314,13 +314,58 @@
        A display skin only: it repaints the Charts panel, it never
        changes a number. Everything is CSS + inline SVG drawn here, so
        the encrypted build stays self-contained with no new requests. */
-    .theme-underwater{
-      position:relative;isolation:isolate;
-      background:linear-gradient(178deg,#0b3049 0%,#092539 42%,#061a28 74%,#04121c 100%);
-      border-color:#12405c;
-      box-shadow:0 24px 60px rgba(0,0,0,.34),inset 0 1px 0 rgba(126,214,255,.14);
+    /* ---------- Underwater theme, tracker-wide ----------
+       The whole tracker is built on the site's CSS variables, so the skin
+       is mostly a token swap on <body>: every panel, table, tab and card
+       repaints from it without touching their own rules. Only the pieces
+       that hard-code a colour need their own override below.
+       Semantic up/down colours are deliberately NOT swapped — gain and
+       loss have to keep reading the same in either theme. */
+    body.theme-underwater{
+      --bg:#04121c;
+      --panel:#0a2942;
+      --panel2:#0e3a5a;
+      --line:rgba(120,196,232,.20);
+      --line2:rgba(120,196,232,.34);
+      --ink:#eaf4fa;
+      --mut:#9dc4d8;
+      --dim:#8fb3c7;            /* keeps ≥4.5:1 on the deep-water ground */
+      --acc:#d6b25e;            /* treasure gold replaces fern */
+      --acc-hi:#f2e4bd;
+      --acc-soft:rgba(214,178,94,.14);
+      background:linear-gradient(184deg,#0b3049 0%,#092539 34%,#061a28 68%,#04121c 100%);
+      background-attachment:fixed;
     }
-    .theme-underwater::before{
+    body.theme-underwater .panel,
+    body.theme-underwater .platform,
+    body.theme-underwater .prices,
+    body.theme-underwater .dividends,
+    body.theme-underwater .portfolio-calendar,
+    body.theme-underwater .project-board-shell,
+    body.theme-underwater .stockchart{
+      background:linear-gradient(168deg,rgba(13,54,82,.82),rgba(6,26,40,.9));
+      border-color:rgba(120,196,232,.24);
+      box-shadow:0 20px 46px rgba(0,0,0,.3),inset 0 1px 0 rgba(126,214,255,.1);
+    }
+    body.theme-underwater .tracker-tabs{background:rgba(9,37,57,.72);border-color:rgba(120,196,232,.24)}
+    body.theme-underwater .tracker-tab[aria-selected="true"]{background:var(--acc);color:#08202f}
+    body.theme-underwater thead th{color:#9dc4d8}
+    body.theme-underwater tbody tr:hover{background:rgba(140,214,255,.055)}
+    body.theme-underwater .btn{border-color:rgba(120,196,232,.3)}
+    body.theme-underwater .btn.primary{background:var(--acc);border-color:var(--acc);color:#08202f}
+    /* caustic light drifting over the whole page, behind everything */
+    body.theme-underwater::before{
+      content:"";position:fixed;inset:-30% -20% auto -20%;height:160%;pointer-events:none;z-index:0;
+      background:
+        linear-gradient(102deg,transparent 42%,rgba(140,224,255,.075) 48%,transparent 55%),
+        linear-gradient(84deg,transparent 60%,rgba(168,240,255,.05) 66%,transparent 73%);
+      animation:uw-drift 19s ease-in-out infinite alternate;
+    }
+    body.theme-underwater > *{position:relative;z-index:1}
+    .theme-underwater .stockchart{
+      position:relative;isolation:isolate;
+    }
+    .stockchart.theme-underwater::before{
       /* caustics: two soft light shafts drifting across the surface */
       content:"";position:absolute;inset:-40% -20% auto -20%;height:150%;pointer-events:none;z-index:0;
       background:
@@ -329,7 +374,7 @@
       animation:uw-drift 19s ease-in-out infinite alternate;
     }
     @keyframes uw-drift{from{transform:translate3d(-3%,0,0) skewX(-2deg)}to{transform:translate3d(4%,0,0) skewX(2.5deg)}}
-    .theme-underwater > *{position:relative;z-index:1}
+    .stockchart.theme-underwater > *{position:relative;z-index:1}
     .uw-bubbles{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
     .uw-bubbles i{
       position:absolute;bottom:-16px;border-radius:50%;
@@ -376,7 +421,7 @@
     .theme-underwater .sidelist-dot{background:#f2c96b}
     .theme-underwater .market-symbol span{color:#f2e4bd;border-color:rgba(214,178,94,.4)}
     @media (prefers-reduced-motion:reduce){
-      .theme-underwater::before{animation:none}
+      body.theme-underwater::before,.stockchart.theme-underwater::before{animation:none}
       .uw-bubbles i{animation:none;opacity:.28}
     }
     @media (max-width:760px){.treasure-chest{width:118px}}
@@ -481,6 +526,7 @@
         <div class="bar">
           <h1>Portfolio Tracker</h1>
           <span class="spacer"></span>
+          <button id="themetoggle" class="btn" type="button" title="Switch the tracker between the Deep and Underwater skins"></button>
           <button id="relock" class="btn" type="button" title="Lock, and forget the saved unlock on this device">Lock</button>
         </div>
         <p class="metaline" id="metaline"></p>
@@ -940,6 +986,14 @@
       });
     });
 
+    $('themetoggle').addEventListener('click', function () {
+      saveChartPrefs({ theme: loadChartPrefs().theme === 'underwater' ? 'deep' : 'underwater' });
+      applyTheme();
+      /* repaint the chart too — the chest and hoard belong to the skin */
+      if (DATA && $('stockchart')) { try { renderStockChart(); } catch (e) { /* other tab is open */ } }
+    });
+    applyTheme();
+
     $('relock').addEventListener('click', function () {
       DATA = null; valued = []; sessionPin = null; demoMode = false; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); expandedChartNoteSymbol = null; clearTimeout(chartNoteSaveTimer); activeChartRange = null; dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
       if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
@@ -1287,6 +1341,19 @@
       return next;
     }
 
+    /* The skin is tracker-wide, so it lives on <body> and the toggle sits
+       in the header rather than inside the Charts tab — it changes every
+       tab, so burying the control under one of them made no sense. */
+    function applyTheme() {
+      var underwater = loadChartPrefs().theme === 'underwater';
+      document.body.classList.toggle('theme-underwater', underwater);
+      var button = $('themetoggle');
+      if (button) {
+        button.textContent = underwater ? '🪙 Underwater' : '🌊 Deep';
+        button.setAttribute('aria-pressed', String(underwater));
+      }
+    }
+
     /* Sidebar order: A-Z, or biggest position first. Ties and unpriced
        positions fall back to alphabetical so the list never reshuffles
        randomly between renders. */
@@ -1578,6 +1645,7 @@
       if (!activeChartRange) activeChartRange = loadChartPrefs().range;
       var prefs = loadChartPrefs(), underwater = prefs.theme === 'underwater';
       $('stockchart').className = 'stockchart' + (underwater ? ' theme-underwater' : '');
+      applyTheme();
       chartValueBySymbol = {};
       valued.forEach(function (r) {
         if (r.kind === 'Equity' && r.symbol && isFinite(r.value)) {

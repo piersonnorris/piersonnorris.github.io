@@ -21,4 +21,10 @@ Inputs that must NEVER be committed: `private/STOCK_HANDOFF.md` (holdings), `pri
 
 decrypted payload → `PNPrices.resolve` (baked quotes → cache → provider key → manual) → `valuate` → headline, charts, per-platform tables → dividend map (payload defaults + user edits) → dividend charts + calendar events → encrypted stock vault (notes, journals, board, private events) via `PNNotes`.
 
+## Staying unlocked on one device
+
+The lock screen has an opt-in **Stay unlocked on this device** checkbox (encrypted build only — the demo page has no PIN to remember). The PIN *is* the decryption key, so it cannot be removed, only remembered: on unlock the page generates a non-extractable AES-GCM key, stores it in IndexedDB (`pn-tracker-unlock`), and keeps the PIN encrypted under it. The PIN is never written in the clear, never leaves the browser profile, and is never sent anywhere. The record also carries the payload's `salt`, so any rebuild that reseals the holdings retires the saved unlock and asks for the PIN once instead of reporting a wrong PIN nobody typed. **Lock deletes the record** — that is the way to un-remember a device.
+
+The tradeoff is deliberate and local: anyone who can use that browser profile is inside. Do not tick it on a shared or public machine.
+
 `calendar.test.js` and `taskboard.test.js` are plain-Node tests; run both before committing changes here.

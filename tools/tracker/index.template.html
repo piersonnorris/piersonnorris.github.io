@@ -90,6 +90,15 @@
     @keyframes padRipple{0%{opacity:.55;transform:scale(.3)}100%{opacity:0;transform:scale(1.4)}}
     .padnote{font-family:var(--mono);font-size:11px;color:var(--dim);margin:16px 0 0}
 
+    /* "stay unlocked on this device" — opt-in, and only on the encrypted
+       build, since the demo page has no PIN to remember. */
+    .remember{
+      display:flex;align-items:center;justify-content:center;gap:9px;
+      margin:16px 0 0;font-family:var(--mono);font-size:12px;color:var(--mut);cursor:pointer;
+    }
+    .remember input{flex:none;width:15px;height:15px;accent-color:var(--acc);cursor:pointer}
+    .remember:hover{color:var(--ink)}
+
     #msg{font-family:var(--mono);font-size:12.5px;min-height:20px;margin:14px 0 0;color:var(--dim)}
     #msg.err{color:var(--bad)}
     .shake{animation:shake .35s}
@@ -458,8 +467,13 @@
             <button type="button" class="pad" data-digit="0" aria-label="Digit 0">0<span class="ripple" aria-hidden="true"></span></button>
             <button type="button" class="pad go" data-action="go" aria-label="Unlock">✓<span class="ripple" aria-hidden="true"></span></button>
           </div>
+          <label class="remember" id="rememberrow" hidden>
+            <input type="checkbox" id="remember">
+            <span>Stay unlocked on this device</span>
+          </label>
           <p id="msg" aria-live="polite"></p>
           <p class="finetext">The same PIN opens the stock-notes vault below.</p>
+          <p class="finetext" id="remembernote" hidden>Staying unlocked keeps the PIN encrypted in this browser only &mdash; anyone who can use this browser profile gets in. Press <b>Lock</b> to forget it.</p>
         </form>
       </section>
 
@@ -467,7 +481,7 @@
         <div class="bar">
           <h1>Portfolio Tracker</h1>
           <span class="spacer"></span>
-          <button id="relock" class="btn" type="button">Lock</button>
+          <button id="relock" class="btn" type="button" title="Lock, and forget the saved unlock on this device">Lock</button>
         </div>
         <p class="metaline" id="metaline"></p>
 
@@ -732,6 +746,66 @@
       return JSON.parse(new TextDecoder().decode(pt));
     }
 
+    /* ---- "stay unlocked on this device" (opt-in) ----------------------
+       The PIN is the decryption key, so remembering the unlock means
+       remembering the PIN. It is never stored in the clear: a
+       non-extractable AES-GCM key is generated in this browser and kept
+       in IndexedDB — script can use the key handle but cannot read its
+       bytes back — and the PIN is stored encrypted under it. Nothing is
+       sent anywhere; this is one browser profile only. The record also
+       carries the payload's salt, so a rebuild with fresh holdings
+       invalidates it instead of failing as a "wrong PIN" nobody typed.
+       Pressing Lock deletes the record. */
+    var REMEMBER_DB = 'pn-tracker-unlock', REMEMBER_STORE = 'unlock', REMEMBER_ID = 'device';
+
+    function rememberDb() {
+      return new Promise(function (resolve, reject) {
+        if (!window.indexedDB) { reject(new Error('IndexedDB unavailable')); return; }
+        var open = indexedDB.open(REMEMBER_DB, 1);
+        open.onupgradeneeded = function () { open.result.createObjectStore(REMEMBER_STORE); };
+        open.onerror = function () { reject(open.error); };
+        open.onsuccess = function () { resolve(open.result); };
+      });
+    }
+
+    /* run() has to issue its request synchronously: an IndexedDB
+       transaction goes inactive the moment control returns to the event
+       loop, so no crypto may be awaited between opening it and using it. */
+    function rememberTx(db, mode, run) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(REMEMBER_STORE, mode), req;
+        try { req = run(tx.objectStore(REMEMBER_STORE)); }
+        catch (e) { db.close(); reject(e); return; }
+        tx.oncomplete = function () { db.close(); resolve(req ? req.result : null); };
+        tx.onerror = tx.onabort = function () { db.close(); reject(tx.error); };
+      });
+    }
+
+    async function rememberSave(pin) {
+      var key = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+      var iv = crypto.getRandomValues(new Uint8Array(12));
+      var ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, new TextEncoder().encode(pin)));
+      var db = await rememberDb();
+      await rememberTx(db, 'readwrite', function (store) {
+        return store.put({ key: key, iv: iv, ct: ct, salt: PAYLOAD.salt }, REMEMBER_ID);
+      });
+    }
+
+    async function rememberLoad() {
+      var db = await rememberDb();
+      var rec = await rememberTx(db, 'readonly', function (store) { return store.get(REMEMBER_ID); });
+      if (!rec || !rec.key) return null;
+      if (rec.salt !== PAYLOAD.salt) return { stale: true };
+      var pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: rec.iv }, rec.key, rec.ct);
+      return { pin: new TextDecoder().decode(pt) };
+    }
+
+    function rememberForget() {
+      return rememberDb().then(function (db) {
+        return rememberTx(db, 'readwrite', function (store) { return store.delete(REMEMBER_ID); });
+      }).catch(function () { /* nothing saved, or IndexedDB unavailable */ });
+    }
+
     // ------------------------------------------------------ unlock flow
 
     var form = $('lockcard'), pinEl = $('pin'), goEl = $('go'), msgEl = $('msg');
@@ -785,6 +859,39 @@
       msgEl.textContent = 'Demo page — the button just lets you in. Sample data only.';
     }
 
+    /* A saved unlock, if this browser has one: try it before the user is
+       shown an empty PIN box. Only the encrypted build has anything to
+       remember, so the demo page never offers the checkbox. */
+    var rememberEl = $('remember'), rememberRow = $('rememberrow'), rememberNote = $('remembernote');
+
+    if (PAYLOAD) {
+      rememberRow.hidden = false;
+      rememberNote.hidden = false;
+      rememberLoad().then(function (rec) {
+        if (!rec) return null;
+        if (rec.stale) {
+          rememberForget();
+          msgEl.textContent = 'Saved unlock expired after a data refresh — enter the PIN once.';
+          return null;
+        }
+        rememberEl.checked = true;
+        goEl.disabled = true; pinEl.disabled = true;
+        msgEl.className = ''; msgEl.textContent = 'unlocking…';
+        return decrypt(rec.pin).then(function (data) {
+          goEl.disabled = false; pinEl.disabled = false; msgEl.textContent = '';
+          revealVault(function () { boot(data, rec.pin); });
+        }).catch(function () {
+          /* The record can no longer open this payload; drop it rather
+             than leave a dead auto-unlock that fails on every load. */
+          rememberForget();
+          rememberEl.checked = false;
+          goEl.disabled = false; pinEl.disabled = false;
+          msgEl.className = 'err';
+          msgEl.textContent = 'Saved unlock no longer works — enter the PIN.';
+        });
+      }).catch(function () { /* nothing saved, or IndexedDB unavailable */ });
+    }
+
     // ---- the reveal: the safe fades/blurs shut, the vault fades up into
     // view, instead of a hard display:none/block cut. Falls back to an
     // instant swap under reduced motion (the CSS media query already
@@ -818,6 +925,10 @@
       decrypt(pin).then(function (data) {
         pinEl.value = ''; renderDots();
         goEl.disabled = false; msgEl.textContent = '';
+        /* Same idiom as the other storage in this file: a browser that
+           refuses the write just means the next visit asks for the PIN. */
+        if (rememberEl && rememberEl.checked) rememberSave(pin).catch(function () { /* ignore */ });
+        else rememberForget();
         revealVault(function () { boot(data, pin); });
       }).catch(function () {
         goEl.disabled = false;
@@ -830,6 +941,10 @@
     $('relock').addEventListener('click', function () {
       DATA = null; valued = []; sessionPin = null; demoMode = false; expandedPositionKey = null; clearTimeout(positionNoteSaveTimer); expandedChartNoteSymbol = null; clearTimeout(chartNoteSaveTimer); activeChartRange = null; dividendDefaults = {}; dividendEdits = {}; dividendSyncDone = false; privateCalendarEvents = []; calendarEditingId = null; projectGoals = []; projectEditingId = null; projectBoardReady = false;
       if (stockNotes && stockNotes.vault) stockNotes.vault.lock();
+      /* Lock means lock: the saved unlock goes too, or the next reload
+         would walk straight back in and the button would be a no-op. */
+      rememberForget();
+      if (rememberEl) rememberEl.checked = false;
       $('vault').style.display = 'none';
       $('lock').style.display = 'grid';
       $('charts').innerHTML = '';

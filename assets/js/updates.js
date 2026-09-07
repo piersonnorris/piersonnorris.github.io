@@ -19,6 +19,11 @@
 
   var entries = [
     {
+      date: '2026-09-07', tag: 'shipped',
+      title: 'Stay unlocked on this device',
+      detail: 'Opt-in checkbox on the PIN screen. The PIN is the decryption key, so it is remembered rather than removed: a non-extractable AES-GCM key generated in the browser lives in IndexedDB, and the PIN is stored encrypted under it — never in the clear, never off this device. A data rebuild reseals the payload under a new salt and retires the saved unlock; pressing Lock deletes it.'
+    },
+    {
       date: '2026-09-06', tag: 'shipped',
       title: 'Underwater theme for the Charts tab',
       detail: 'Opt-in skin (Theme: Deep / Underwater). Ocean ground with drifting caustics and bubbles, an open treasure chest presiding over the range figures, and a gold-backed "hoard" panel below carrying what the KPI row has no room for — including cost basis and P/L summed from that symbol\'s purchase journals. Repaints only; it never changes a number.',

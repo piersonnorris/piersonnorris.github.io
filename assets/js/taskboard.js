@@ -68,6 +68,18 @@
     };
   }
 
+  /* Sort by workflow stage (Backlog -> Planned -> In progress -> Blocked
+     -> Complete), then by target date (soonest first, undated last),
+     then title — a stable default order for any flat list of goals
+     (the Island page's "All hands" view; ties within a tracker column). */
+  function sortGoals(goals) {
+    return normalize(goals).slice().sort(function (a, b) {
+      return columnIndex(a.status) - columnIndex(b.status) ||
+        (a.targetDate || '9999-99-99').localeCompare(b.targetDate || '9999-99-99') ||
+        a.title.localeCompare(b.title);
+    });
+  }
+
   function move(goals, id, direction) {
     return normalize(goals).map(function (goal) {
       if (goal.id !== id) return goal;
@@ -127,11 +139,11 @@
         dependencies: ['Pierce'], relatedLink: '#projects', created: now, updated: now
       },
       {
-        id: 'goal-calendar-sync', title: 'R9 · Two-way Google Calendar sync', status: 'backlog',
-        outcome: 'Keep approved portfolio events synchronized without exposing calendar tokens.',
-        nextAction: 'Choose a private OAuth backend and define one-way versus two-way scope.',
-        milestones: ['OAuth design', 'Token storage review', 'Sync conflict policy'],
-        dependencies: ['Private backend', 'Google OAuth credentials'], relatedLink: '#calendar', created: now, updated: now
+        id: 'goal-calendar-sync', title: 'R9 · Google Calendar — one-way pull done, two-way parked', status: 'complete',
+        outcome: 'A session-side Google Calendar connector pulled 130 real confirmed events (next ~3 months) into private/tracker/google-calendar.json; build.js bakes them into the encrypted payload (googleEvents) alongside dividend dates. The Calendar tab merges them in with their own filter, and the Projects tab now has a compact "main calendar" (renderBoardCalendar()) directly under the board, combining board target dates + dividends + private plans + Google events. The board itself now sorts by stage then target date (PNTaskboard.sortGoals()) instead of raw insertion order, on both this board and /island/. Island got its own public-safe "tide chart" of board target dates only — no personal or portfolio data on the public page.',
+        nextAction: 'Refresh the Google snapshot periodically: a Claude session re-pulls via the connector and reruns --local-snapshot. True two-way sync (write-back, self-refreshing) still needs a private OAuth backend — tracked separately as R9b, parked on purpose.',
+        milestones: ['Session-side pull → private snapshot', 'build.js googleEvents seam', 'Calendar tab merge + filter', 'Board calendar under the kanban board', 'Stage-then-date sort (board + Island)', "Island's public tide chart"],
+        dependencies: [], relatedLink: '#projects', created: now, updated: now
       },
       {
         id: 'goal-dividend-refresh', title: 'R6 · Quarterly dividend re-verify', status: 'backlog',
@@ -365,6 +377,7 @@
   global.PNTaskboard = {
     columns: COLUMNS,
     normalize: normalize,
+    sortGoals: sortGoals,
     metrics: metrics,
     move: move,
     seed: seed

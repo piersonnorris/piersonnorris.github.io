@@ -122,6 +122,25 @@
 
         <p class="driftnote">Board content comes straight from <span class="mono" style="font-family:'IBM Plex Mono',monospace">assets/js/taskboard.js</span>'s shared seed — update it (or <span class="mono" style="font-family:'IBM Plex Mono',monospace">docs/ROADMAP.md</span>) and this page changes too. The real, editable private board — with your own goals, milestones and dependencies — lives behind the PIN in the tracker's Projects tab.</p>
 
+        <div class="posts tideposts">
+          <span class="postleg pl" aria-hidden="true"></span>
+          <span class="postleg pr" aria-hidden="true"></span>
+          <div class="board tideboard" id="tide">
+            <span class="nail tl"></span><span class="nail tr"></span>
+            <span class="nail bl"></span><span class="nail br"></span>
+            <h2>Tide chart</h2>
+            <p class="count" id="tide-count">reading the tide…</p>
+            <div class="tide-nav">
+              <button type="button" class="tide-btn" id="tideprev" aria-label="Previous month">←</button>
+              <span class="tide-month" id="tidemonth"></span>
+              <button type="button" class="tide-btn" id="tidenext" aria-label="Next month">→</button>
+            </div>
+            <div class="tide-weekdays"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
+            <div class="tide-grid" id="tidegrid"></div>
+          </div>
+        </div>
+        <p class="driftnote">The tide chart plots every plank's target date — same public data as the board above, just read as a calendar. No personal or portfolio dates ever wash up here.</p>
+
         <a class="bottlelink" href="/tools/tracker/#projects">✉️ Message in a bottle — open the private board →</a>
       </div>
     </div>
@@ -138,11 +157,12 @@
 
   <script src="/assets/js/nav.js"></script>
   <script src="/assets/js/taskboard.js"></script>
+  <script src="/assets/js/calendar.js"></script>
   <script>
   (function () {
     'use strict';
     var STATUS_LABEL = { backlog: 'Backlog', planned: 'Planned', 'in-progress': 'In progress', blocked: 'Blocked', complete: 'Complete' };
-    var goals = window.PNTaskboard.normalize(window.PNTaskboard.seed());
+    var goals = window.PNTaskboard.sortGoals(window.PNTaskboard.seed());
     var active = 'all';
 
     function esc(s) {
@@ -185,6 +205,37 @@
     }
 
     render();
+
+    /* ---- Tide chart: a month grid of the same board's target dates.
+       Public data only (targetDate already prints on each plank above) —
+       no portfolio or personal calendar ever reaches this page. */
+    var STATUS_VAR = { backlog: 'backlog', planned: 'planned', 'in-progress': 'progress', blocked: 'blocked', complete: 'done' };
+    var tideAnchor = window.PNCalendar.anchorKey(new Date());
+
+    function tideEvents() {
+      return goals.filter(function (g) { return g.targetDate; }).map(function (g) {
+        return { date: g.targetDate, title: g.title, status: g.status };
+      });
+    }
+
+    function renderTide() {
+      var events = tideEvents();
+      var map = {};
+      events.forEach(function (e) { (map[e.date] = map[e.date] || []).push(e); });
+      var cells = window.PNCalendar.monthCells(tideAnchor);
+      document.getElementById('tidemonth').textContent = window.PNCalendar.monthTitle(tideAnchor);
+      document.getElementById('tide-count').textContent = events.length + ' target date' + (events.length === 1 ? '' : 's') + ' charted';
+      document.getElementById('tidegrid').innerHTML = cells.map(function (cell) {
+        var items = map[cell.key] || [];
+        var label = cell.day + (items.length ? ': ' + items.map(function (i) { return i.title; }).join(', ') : '');
+        return '<div class="tide-cell' + (cell.inMonth ? '' : ' outside') + (cell.isToday ? ' today' : '') + (items.length ? ' hasitem' : '') + '" title="' + esc(label) + '"><span class="tide-day">' + cell.day + '</span>' +
+          items.map(function (i) { return '<span class="tide-dot" style="--sc:var(--' + (STATUS_VAR[i.status] || 'backlog') + ')"></span>'; }).join('') + '</div>';
+      }).join('');
+    }
+
+    document.getElementById('tideprev').addEventListener('click', function () { tideAnchor = window.PNCalendar.moveMonth(tideAnchor, -1); renderTide(); });
+    document.getElementById('tidenext').addEventListener('click', function () { tideAnchor = window.PNCalendar.moveMonth(tideAnchor, 1); renderTide(); });
+    renderTide();
   })();
   </script>
 </body>

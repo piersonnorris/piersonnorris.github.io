@@ -4,7 +4,7 @@ The shared task list for the three people building this site: **Pierce** (owner,
 
 Sync rule: this file is canonical. The same list is mirrored to `TASKS.md` (Pierce's local Obsidian vault note, untracked) and seeded into the tracker's **Projects** board (`assets/js/taskboard.js → seed()`), which is also what `/island/` reads — so a card added there shows up in three places automatically. When a task changes state, update this file and the mirror you touched — whoever commits next reconciles the third.
 
-Updated: 2026-09-06 — R13/R14 shipped (chart sidebar + notes, then V2 customization: candles, RSI/MACD, sort, remembered prefs) with a new `charts.test.js`; §5 PN Tasks added (Pierce's open-questions queue + idea backlog); §3a: 14 of the 22-item UI backlog built same-day, 8 deliberately deferred (each says why).
+Updated: 2026-09-07 — R9 moved from parked to mostly-done: a session-side Google Calendar connector now feeds real events into the encrypted tracker (one-way, snapshot + rebuild, not live two-way sync — that still needs an OAuth backend), the Projects tab grew a compact "main calendar" under the board, and the to-do board (private + `/island/`) now sorts by workflow stage then target date instead of raw insertion order. Previous update 2026-09-06 — R13/R14 shipped (chart sidebar + notes, then V2 customization: candles, RSI/MACD, sort, remembered prefs) with a new `charts.test.js`; §5 PN Tasks added (Pierce's open-questions queue + idea backlog); §3a: 14 of the 22-item UI backlog built same-day, 8 deliberately deferred (each says why).
 
 ---
 
@@ -18,6 +18,14 @@ Pierce is setting up the Robinhood MCP on his side. Once connected, Claude wires
 ### R2. Tracker refresh secrets in GitHub Actions — **Pierce**
 `.github/workflows/refresh-tracker.yml` exists but cannot run until repo secrets are set: `TRACKER_PASSWORD` (the tracker PIN), `GOOGLE_SERVICE_ACCOUNT_JSON`, `SHEET_ID`. Until then the tracker is rebuilt locally with `node tools/tracker/build.js --local-snapshot`.
 - Done when: the scheduled workflow runs green and commits a refreshed `tools/tracker/index.html`.
+
+### R9. Google Calendar — ✅ one-way pull done 2026-09-07, two-way still parked
+The static site still has no OAuth of its own and never will without a private backend (unchanged boundary — see `docs/PORTFOLIO_CALENDAR_PLAN.md` "Known boundary"). What changed: Claude has a session-side Google Calendar connector, so it pulled Pierce's real primary-calendar events (confirmed, next ~3 months, 130 events) straight from Google, normalized them, and saved the snapshot to `private/tracker/google-calendar.json` (gitignored, never committed). `tools/tracker/build.js` now has a `loadGoogleEvents()` seam — same shape as `loadCalendar()` for dividend dates — that bakes that snapshot into the encrypted payload as `googleEvents`. The tracker's Calendar tab merges them in (new "Google" filter, its own pill/day-event color) alongside dividend and private events.
+- **New: a "main calendar" under the to-do board.** The Projects tab now has a compact month grid directly beneath the kanban board (`renderBoardCalendar()`, `#board-calendar`) combining board target dates + dividend dates + private plans + the baked Google events — its own month anchor so paging it never disturbs the full Calendar tab. Clicking a day jumps to the full tab with that date selected; editing/export still only happen there.
+- **Also: the to-do board now sorts.** `PNTaskboard.sortGoals()` orders by workflow stage (Backlog → Planned → In progress → Blocked → Complete), then target date (soonest first, undated last), then title. Applied to `/island/`'s flat "All hands" list (previously raw seed order) and to card order within each column on the private board (previously insertion order).
+- **Island's own calendar stays public-safe.** `/island/` got its own small "tide chart" — a month grid of the board's own `targetDate`s (already public text on each plank) — not a copy of the private/Google data. No portfolio or personal-calendar content reaches the public page.
+- **Known boundary, unchanged:** this is a manual refresh, not live sync. Re-pulling means a Claude session calling the connector again and re-running `--local-snapshot`; there is no way for GitHub Actions or the static site itself to do this pull, since the connector is tied to a chat session, not a portable credential. True two-way sync is still exactly the OAuth-backend project described below.
+- Verified: `calendar.test.js`/`taskboard.test.js` pass, rebuilt with `--local-snapshot`, grepped the output for plaintext holdings and for any of the 130 fetched event titles — zero hits outside the encrypted blob.
 
 ### R3. Investment handoff file — ✅ done 2026-09-06
 September 2026 (48 holdings) confirmed by Pierce and sealed into the tracker alongside August. Month switcher and value-over-time chart both show two points now. Reopens automatically next time a new month lands: refresh `private/STOCK_HANDOFF.md` from the Sheet (or run the `stock-portfolio-update` skill with screenshots), create the new tab, rebuild.
@@ -58,12 +66,12 @@ Pierce supplied a Twelve Data key; it now lives in `private/.twelvedata-key` (gi
 ### R7. Public pages M2/M3 — **ChatGPT** (copy from CONTENT.md only)
 About, Projects, Contact, Tools hub, 404, `sitemap.xml`, per-page OG tags. Blocked partly on R4. Rules: copy verbatim from `CONTENT.md`, `[OPEN]` means ask Pierce, no frameworks, no build steps, keep `llms.txt` in sync.
 
-### R8. Résumé PDF — **Pierce**
-Produce the PDF; it drops in at `/assets/resume/pierson-norris-resume.pdf`. The Experience page button already points there.
+### R8. Résumé PDF — ✅ done
+`/assets/resume/pierson-norris-resume.pdf` exists and the Experience page's button now links straight to it (`download` attribute) instead of the "pending" placeholder span.
 
 ## 3. Later — parked on purpose
 
-- **R9. Two-way Google Calendar sync** — needs a private OAuth backend design that keeps tokens off the public site. One-way `.ics` export already works.
+- **R9b. Two-way Google Calendar sync** — a private OAuth backend so the tracker could write back to Google (or refresh itself without a Claude session in the loop). The one-way pull (Claude connector → snapshot → bake at build time) shipped 2026-09-07 — see R9 above; this is only the write-back / self-refreshing half, and it stays parked for the same reason it always has: no long-lived Google credentials belong on a public static site.
 - **R10. Obsidian visual style** — pick a direction from `notes/visual-options/` (local exploration) and apply it to `/notes/` and the tracker's Obsidian tab.
 - **R11. Real launch hardening** — before promoting the site: revisit the template page's deliberate demo login (`tools/tracker/index.template.html`, fake by design "for now" per Pierce 2026-09-05), run the BLUEPRINT §10 definition-of-done list, attach the `piersonnorris.com` domain (CNAME + absolute-URL sweep).
 - **R12. Chart indicators v2** — candlesticks, RSI/MACD, and EMA-crossover flags on the *stock chart* (corrected 2026-09-06 — this previously said "vault graph," which is a different feature entirely), only if Pierce actually uses v1. Dividend markers and normalized comparison mode (the plan's own "recommended next milestone") shipped 2026-09-06 — see `docs/STOCK_CHART_PLAN.md` Version 2 status. Portfolio-aggregate line, total-return toggle, and a benchmark line stay parked until a dated transaction ledger exists — faking one off today's share counts would misrepresent performance. **Closed out 2026-09-06 by R14**: candlesticks, RSI and MACD all shipped as part of the V2 customization pass. EMA-crossover *flags* (an explicit marker when two EMAs cross) are the only piece of the original R12 wording not built — reopen it only if the crossings are hard to spot by eye now that the overlays and oscillators are both there.

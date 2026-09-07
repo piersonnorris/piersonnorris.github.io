@@ -52,6 +52,28 @@ function loadCalendar() {
   } catch { fail('DIVIDEND_CALENDAR_JSON is not valid JSON.'); }
 }
 
+/* ---- Google Calendar snapshot (ROADMAP R9) --------------------------
+   Read-only events pulled from the real Google Calendar. build.js has
+   no OAuth of its own and never will (see docs/PORTFOLIO_CALENDAR_PLAN.md
+   "Known boundary") — a session with the connector snapshots events into
+   private/tracker/google-calendar.json (gitignored), and this just bakes
+   that snapshot into the encrypted payload, same as dividend dates.
+   Missing/invalid input degrades to an empty list; the build never fails
+   over stale or absent calendar data. */
+function loadGoogleEvents() {
+  let source = process.env.GOOGLE_CALENDAR_EVENTS_JSON;
+  const privateFile = path.join(ROOT, 'private', 'tracker', 'google-calendar.json');
+  if (!source && fs.existsSync(privateFile)) source = fs.readFileSync(privateFile, 'utf8');
+  if (!source) return [];
+  try {
+    const value = JSON.parse(source);
+    if (!Array.isArray(value)) return [];
+    return value
+      .filter((event) => event && text(event.date) && text(event.title))
+      .map((event) => ({ id: text(event.id) || `google-${text(event.date)}-${text(event.title)}`, date: text(event.date), title: text(event.title), notes: text(event.notes) }));
+  } catch { return []; }
+}
+
 /* ---- baked quotes (ROADMAP R5) -------------------------------------
    If a Twelve Data key is available (env TWELVEDATA_API_KEY, or the
    ignored local file private/.twelvedata-key), fetch a spot price for
@@ -168,7 +190,7 @@ async function buildFromLocalSnapshot() {
   const password = fs.readFileSync(pinPath, 'utf8').trim();
   if (!password) fail('Private local tracker PIN is empty.');
   const quotes = await fetchQuotes(months);
-  render(seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar() }, password));
+  render(seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents() }, password));
 }
 
 async function fetchMonths() {
@@ -203,7 +225,7 @@ async function main() {
   const months = await fetchMonths();
   if (!months.length) fail('No month-named tabs were found.');
   const quotes = await fetchQuotes(months);
-  const payload = seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar() }, password);
+  const payload = seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents() }, password);
   render(payload);
 }
 

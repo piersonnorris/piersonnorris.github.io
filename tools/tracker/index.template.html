@@ -263,9 +263,9 @@
     .portfolio-calendar{background:linear-gradient(150deg,#171e28,var(--panel) 64%);border:1px solid var(--line2);border-radius:14px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.16)}
     .cal-head{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}.cal-head h2{font-size:22px;margin:0 0 3px}.cal-head p{font-size:13px;color:var(--mut);margin:0}.cal-private{margin-left:auto;display:flex;align-items:center;gap:7px;font:10px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--acc-hi);border:1px solid rgba(142,209,138,.32);border-radius:999px;padding:7px 10px}.cal-private::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 0 4px rgba(95,174,90,.12)}
     .cal-summary{display:grid;grid-template-columns:repeat(4,minmax(110px,1fr));gap:8px;margin-bottom:14px}.cal-stat{background:rgba(10,14,19,.52);border:1px solid var(--line);border-radius:9px;padding:11px 12px}.cal-stat b{display:block;font:700 19px/1.15 var(--display);color:var(--ink)}.cal-stat span{font:9px/1.25 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim)}
-    .cal-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}.cal-nav{display:flex;align-items:center;gap:5px}.cal-nav .btn{min-width:38px;justify-content:center}.cal-monthtitle{font:700 17px/1.2 var(--display);min-width:165px;text-align:center}.cal-filters{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}.cal-filter{appearance:none;border:1px solid var(--line2);border-radius:999px;background:var(--bg);color:var(--dim);font:10px/1 var(--mono);padding:7px 9px;cursor:pointer}.cal-filter[aria-pressed="true"]{color:var(--ink);border-color:var(--cal-color,var(--acc));box-shadow:inset 0 0 0 1px var(--cal-color,var(--acc))}.cal-filter[data-kind="ex-dividend"]{--cal-color:#4cc9f0}.cal-filter[data-kind="payment"]{--cal-color:#5fae5a}.cal-filter[data-kind="earnings"]{--cal-color:#e8a33d}.cal-filter[data-kind="private"]{--cal-color:#c084fc}
-    .cal-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}.cal-scroll{overflow-x:auto}.cal-board{min-width:680px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}.cal-weekdays,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}.cal-weekdays span{padding:8px 6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font:9px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:center;color:var(--dim)}.cal-weekdays span:last-child{border-right:0}.cal-cell{appearance:none;position:relative;min-height:102px;padding:8px;text-align:left;color:var(--ink);background:transparent;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;overflow:hidden}.cal-cell:nth-child(7n){border-right:0}.cal-cell:nth-last-child(-n+7){border-bottom:0}.cal-cell:hover{background:rgba(255,255,255,.025)}.cal-cell.outside{color:var(--dim);background:rgba(9,12,16,.34)}.cal-cell.selected{box-shadow:inset 0 0 0 2px var(--acc);z-index:1}.cal-cell.today .cal-daynum{background:var(--acc);color:#0e1116}.cal-daynum{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font:500 11px/1 var(--mono);margin-bottom:5px}.cal-pill{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-left:2px solid var(--pill,var(--mut));border-radius:3px;background:rgba(255,255,255,.04);padding:3px 5px;margin-top:3px;font:9.5px/1.25 var(--mono);color:var(--mut)}.cal-pill.ex-dividend{--pill:#4cc9f0}.cal-pill.payment{--pill:#5fae5a}.cal-pill.earnings{--pill:#e8a33d}.cal-pill.reminder,.cal-pill.review,.cal-pill.tax{--pill:#c084fc}.cal-more{display:block;font:9px/1.2 var(--mono);color:var(--dim);margin:5px 0 0 7px}
-    .cal-side{background:rgba(10,14,19,.48);border:1px solid var(--line);border-radius:10px;padding:14px}.cal-side h3{font-size:16px;margin:0 0 3px}.cal-side>.muted{font-size:12px;margin:0 0 12px}.cal-dayevents{display:grid;gap:7px;margin-bottom:14px}.cal-dayevent{border:1px solid var(--line);border-left:3px solid var(--event,var(--mut));border-radius:8px;background:var(--panel);padding:9px 10px}.cal-dayevent.ex-dividend{--event:#4cc9f0}.cal-dayevent.payment{--event:#5fae5a}.cal-dayevent.earnings{--event:#e8a33d}.cal-dayevent.reminder,.cal-dayevent.review,.cal-dayevent.tax{--event:#c084fc}.cal-dayevent b{display:block;font-size:13px}.cal-dayevent p{font-size:11px;color:var(--mut);margin:2px 0 7px}.cal-eventactions{display:flex;gap:6px;align-items:center}.cal-eventactions a,.cal-eventactions button{appearance:none;background:transparent;border:0;padding:0;color:var(--dim);font:10px/1.2 var(--mono);cursor:pointer;text-decoration:none}.cal-eventactions a:hover,.cal-eventactions button:hover{color:var(--acc-hi)}.cal-form{border-top:1px solid var(--line);padding-top:13px}.cal-form h4{font-size:14px;margin:0 0 9px}.cal-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cal-formgrid .wide{grid-column:1/-1}.cal-form .fld span{font-size:9px}.cal-form textarea{min-height:76px;resize:vertical}.cal-formactions{display:flex;align-items:center;gap:7px;margin-top:8px}.cal-formactions .btn{justify-content:center}.cal-formstatus{font:10px/1.35 var(--mono);color:var(--dim);margin:8px 0 0;min-height:14px}
+    .cal-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:14px}.cal-nav{display:flex;align-items:center;gap:5px}.cal-nav .btn{min-width:38px;justify-content:center}.cal-monthtitle{font:700 17px/1.2 var(--display);min-width:165px;text-align:center}.cal-filters{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}.cal-filter{appearance:none;border:1px solid var(--line2);border-radius:999px;background:var(--bg);color:var(--dim);font:10px/1 var(--mono);padding:7px 9px;cursor:pointer}.cal-filter[aria-pressed="true"]{color:var(--ink);border-color:var(--cal-color,var(--acc));box-shadow:inset 0 0 0 1px var(--cal-color,var(--acc))}.cal-filter[data-kind="ex-dividend"]{--cal-color:#4cc9f0}.cal-filter[data-kind="payment"]{--cal-color:#5fae5a}.cal-filter[data-kind="earnings"]{--cal-color:#e8a33d}.cal-filter[data-kind="google"]{--cal-color:#7c9eff}.cal-filter[data-kind="private"]{--cal-color:#c084fc}
+    .cal-layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}.cal-scroll{overflow-x:auto}.cal-board{min-width:680px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg)}.cal-weekdays,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}.cal-weekdays span{padding:8px 6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);font:9px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:center;color:var(--dim)}.cal-weekdays span:last-child{border-right:0}.cal-cell{appearance:none;position:relative;min-height:102px;padding:8px;text-align:left;color:var(--ink);background:transparent;border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);cursor:pointer;overflow:hidden}.cal-cell:nth-child(7n){border-right:0}.cal-cell:nth-last-child(-n+7){border-bottom:0}.cal-cell:hover{background:rgba(255,255,255,.025)}.cal-cell.outside{color:var(--dim);background:rgba(9,12,16,.34)}.cal-cell.selected{box-shadow:inset 0 0 0 2px var(--acc);z-index:1}.cal-cell.today .cal-daynum{background:var(--acc);color:#0e1116}.cal-daynum{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;font:500 11px/1 var(--mono);margin-bottom:5px}.cal-pill{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-left:2px solid var(--pill,var(--mut));border-radius:3px;background:rgba(255,255,255,.04);padding:3px 5px;margin-top:3px;font:9.5px/1.25 var(--mono);color:var(--mut)}.cal-pill.ex-dividend{--pill:#4cc9f0}.cal-pill.payment{--pill:#5fae5a}.cal-pill.earnings{--pill:#e8a33d}.cal-pill.google{--pill:#7c9eff}.cal-pill.reminder,.cal-pill.review,.cal-pill.tax{--pill:#c084fc}.cal-more{display:block;font:9px/1.2 var(--mono);color:var(--dim);margin:5px 0 0 7px}
+    .cal-side{background:rgba(10,14,19,.48);border:1px solid var(--line);border-radius:10px;padding:14px}.cal-side h3{font-size:16px;margin:0 0 3px}.cal-side>.muted{font-size:12px;margin:0 0 12px}.cal-dayevents{display:grid;gap:7px;margin-bottom:14px}.cal-dayevent{border:1px solid var(--line);border-left:3px solid var(--event,var(--mut));border-radius:8px;background:var(--panel);padding:9px 10px}.cal-dayevent.ex-dividend{--event:#4cc9f0}.cal-dayevent.payment{--event:#5fae5a}.cal-dayevent.earnings{--event:#e8a33d}.cal-dayevent.google{--event:#7c9eff}.cal-dayevent.reminder,.cal-dayevent.review,.cal-dayevent.tax{--event:#c084fc}.cal-dayevent b{display:block;font-size:13px}.cal-dayevent p{font-size:11px;color:var(--mut);margin:2px 0 7px}.cal-eventactions{display:flex;gap:6px;align-items:center}.cal-eventactions a,.cal-eventactions button{appearance:none;background:transparent;border:0;padding:0;color:var(--dim);font:10px/1.2 var(--mono);cursor:pointer;text-decoration:none}.cal-eventactions a:hover,.cal-eventactions button:hover{color:var(--acc-hi)}.cal-form{border-top:1px solid var(--line);padding-top:13px}.cal-form h4{font-size:14px;margin:0 0 9px}.cal-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.cal-formgrid .wide{grid-column:1/-1}.cal-form .fld span{font-size:9px}.cal-form textarea{min-height:76px;resize:vertical}.cal-formactions{display:flex;align-items:center;gap:7px;margin-top:8px}.cal-formactions .btn{justify-content:center}.cal-formstatus{font:10px/1.35 var(--mono);color:var(--dim);margin:8px 0 0;min-height:14px}
     .cal-eventactions span{font:10px/1.2 var(--mono);color:var(--dim)}.cal-form fieldset{border:0;padding:0;margin:0;min-width:0}.cal-form fieldset:disabled{opacity:.52}
     .cal-agenda{margin-top:14px;border-top:1px solid var(--line);padding-top:14px}.cal-agendahead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:9px}.cal-agendahead h3{font-size:16px;margin:0}.cal-agendahead p{font:10px var(--mono);color:var(--dim);margin:0}.cal-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}.cal-agendalist{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:7px}.cal-agendaitem{display:grid;grid-template-columns:48px 1fr;gap:10px;align-items:center;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:9px 10px}.cal-agendadate{text-align:center;font:10px/1.1 var(--mono);color:var(--dim)}.cal-agendadate b{display:block;font:700 19px/1 var(--display);color:var(--ink);margin:2px 0}.cal-agendaitem>div:last-child b{display:block;font-size:12.5px}.cal-agendaitem>div:last-child span{display:block;font:10px/1.35 var(--mono);color:var(--mut);margin-top:2px}.cal-empty{font-size:13px;color:var(--mut);padding:12px;border:1px dashed var(--line2);border-radius:8px}
     .project-board-shell{position:relative;overflow:hidden;background:linear-gradient(145deg,#171e28 0%,var(--panel) 68%);border:1px solid var(--line2);border-radius:14px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.17)}
@@ -276,6 +276,10 @@
     .goal-editor{background:rgba(10,14,19,.7);border:1px solid var(--line2);border-radius:10px;padding:14px;margin-bottom:14px}.goal-editor h3{font-size:16px;margin:0 0 10px}.goal-formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.goal-formgrid .wide{grid-column:1/-1}.goal-formgrid textarea{min-height:78px;resize:vertical}.goal-formgrid .fld span{font-size:10px}.goal-formactions{display:flex;align-items:center;gap:8px;margin-top:10px}.goal-formstatus{font:10px/1.35 var(--mono);color:var(--dim);margin:0 0 0 auto}
     .proj-boardscroll{overflow-x:auto;padding-bottom:5px}.proj-board{display:grid;grid-template-columns:repeat(5,minmax(245px,1fr));gap:10px;min-width:1265px;align-items:start}.proj-column{--stage:var(--mut);background:rgba(9,12,16,.48);border:1px solid var(--line);border-top:2px solid var(--stage);border-radius:10px;padding:10px;min-height:230px}.proj-column[data-status="planned"]{--stage:#4cc9f0}.proj-column[data-status="in-progress"]{--stage:#e8a33d}.proj-column[data-status="blocked"]{--stage:#f0726b}.proj-column[data-status="complete"]{--stage:#75d477}.proj-colhead{display:flex;align-items:center;gap:8px;padding:2px 2px 10px}.proj-colhead h3{font-size:14px;margin:0}.proj-colhead span{margin-left:auto;font:10px/1 var(--mono);color:var(--stage);border:1px solid color-mix(in srgb,var(--stage) 35%,transparent);border-radius:999px;padding:4px 6px}.proj-cards{display:grid;gap:8px}.proj-empty{font:11px/1.5 var(--mono);color:var(--dim);border:1px dashed var(--line2);border-radius:8px;padding:13px;margin:0}
     .proj-card{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px;box-shadow:0 8px 20px rgba(0,0,0,.12)}.proj-card h4{font-size:14px;line-height:1.35;margin:0 0 6px}.proj-outcome{font-size:12px;line-height:1.45;color:var(--mut);margin:0 0 9px}.proj-next{border-left:2px solid var(--stage);padding-left:8px;margin:0 0 9px}.proj-next span{display:block;font:9px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}.proj-next b{display:block;font-size:12px;line-height:1.4;font-weight:500}.proj-progress{display:flex;align-items:center;gap:7px;margin:8px 0}.proj-progressbar{height:4px;flex:1;background:var(--line);border-radius:999px;overflow:hidden}.proj-progressbar i{display:block;height:100%;background:var(--stage)}.proj-progress>span{font:9px/1 var(--mono);color:var(--dim)}.proj-meta{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0}.proj-meta span{font:9px/1.2 var(--mono);color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:4px 6px}.proj-meta .overdue{color:var(--bad);border-color:rgba(240,114,107,.35)}.proj-cardactions{display:flex;align-items:center;gap:5px;border-top:1px solid var(--line);padding-top:8px;margin-top:8px}.proj-cardactions button,.proj-cardactions a{appearance:none;border:0;background:transparent;color:var(--dim);font:10px/1 var(--mono);padding:5px;cursor:pointer;text-decoration:none}.proj-cardactions button:hover,.proj-cardactions a:hover{color:var(--acc-hi)}.proj-cardactions .proj-edit{margin-left:auto}
+    .board-calendar-shell{margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+    .board-calendar-shell .cal-head{margin-bottom:12px}
+    .board-calendar-shell .cal-board{min-width:560px}
+    .board-calendar-shell .boardcal-cell{min-height:60px}
     .stockchart{position:relative;overflow:hidden;background:linear-gradient(145deg,#171e28 0%,var(--panel) 62%);border:1px solid var(--line2);border-radius:14px;padding:20px;margin:0 0 22px;box-shadow:0 24px 60px rgba(0,0,0,.18)}
     .stockchart::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,rgba(142,209,138,.7),transparent)}
     .stockchart h2{font-size:19px;margin:0}.stockchart .chart-copy{font-size:13px;color:var(--mut);margin:4px 0 0}
@@ -642,7 +646,8 @@
 
     var DATA = null, activeMonth = 0, valued = [], allValued = [], stockNotes = null, sessionPin = null, activeChartSymbol = null, activeChartRange = null, expandedPositionKey = null, positionNoteSaveTimer = null, expandedChartNoteSymbol = null, chartNoteSaveTimer = null, chartValueBySymbol = {}, dividendDefaults = {}, dividendEdits = {}, dividendSyncDone = false;
     var calendarAnchor = window.PNCalendar.anchorKey(new Date()), calendarSelectedDate = window.PNCalendar.dateKey(new Date()), calendarEditingId = null, privateCalendarEvents = [];
-    var calendarFilters = { 'ex-dividend': true, payment: true, earnings: true, private: true };
+    var calendarFilters = { 'ex-dividend': true, payment: true, earnings: true, google: true, private: true };
+    var boardCalendarAnchor = window.PNCalendar.anchorKey(new Date());
     var projectGoals = [], projectEditingId = null, projectBoardReady = false;
     var demoMode = false;
     var EMA_PERIODS = [10, 20, 50, 200];
@@ -1895,22 +1900,42 @@
     }
 
     function calendarFilterKind(event) {
-      if (event.kind === 'ex-dividend' || event.kind === 'payment' || event.kind === 'earnings') return event.kind;
+      if (event.kind === 'ex-dividend' || event.kind === 'payment' || event.kind === 'earnings' || event.kind === 'google') return event.kind;
       return 'private';
     }
 
     function calendarKindLabel(kind) {
-      return ({ 'ex-dividend': 'Ex-dividend', payment: 'Dividend payment', earnings: 'Earnings', reminder: 'Reminder', review: 'Portfolio review', tax: 'Tax deadline' })[kind] || 'Private event';
+      return ({ 'ex-dividend': 'Ex-dividend', payment: 'Dividend payment', earnings: 'Earnings', google: 'Personal (Google)', goal: 'Board goal', reminder: 'Reminder', review: 'Portfolio review', tax: 'Tax deadline' })[kind] || 'Private event';
     }
 
     function calendarKindClass(kind) {
-      return ['ex-dividend', 'payment', 'earnings', 'reminder', 'review', 'tax'].indexOf(kind) !== -1 ? kind : 'reminder';
+      return ['ex-dividend', 'payment', 'earnings', 'google', 'reminder', 'review', 'tax'].indexOf(kind) !== -1 ? kind : 'reminder';
+    }
+
+    /* R9: read-only events pulled from Pierce's real Google Calendar via
+       a session-side connector (Claude has it, the static site never
+       does), snapshotted to private/tracker/google-calendar.json, then
+       baked into the encrypted payload by build.js like dividend dates.
+       One-way and manually refreshed — see docs/PORTFOLIO_CALENDAR_PLAN.md
+       "Known boundary" for why true two-way sync still needs a backend. */
+    function googleCalendarEvents() {
+      return (DATA && Array.isArray(DATA.googleEvents) ? DATA.googleEvents : []).map(function (event) {
+        return { id: event.id, date: event.date, title: event.title, kind: 'google', symbol: '', notes: event.notes || '', source: 'google', readonly: true };
+      });
+    }
+
+    /* Board target dates, read-only here — edit them from the Projects
+       tab's goal editor, not the calendar. */
+    function goalCalendarEvents(goals) {
+      return (goals || []).filter(function (goal) { return goal.targetDate; }).map(function (goal) {
+        return { id: 'goal-' + goal.id, date: goal.targetDate, title: goal.title, kind: 'goal', symbol: '', notes: 'Board · ' + goal.status, source: 'board', readonly: true };
+      });
     }
 
     function portfolioCalendarEvents() {
       var summary = dividendSummary();
       var derived = calendarEvents(dividendMap(), Object.keys(summary.grouped));
-      return window.PNCalendar.normalize(derived.concat(privateCalendarEvents));
+      return window.PNCalendar.normalize(derived.concat(privateCalendarEvents).concat(googleCalendarEvents()));
     }
 
     function savePrivateCalendar() {
@@ -1973,7 +1998,7 @@
         '<div class="cal-summary"><div class="cal-stat"><b>' + monthEvents.length + '</b><span>events this month</span></div><div class="cal-stat"><b>' + next30.length + '</b><span>next 30 days</span></div><div class="cal-stat"><b>' + dividendDates + '</b><span>dividend dates · 90d</span></div><div class="cal-stat"><b>' + privateDates + '</b><span>private plans · 90d</span></div></div>' +
         '<div class="cal-toolbar"><div class="cal-nav"><button type="button" class="btn" id="calprev" aria-label="Previous month">←</button><span class="cal-monthtitle">' + esc(window.PNCalendar.monthTitle(calendarAnchor)) + '</span><button type="button" class="btn" id="calnext" aria-label="Next month">→</button><button type="button" class="btn" id="caltoday">Today</button></div>' +
         '<div class="cal-filters" aria-label="Calendar filters">' + [
-          ['ex-dividend', 'Ex-dates'], ['payment', 'Payments'], ['earnings', 'Earnings'], ['private', 'Private plans']
+          ['ex-dividend', 'Ex-dates'], ['payment', 'Payments'], ['earnings', 'Earnings'], ['google', 'Google'], ['private', 'Private plans']
         ].map(function (filter) { return '<button type="button" class="cal-filter" data-kind="' + filter[0] + '" aria-pressed="' + (calendarFilters[filter[0]] !== false) + '">' + filter[1] + '</button>'; }).join('') + '</div></div>' +
         '<div class="cal-layout"><div class="cal-scroll"><div class="cal-board"><div class="cal-weekdays"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div class="cal-grid">' + cellHtml + '</div></div></div>' +
         '<aside class="cal-side"><h3>' + esc(calendarDateLabel(calendarSelectedDate)) + '</h3><p class="muted">' + selectedEvents.length + ' scheduled</p><div class="cal-dayevents">' + dayHtml + '</div>' +
@@ -2069,7 +2094,7 @@
         '</div><div class="goal-formactions"><button type="submit" class="btn primary">' + (editing ? 'Update goal' : 'Save goal') + '</button><button type="button" class="btn" id="goalcancel">Cancel</button><p class="goal-formstatus">Encrypted on this device.</p></div></fieldset></form>' : '';
 
       var boardHtml = window.PNTaskboard.columns.map(function (column) {
-        var columnGoals = goals.filter(function (goal) { return goal.status === column.id; });
+        var columnGoals = window.PNTaskboard.sortGoals(goals).filter(function (goal) { return goal.status === column.id; });
         var cards = columnGoals.length ? columnGoals.map(function (goal) {
           var progress = projectProgress(goal);
           var overdue = goal.targetDate && goal.targetDate < today && goal.status !== 'complete';
@@ -2092,8 +2117,10 @@
       host.innerHTML = '<div class="proj-head"><div><h2>Portfolio project board</h2><p>Goals, milestones, blockers, and the next concrete action.</p></div><button type="button" class="btn" id="projupdates" style="margin-left:auto">Updates &amp; timeline →</button><span class="cal-private">encrypted · Obsidian ready</span></div>' +
         '<div class="proj-summary"><div class="proj-stat"><b>' + stats.active + '</b><span>active goals</span></div><div class="proj-stat"><b>' + stats.dueSoon + '</b><span>due next 30 days</span></div><div class="proj-stat"><b>' + stats.blocked + '</b><span>blocked</span></div><div class="proj-stat"><b>' + stats.complete + '</b><span>complete</span></div></div>' +
         '<div class="proj-toolbar"><p id="projstatus">' + (obsidianReady ? 'Changes save into the encrypted stock vault.' : vaultReady ? 'Demo board — edits stay in this tab only.' : 'Unlocking the encrypted stock vault…') + '</p><div class="proj-actions"><button type="button" class="btn primary" id="projnew"' + (vaultReady ? '' : ' disabled') + '>+ New goal</button><button type="button" class="btn" id="projobsidian"' + (obsidianReady ? '' : ' disabled') + '>Open in Obsidian</button></div></div>' + editorHtml + '<div class="proj-boardscroll"><div class="proj-board" aria-label="Portfolio project goals">' + boardHtml + '</div></div>' +
+        '<section class="board-calendar-shell" id="board-calendar"></section>' +
         '<div class="vaultgraph"><h3>Vault graph</h3><p class="sub">projects · AI thoughts · linked notes</p><div id="projgraph"></div></div>';
 
+      renderBoardCalendar(goals);
       if ($('projupdates')) $('projupdates').addEventListener('click', function () { activateTrackerPanel('updates', true); });
       if ($('projnew')) $('projnew').addEventListener('click', function () { projectEditingId = '__new__'; renderProjectBoard(); var title = $('goalform') && $('goalform').elements.title; if (title) title.focus(); });
       if ($('projobsidian')) $('projobsidian').addEventListener('click', function () {
@@ -2130,6 +2157,52 @@
         button.addEventListener('click', function () { activateTrackerPanel(button.dataset.link.slice(1), true); });
       });
       renderVaultGraph(goals);
+    }
+
+    /* The "main calendar underneath the to-do list" (R9): a compact,
+       read-only month grid combining board target dates, dividend
+       dates, private plans, and baked Google events — its own anchor
+       month so paging it never disturbs the full Calendar tab. Editing
+       and export stay on that tab; clicking a day here just jumps there
+       with the date pre-selected. */
+    function renderBoardCalendar(goals) {
+      var host = $('board-calendar');
+      if (!host || !DATA) return;
+      var merged = window.PNCalendar.normalize(portfolioCalendarEvents().concat(goalCalendarEvents(goals)));
+      var visible = merged.filter(function (event) { return calendarFilters[calendarFilterKind(event)] !== false; });
+      var cells = window.PNCalendar.monthCells(boardCalendarAnchor);
+      var eventMap = {};
+      visible.forEach(function (event) { (eventMap[event.date] = eventMap[event.date] || []).push(event); });
+
+      var cellHtml = cells.map(function (cell) {
+        var events = eventMap[cell.key] || [];
+        var label = calendarDateLabel(cell.key, { month: 'long', day: 'numeric', year: 'numeric' }) + (events.length ? ', ' + events.length + ' event' + (events.length === 1 ? '' : 's') : ', no events');
+        return '<button type="button" class="cal-cell boardcal-cell' + (cell.inMonth ? '' : ' outside') + (cell.isToday ? ' today' : '') + '" data-date="' + cell.key + '" aria-label="' + esc(label) + '"><span class="cal-daynum">' + cell.day + '</span>' +
+          events.slice(0, 2).map(function (event) { return '<span class="cal-pill ' + calendarKindClass(event.kind) + '">' + esc(event.title) + '</span>'; }).join('') +
+          (events.length > 2 ? '<span class="cal-more">+' + (events.length - 2) + ' more</span>' : '') + '</button>';
+      }).join('');
+
+      host.innerHTML = '<div class="cal-head"><div><h2>Main calendar</h2><p>Board target dates, dividends, private plans, and your synced Google events — one glance under the board.</p></div></div>' +
+        '<div class="cal-toolbar"><div class="cal-nav"><button type="button" class="btn" id="boardcalprev" aria-label="Previous month">←</button><span class="cal-monthtitle">' + esc(window.PNCalendar.monthTitle(boardCalendarAnchor)) + '</span><button type="button" class="btn" id="boardcalnext" aria-label="Next month">→</button><button type="button" class="btn" id="boardcaltoday">Today</button></div>' +
+        '<div class="cal-filters" aria-label="Board calendar filters">' + [
+          ['ex-dividend', 'Ex-dates'], ['payment', 'Payments'], ['google', 'Google'], ['private', 'Private']
+        ].map(function (filter) { return '<button type="button" class="cal-filter boardcal-filter" data-kind="' + filter[0] + '" aria-pressed="' + (calendarFilters[filter[0]] !== false) + '">' + filter[1] + '</button>'; }).join('') + '</div></div>' +
+        '<div class="cal-scroll"><div class="cal-board"><div class="cal-weekdays"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div class="cal-grid">' + cellHtml + '</div></div></div>' +
+        '<p class="finetext" style="margin-top:10px">Click a day to open it in the full <button type="button" class="proj-link" id="boardcalopen">Calendar tab</button> — that\'s also where private events are added, edited, and exported.</p>';
+
+      $('boardcalprev').addEventListener('click', function () { boardCalendarAnchor = window.PNCalendar.moveMonth(boardCalendarAnchor, -1); renderBoardCalendar(goals); });
+      $('boardcalnext').addEventListener('click', function () { boardCalendarAnchor = window.PNCalendar.moveMonth(boardCalendarAnchor, 1); renderBoardCalendar(goals); });
+      $('boardcaltoday').addEventListener('click', function () { boardCalendarAnchor = window.PNCalendar.anchorKey(new Date()); renderBoardCalendar(goals); });
+      $('boardcalopen').addEventListener('click', function () { activateTrackerPanel('calendar', true); });
+      Array.prototype.forEach.call(host.querySelectorAll('.boardcal-filter'), function (button) {
+        button.addEventListener('click', function () { calendarFilters[button.dataset.kind] = button.getAttribute('aria-pressed') !== 'true'; renderBoardCalendar(goals); });
+      });
+      Array.prototype.forEach.call(host.querySelectorAll('.boardcal-cell'), function (button) {
+        button.addEventListener('click', function () {
+          calendarSelectedDate = button.dataset.date; calendarAnchor = window.PNCalendar.anchorKey(calendarSelectedDate);
+          activateTrackerPanel('calendar', true); renderCalendar();
+        });
+      });
     }
 
     /* The Obsidian visual: a force-directed map of the board's projects,

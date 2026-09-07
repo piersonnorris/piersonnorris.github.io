@@ -197,6 +197,37 @@ body.island-page{
 .planknext{margin:5px 0 0;font-size:13px;color:var(--ink-soft);line-height:1.5}
 .planknext b{color:var(--ink)}
 
+/* ---------------- tide chart (calendar under the board) ---------------- */
+.tideposts{margin-top:60px}
+.tideboard{padding:22px 24px 26px}
+.tide-nav{display:flex;align-items:center;gap:10px;margin:2px 0 14px}
+.tide-btn{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;line-height:1;color:var(--paper);
+  background:rgba(0,0,0,.18);border:1px solid rgba(251,242,217,.3);border-radius:6px;
+  padding:5px 11px;cursor:pointer;transition:background .15s;
+}
+.tide-btn:hover{background:rgba(0,0,0,.32)}
+.tide-month{font-family:'Kalam',cursive;color:var(--paper);font-size:15px;min-width:150px;text-align:center}
+.tide-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
+.tide-weekdays span{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(251,242,217,.55);text-align:center;
+}
+.tide-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.tide-cell{
+  position:relative;min-height:44px;background:rgba(0,0,0,.12);border-radius:5px;padding:4px 4px 5px;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(251,242,217,.5);
+}
+.tide-cell.outside{opacity:.35}
+.tide-cell.today{box-shadow:inset 0 0 0 2px var(--sand-lt)}
+.tide-cell.hasitem{background:rgba(0,0,0,.26);color:rgba(251,242,217,.85)}
+.tide-day{display:block}
+.tide-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin:4px 2px 0 0;background:var(--sc,var(--sand-lt))}
+@media (max-width:640px){
+  .tideboard{padding:18px 14px 22px}
+  .tide-cell{min-height:34px;font-size:9px}
+}
+
 .driftnote{
   margin:26px auto 0;max-width:640px;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
   color:var(--ink-soft);background:rgba(255,255,255,.35);border:1px dashed rgba(74,49,23,.3);

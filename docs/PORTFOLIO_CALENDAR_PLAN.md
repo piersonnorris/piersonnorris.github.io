@@ -19,6 +19,8 @@ The first calendar phase is implemented as a dedicated password-gated tab inside
 - Encrypted device-local persistence through the existing stock vault.
 - Persistent dividend-date overrides so manual calendar corrections survive reloads.
 - Obsidian Markdown export/import for private calendar records.
+- **(2026-09-07) Real Google Calendar events, pulled one-way.** `tools/tracker/build.js` reads `private/tracker/google-calendar.json` (gitignored) and bakes it into the payload as `googleEvents`, exactly like `dividendCalendar`. That snapshot is produced by a Claude session with a Google Calendar connector — the source file never comes from the static site itself. See "Known boundary" below for what this is and isn't.
+- **(2026-09-07) A compact calendar under the Projects board.** The kanban board's own tab now shows a read-only month grid (board target dates + dividends + private plans + Google events) directly beneath the board, so you don't have to switch tabs to see what's coming up. Editing and export still live on the full Calendar tab.
 
 ## Privacy model
 
@@ -66,7 +68,9 @@ Dividend events use the same normalized shape but are marked `source: "dividend"
 
 ## Known boundary
 
-This phase uses safe Google Calendar handoff links and standards-based `.ics` export. Automatic two-way Google Calendar synchronization would require Google OAuth credentials, token storage, revocation handling, and a private backend. That should be designed as a later integration rather than embedding long-lived credentials in a public static site.
+This phase uses safe Google Calendar handoff links, standards-based `.ics` export, and — as of 2026-09-07 — a one-way, session-pulled snapshot of real events. None of that is the same as live sync: the static site itself holds no Google credentials and makes no calls to Google at any point, in the browser or in CI. The snapshot in `private/tracker/google-calendar.json` is produced entirely outside the site's own code, by a Claude session that happens to have a Google Calendar connector authorized for that chat; refreshing it means running that pull again and rebuilding, not something the site or a scheduled workflow can trigger itself.
+
+Automatic two-way Google Calendar synchronization (write-back, or the tracker refreshing its own snapshot on a schedule) would still require Google OAuth credentials, token storage, revocation handling, and a private backend — tracked as **R9b** in `docs/ROADMAP.md`, and still parked for the same reason: no long-lived Google credentials belong on a public static site.
 
 ## Validation checklist
 

@@ -31,6 +31,12 @@
     },
     {
       date: '2026-09-06', tag: 'shipped',
+      title: 'Underwater skin now covers the whole tracker',
+      detail: 'Positions, Dividends, Calendar, Projects, Updates and Obsidian all repaint with the Charts tab instead of leaving it stranded on one panel. Mostly a token swap on <body>, since the tracker already runs on the site\'s CSS variables. Gain/loss colours stay put in both skins, and the toggle moved to the header beside Lock.',
+      link: '#positions'
+    },
+    {
+      date: '2026-09-06', tag: 'shipped',
       title: 'Underwater theme for the Charts tab',
       detail: 'Opt-in skin (Theme: Deep / Underwater). Ocean ground with drifting caustics and bubbles, an open treasure chest presiding over the range figures, and a gold-backed "hoard" panel below carrying what the KPI row has no room for — including cost basis and P/L summed from that symbol\'s purchase journals. Repaints only; it never changes a number.',
       link: '#charts'

@@ -139,17 +139,17 @@
         dependencies: ['Pierce'], relatedLink: '#projects', created: now, updated: now
       },
       {
-        id: 'goal-observatory', title: 'R18 · Bottle Observatory — home page UI rebuild', status: 'planned',
+        id: 'goal-observatory', title: 'R18 · Bottle Observatory — home page UI rebuild', status: 'in-progress',
         outcome: 'The ship-in-a-bottle Obsidian showcase, picked from five drafted directions (docs/BOTTLE_SHOWCASE.md) and scoped up to the home page itself rather than a sub-page. The bottle IS the page: the vault lives inside the glass as a drifting constellation of real notes joined by real [[wikilinks]], the ship tacks between them, and popping the cork flies the camera through the glass so the bottle becomes the vignette you are permanently inside. One click, no gate, and the only job is to look extraordinary while the structure underneath stays real. Also done: the porthole no longer links to the stock desk — the Obsidian and portfolio surfaces now share no navigation at all.',
-        nextAction: 'Phase A first, and nothing before it: take direction 01 from a one-fifth-scale sketch to a full-size, full-viewport static comp — real geometry, real node count, real type, three states, both themes, desktop and phone. Pierce asked for the refine pass explicitly. If the comp does not hold up full-size, we re-pick (Vault OS is the fallback).',
-        milestones: ['A · refine to a full-size comp', 'B · the glass', 'C · the through-the-glass camera', 'D · the constellation (PNGraphify)', 'E · the home page around it', 'F · fold in the R19 strip'],
+        nextAction: 'Phase A is done (2026-09-08) and 01 held up at full size, so the re-pick branch is closed. Two findings changed the build: "inside" is a second composition rather than a zoom, which re-scopes phase C from a camera push to a morph between two layouts; and the desktop composition does not survive portrait, so phone is a third composition. Next is phase B — the glass as a real component, plus the upright-bottle portrait treatment A deferred. Phase E is blocked on R19\'s lane labels, since R19 is now the data layer that replaces the console tiles.',
+        milestones: ['A · full-size comp — done, 01 holds up', 'B · the glass + upright portrait', 'C · the layout morph (was: camera)', 'D · the constellation (PNGraphify) + node cap', 'E · the page around it — needs R19 data', 'F · cut / over to /'],
         dependencies: ['Pierce'], relatedLink: '#projects', created: now, updated: now
       },
       {
         id: 'goal-voyage', title: 'R19 · Island to island — the work as a chart', status: 'planned',
         outcome: 'The work history laid out as a sea chart instead of a list: every chapter an island — portfolio, Oasis, Elon, True North, Screencastify, this site — placed by date, sized by duration, with the ship at today and the AI Club presidency drawn as an outline it has not reached yet. The lanes between islands are the argument: each is labelled with what actually carried over (crew and door-to-door, hustle to institution, the documented system, the workflow method), which a bullet list physically cannot show. Copy is CONTENT.md §3 verbatim — nothing new is written, it gets placed.',
-        nextAction: 'Pierce\'s words on the six lane labels before anything ships — they are claims about his own career. Then decide whether the chart sits above the Experience timeline (recommended) or replaces it, and whether the compact home-page strip lands inside R18 phase F.',
-        milestones: ['Lane labels in Pierce\'s words', 'voyage-data.js traced to CONTENT.md §3', 'Chart above the Experience timeline', 'Degrades to the ordered list under 760px', 'Home-page strip'],
+        nextAction: 'Promoted 2026-09-08: voyage-data.js is now the data layer the home page reads below the fold, not just the Experience chart\'s source — R18 phase A left the six console tiles with nowhere to go, and this is what replaces them. So the data file has to exist by R18 phase E, which puts the six lane labels on the critical path. They are claims about Pierce\'s own career and need his words before anything ships.',
+        milestones: ['Lane labels in Pierce\'s words — blocks R18 phase E', 'voyage-data.js traced to CONTENT.md §3', 'Home-page work section reads it', 'Chart above the Experience timeline', 'Degrades to the ordered list under 760px'],
         dependencies: ['Pierce'], relatedLink: '#projects', created: now, updated: now
       },
       {

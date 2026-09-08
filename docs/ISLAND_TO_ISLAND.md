@@ -64,6 +64,25 @@ defensible from §3.
 
 ---
 
+## 2a. R19 is the home page's data layer — decided 2026-09-08
+
+Pierce, 2026-09-08: *"add to the note that R19 will be started as the data for the home page when its updates."*
+
+This is a scope change and a good one. R18 phase A showed the Observatory owns the first screen but has no
+answer for what sits below it — the six console tiles have nowhere to go in the new composition.
+
+**R19's data file becomes that answer.** `assets/js/voyage-data.js` is not only the Experience chart's source;
+it is **what the home page reads for everything below the fold**. The work section stops being six
+hand-maintained tiles and becomes the voyage, rendered compactly.
+
+- **One source, two surfaces.** Experience gets the full chart, the home page gets the strip, both read the
+  same file. Add a chapter once — the same rule `atlas-data.js` already follows.
+- **Sequencing: the data lands *inside* the home-page pass**, not after it. `voyage-data.js` must exist by
+  R18 **phase E**, because phase E is what replaces the tiles. The chart *rendering* on Experience can follow
+  later; the data cannot.
+- **Which promotes a blocker.** The lane labels below need Pierce's own words, and they are now on R18's
+  critical path rather than a nice-to-have afterwards.
+
 ## 3. Where it goes
 
 **Primary: the Experience page**, replacing the top of it — the chart first, the existing year-by-year detail

@@ -66,6 +66,15 @@ Pierce supplied a Twelve Data key; it now lives in `private/.twelvedata-key` (gi
 ### R7. Public pages M2/M3 — **ChatGPT** (copy from CONTENT.md only)
 About, Projects, Contact, Tools hub, 404, `sitemap.xml`, per-page OG tags. Blocked partly on R4. Rules: copy verbatim from `CONTENT.md`, `[OPEN]` means ask Pierce, no frameworks, no build steps, keep `llms.txt` in sync.
 
+### R18. Ship-in-a-bottle Obsidian showcase — 🎨 five directions drafted 2026-09-08
+Full write-up in `docs/BOTTLE_SHOWCASE.md`; live previews at `vault/concepts/index.html` (local only). Pierce's brief: *"an amazing in-a-bottle Obsidian visual that looks impressive … one click … no gate … a crazy looking UI to showcase the use of Obsidian, no other purposes."* This finally closes out the Easter-egg idea in §5 that has been open since 2026-09-06 — the porthole's "deliberately not built" viewer is exactly what this is.
+
+- **Separation from the stock page — done.** The bottle porthole's second button was **Stock desk → `/tools/tracker/#stocknotes`**; that was the only place the two surfaces touched, and it is gone. The buttons are now `/vault/` and `/notes/`. The tracker keeps its own Obsidian tab, deliberately: those are *stock* notes about holdings and they belong next to the holdings. Standing rule from here: the showcase never links to the tracker, and the tracker never links to the showcase.
+- **Five directions**, each previewed as live CSS/SVG at real proportions rather than described: **01 Bottle Observatory** (the vault as a constellation inside the glass, camera flies through it), **02 Cartographer's Table** (notes as islands, links as inked shipping lanes, unresolved links as *hic sunt dracones*), **03 The Descent** (scroll is diving, depth is age), **04 Orrery in Glass** (domains as suns, orbital period is recency), **05 Vault OS** (phosphor terminal boots the vault, ASCII graph morphs into the real SVG one).
+- **Recommendation: 01.** It is the only one where the bottle stays the subject throughout, and the graph it needs is already built. **05** is the hedge that could ship in a session; **04** is the pick if novelty is the goal.
+- **No gate, on purpose.** Pierce's call: only he links to it, and it can be gated later in one commit. That is reversible in a way publishing content is not.
+- **Blocked on:** which direction. Nothing gets built until he picks one.
+
 ### R17. Backstage — the vault in public, no gate — ✅ P0–P3 done 2026-09-08, P4 waiting on Pierce
 Full plan and current status in `docs/BACKSTAGE_PLAN.md`; the tool half is written up in `docs/OBSIDIAN_SYNC.md` §3. Pierce asked to "view the website back end Obsidian, no gate to get in, and a good visual," and chose **the whole personal vault, ungated** over two narrower scopes.
 

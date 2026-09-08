@@ -152,9 +152,13 @@
             'That drawing is a <b>sketch of a linked vault</b>, not your notes — nothing on this page can read them. ' +
             'The real graph, the notes, and their backlinks live behind your PIN, decrypted in your own browser and nowhere else.') +
           '</p>' +
+          /* The stock desk deliberately does NOT appear here (Pierce,
+             2026-09-08). The bottle is the Obsidian showcase's front
+             door and nothing else's — mixing a portfolio link into it
+             was the one place the two surfaces touched. */
           '<div class="pnb-actions">' +
-            '<a class="pnb-btn primary" href="/notes/">Open the vault <span aria-hidden="true">→</span></a>' +
-            '<a class="pnb-btn" href="/tools/tracker/#stocknotes">Stock desk <span aria-hidden="true">→</span></a>' +
+            '<a class="pnb-btn primary" href="/vault/">Open the vault <span aria-hidden="true">→</span></a>' +
+            '<a class="pnb-btn" href="/notes/">My private notes <span aria-hidden="true">→</span></a>' +
           '</div>' +
         '</div>' +
       '</div>'

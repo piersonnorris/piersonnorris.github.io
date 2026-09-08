@@ -139,6 +139,20 @@
         dependencies: ['Pierce'], relatedLink: '#projects', created: now, updated: now
       },
       {
+        id: 'goal-observatory', title: 'R18 · Bottle Observatory — home page UI rebuild', status: 'planned',
+        outcome: 'The ship-in-a-bottle Obsidian showcase, picked from five drafted directions (docs/BOTTLE_SHOWCASE.md) and scoped up to the home page itself rather than a sub-page. The bottle IS the page: the vault lives inside the glass as a drifting constellation of real notes joined by real [[wikilinks]], the ship tacks between them, and popping the cork flies the camera through the glass so the bottle becomes the vignette you are permanently inside. One click, no gate, and the only job is to look extraordinary while the structure underneath stays real. Also done: the porthole no longer links to the stock desk — the Obsidian and portfolio surfaces now share no navigation at all.',
+        nextAction: 'Phase A first, and nothing before it: take direction 01 from a one-fifth-scale sketch to a full-size, full-viewport static comp — real geometry, real node count, real type, three states, both themes, desktop and phone. Pierce asked for the refine pass explicitly. If the comp does not hold up full-size, we re-pick (Vault OS is the fallback).',
+        milestones: ['A · refine to a full-size comp', 'B · the glass', 'C · the through-the-glass camera', 'D · the constellation (PNGraphify)', 'E · the home page around it', 'F · fold in the R19 strip'],
+        dependencies: ['Pierce'], relatedLink: '#projects', created: now, updated: now
+      },
+      {
+        id: 'goal-voyage', title: 'R19 · Island to island — the work as a chart', status: 'planned',
+        outcome: 'The work history laid out as a sea chart instead of a list: every chapter an island — portfolio, Oasis, Elon, True North, Screencastify, this site — placed by date, sized by duration, with the ship at today and the AI Club presidency drawn as an outline it has not reached yet. The lanes between islands are the argument: each is labelled with what actually carried over (crew and door-to-door, hustle to institution, the documented system, the workflow method), which a bullet list physically cannot show. Copy is CONTENT.md §3 verbatim — nothing new is written, it gets placed.',
+        nextAction: 'Pierce\'s words on the six lane labels before anything ships — they are claims about his own career. Then decide whether the chart sits above the Experience timeline (recommended) or replaces it, and whether the compact home-page strip lands inside R18 phase F.',
+        milestones: ['Lane labels in Pierce\'s words', 'voyage-data.js traced to CONTENT.md §3', 'Chart above the Experience timeline', 'Degrades to the ordered list under 760px', 'Home-page strip'],
+        dependencies: ['Pierce'], relatedLink: '#projects', created: now, updated: now
+      },
+      {
         id: 'goal-backstage', title: 'R17 · Backstage — the vault in public, no gate (/vault/)', status: 'in-progress',
         outcome: 'A public, read-only vault reader at /vault/ with no login: folder tree, rendered Markdown, backlinks inspector, ⌘K palette, and the real link graph. Fed by a new --public mode on tools/obsidian-sync.js that gates on publish:false / #private / nopublish/, refuses (never silently redacts) on anything shaped like a dollar figure, address, phone number or key, and resolves inline path references into wikilinks. New PNMarkdown renderer (assets/js/markdown.js), escape-first. Also fixed the .gitignore hole that had kept /atlas/ from ever deploying, and a real bug in PNGraphify: [[links]] inside code spans were being counted as links.',
         nextAction: 'Phases P0–P3 are done and the first snapshot published is the site\'s own docs/ folder (already public in the repo). P4 — publishing the personal vault — waits on Pierce reading `node tools/obsidian-sync.js --report` against it and answering the four questions in docs/BACKSTAGE_PLAN.md §7.',

@@ -1,7 +1,17 @@
 # SHIP IN A BOTTLE — the Obsidian showcase
 
-**Status: five directions drafted 2026-09-08, awaiting Pierce's pick.** ROADMAP **R18**.
+**Status: direction 01 picked 2026-09-08. Scope raised to a full home-page UI update. Nothing built yet —
+phase A is a refine pass, on purpose.** ROADMAP **R18**.
 Live previews (local only, not committed): `vault/concepts/index.html`.
+Companion: `docs/ISLAND_TO_ISLAND.md` (R19) — direction 02's chart, pointed at the work history instead.
+
+> **Pierce, 2026-09-08:** *"i like 1 … before this starts add in to refine the visual and build it out because
+> this is a whole home page ui update."*
+>
+> Two things follow from that sentence and they change the shape of this doc. **The Bottle Observatory is not a
+> sub-page** — it is the home page's new front. And **the first phase is refinement, not construction**: the
+> preview in `vault/concepts/` is a one-fifth-scale sketch, and sketching is not designing. Building straight
+> from it would bake in proportions nobody has looked at full-size.
 
 ---
 
@@ -116,25 +126,56 @@ single transition is the whole trick.
 
 ---
 
-## 3. Recommendation
+## 2a. The build, now that 01 is picked
 
-**01, The Bottle Observatory.** It is the only one where the bottle stays the subject the whole way through,
-which is what was actually asked for. The graph is already built and already impressive; putting it inside
-glass is the shortest distance between what exists and *"how is that a website"*.
+Scope is **the home page**, not a new URL: the Observatory becomes what you land on at `/`. That raises the
+stakes — this is the first thing a recruiter sees, so "looks impossible" and "loads fast, reads clearly, works
+on a phone" have to both be true. The phases are cut so the expensive, irreversible-feeling decisions happen
+while everything is still cheap to throw away.
 
-**05** is the hedge — it could be live tonight, and it is the only one whose failure mode is "fine" rather than
-"broken". **04** is the pick if the goal is specifically that nobody has seen it before.
+| Phase | What | Why it's cut here |
+|---|---|---|
+| **A — Refine the visual** *(first, before any build)* | Take direction 01 from a one-fifth-scale sketch to a **full-size, full-viewport static comp**. Real bottle geometry and glass, real node count from `vault-public.js`, real type sizes, the actual home-page content sitting inside it. Three states drawn: sealed, mid-uncork, inside. Light and dark. Desktop and phone. | A sketch that looks good at 250px wide can be unreadable at 1440. Pierce asked for this explicitly and he's right: everything after A is expensive to change, and nothing in A is. |
+| **B — The glass** | The bottle as a real component: geometry, specular sweep, refraction offset, caustics. Static, no camera yet. Ships behind a flag on a scratch route. | The glass is the whole illusion. If it doesn't convince standing still, no amount of motion rescues it. |
+| **C — The camera** | The one click: cork → fly through the glass → bottle becomes the vignette. 60fps or it doesn't ship. `prefers-reduced-motion` gets a straight cut instead. | The single highest-risk piece. Isolating it means it can be cut without losing A and B. |
+| **D — The constellation** | `PNGraphify` re-skinned as the drifting star-field inside the glass — real notes, real `[[wikilinks]]`, neighbourhood highlight on read, unresolved links as corked empty bottles. | The structure must be real. This is the phase that keeps it honest. |
+| **E — The home page around it** | What survives from today's home: the Currently card, the console tiles, the nav, the footer. Some of it moves inside the bottle; some of it has to stay plainly readable outside the metaphor. | The part most likely to be underestimated. A gorgeous page that buries the contact details is a worse home page. |
+| **F — Fold in R19** | The island-to-island strip (`docs/ISLAND_TO_ISLAND.md`) as the home page's "the work" section, sharing the ocean language. | Ties the two directions into one world rather than two themes. |
 
-Whichever wins, three things carry over unchanged: real link structure from `PNGraphify`, the `PNBottle`
-entrance, and `prefers-reduced-motion` honoured throughout — every one of these directions is built out of
-motion, and all five have to survive it being switched off.
+**Ends of the line, stated now:** if phase C can't hold frame rate on a mid-range laptop, the fallback is a
+cross-fade rather than a camera move, and the page is still good. If phase A's comp doesn't actually look
+impressive full-size, we stop and re-pick from the five — that is what phase A is *for*.
+
+**What is not in scope:** changing what `/vault/` does (it stays the useful reading surface, and the Observatory
+links to it), touching the tracker, or publishing the personal vault (still R17's parked P4).
+
+## 3. The pick — 01, and what the others are still for
+
+**01, The Bottle Observatory — chosen 2026-09-08.** It was the recommendation and it is the pick: the only one
+where the bottle stays the subject the whole way through, and the graph it needs is already built.
+
+The other four are not discarded, they are shelved with a purpose:
+
+- **02** is now **R19**, doing a different job entirely — see `docs/ISLAND_TO_ISLAND.md`.
+- **05, Vault OS** is the **fallback**. If phase A says 01 doesn't hold up full-size, this is what ships instead;
+  it is the only direction whose failure mode is "fine" rather than "broken".
+- **03** and **04** stay on the shelf. 04 in particular is worth revisiting if the site ever wants a second
+  showpiece, because nothing about it overlaps with 01.
+
+Three things hold regardless: real link structure from `PNGraphify`, the `PNBottle` entrance, and
+`prefers-reduced-motion` honoured throughout — this is built out of motion, and it has to survive that being
+switched off.
 
 ---
 
 ## 4. Open
 
-- **Which direction.** Pierce's call; nothing gets built until he picks one.
-- **Where it lives.** A new `/bottle/`, or does it replace `/vault/`'s Reader as its front door? `/vault/` is
-  the useful reading surface and this is the showcase — they may want to be two pages, one linking to the other.
+- ~~Which direction.~~ **Answered 2026-09-08: 01.**
+- ~~Where it lives.~~ **Answered: the home page itself**, not a new URL. `/vault/` stays the reading surface and
+  the Observatory links to it.
 - **What it shows.** Right now `vault-public.js` is the site's own `docs/` folder. A showcase of "how I use
-  Obsidian" is more convincing over the *personal* vault, which is R17's parked P4 — same four questions.
+  Obsidian" is more convincing over the *personal* vault, which is R17's parked P4 — same four questions. Worth
+  deciding before phase D, since the node count changes the composition.
+- **How much of today's home page survives** (phase E). Needs Pierce's call on what must stay plainly readable
+  outside the metaphor — at minimum the contact route, probably the Currently card.
+- **Does the R19 strip land in this pass** (phase F) or immediately after?

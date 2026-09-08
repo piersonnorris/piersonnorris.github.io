@@ -66,14 +66,27 @@ Pierce supplied a Twelve Data key; it now lives in `private/.twelvedata-key` (gi
 ### R7. Public pages M2/M3 — **ChatGPT** (copy from CONTENT.md only)
 About, Projects, Contact, Tools hub, 404, `sitemap.xml`, per-page OG tags. Blocked partly on R4. Rules: copy verbatim from `CONTENT.md`, `[OPEN]` means ask Pierce, no frameworks, no build steps, keep `llms.txt` in sync.
 
-### R18. Ship-in-a-bottle Obsidian showcase — 🎨 five directions drafted 2026-09-08
+### R19. Island to island — the work as a chart — 📝 planned 2026-09-08
+Full write-up in `docs/ISLAND_TO_ISLAND.md`; preview is direction 06 in `vault/concepts/index.html`. Direction 02's cartography, pointed at the work history instead of the vault — Pierce's call, the same session he picked 01 for the bottle.
+
+- **Every chapter is an island**, placed by date and sized by duration: the portfolio (2020 —), Oasis (May 2023), Elon (Aug 2023), True North (Apr 2026 —), Screencastify (Jun–Aug 2026), this site (2026 —). The ship sits at *today*. The incoming AI Club presidency is drawn as a **dashed outline** — charted, not yet made landfall.
+- **The lanes are the argument.** Not decoration and not `[[wikilinks]]`: each is labelled with what actually carried over — crew and door-to-door out of Oasis, *hustle → institution* into True North, the documented system into the internship, the workflow method back out onto this site. A vertical timeline can only show order; a chart shows what fed what.
+- **No new copy.** Islands, dates and inscriptions come from `CONTENT.md` §3 verbatim, each island's *Takeaway:* line as its inscription, in one `voyage-data.js` file under the same rule as `atlas-data.js`.
+- **Nothing invented to fill the water.** Student Maintenance LLC is `[OPEN]` in §3, so it gets no island; Oasis → True North is drawn as two islands and a lane, which is true whether or not it turns out to be a rebrand.
+- **Placement is derived, not drawn** — longitude is time. An island placed by eye makes this a picture that drifts out of date the first time a chapter is added.
+- **The chart is an enhancement; the ordered list is the content.** It must degrade to the existing timeline under 760px, and serif-on-parchment has to clear 4.5:1 (U1).
+- **Blocked on Pierce:** the six lane labels are claims about his own career and need his words, not drafted ones.
+
+### R18. Ship-in-a-bottle Obsidian showcase — ✅ direction 01 picked 2026-09-08, phase A next
 Full write-up in `docs/BOTTLE_SHOWCASE.md`; live previews at `vault/concepts/index.html` (local only). Pierce's brief: *"an amazing in-a-bottle Obsidian visual that looks impressive … one click … no gate … a crazy looking UI to showcase the use of Obsidian, no other purposes."* This finally closes out the Easter-egg idea in §5 that has been open since 2026-09-06 — the porthole's "deliberately not built" viewer is exactly what this is.
 
 - **Separation from the stock page — done.** The bottle porthole's second button was **Stock desk → `/tools/tracker/#stocknotes`**; that was the only place the two surfaces touched, and it is gone. The buttons are now `/vault/` and `/notes/`. The tracker keeps its own Obsidian tab, deliberately: those are *stock* notes about holdings and they belong next to the holdings. Standing rule from here: the showcase never links to the tracker, and the tracker never links to the showcase.
 - **Five directions**, each previewed as live CSS/SVG at real proportions rather than described: **01 Bottle Observatory** (the vault as a constellation inside the glass, camera flies through it), **02 Cartographer's Table** (notes as islands, links as inked shipping lanes, unresolved links as *hic sunt dracones*), **03 The Descent** (scroll is diving, depth is age), **04 Orrery in Glass** (domains as suns, orbital period is recency), **05 Vault OS** (phosphor terminal boots the vault, ASCII graph morphs into the real SVG one).
-- **Recommendation: 01.** It is the only one where the bottle stays the subject throughout, and the graph it needs is already built. **05** is the hedge that could ship in a session; **04** is the pick if novelty is the goal.
-- **No gate, on purpose.** Pierce's call: only he links to it, and it can be gated later in one commit. That is reversible in a way publishing content is not.
-- **Blocked on:** which direction. Nothing gets built until he picks one.
+- **Picked: 01, and the scope went up.** Pierce, same session: *"i like 1 … before this starts add in to refine the visual and build it out because this is a whole home page ui update."* So the Observatory is **not a sub-page** — it becomes the home page's new front, which means "looks impossible" and "loads fast, reads clearly, works on a phone" both have to be true at once.
+- **Phase A is a refine pass, and nothing starts before it.** The preview is a one-fifth-scale sketch, and sketching is not designing: A takes it to a full-size, full-viewport static comp — real geometry, real node count from `vault-public.js`, real type sizes, three states (sealed / mid-uncork / inside), both themes, desktop and phone. Everything after A is expensive to change and nothing in A is. Then B the glass, C the through-the-glass camera, D the constellation, E the home page around it, F fold in R19's strip.
+- **Ends of the line, stated up front:** if C can't hold frame rate on a mid-range laptop it degrades to a cross-fade and the page is still good; if A's comp doesn't look impressive full-size we stop and re-pick, with **05 Vault OS** as the fallback. That is what phase A is *for*.
+- **No gate, on purpose.** Pierce's call: only he links to it, and it can be gated later in one commit — reversible in a way publishing content is not.
+- **The other three are shelved, not dead.** 02 became R19; 04 is worth revisiting if the site ever wants a second showpiece, since nothing about it overlaps with 01.
 
 ### R17. Backstage — the vault in public, no gate — ✅ P0–P3 done 2026-09-08, P4 waiting on Pierce
 Full plan and current status in `docs/BACKSTAGE_PLAN.md`; the tool half is written up in `docs/OBSIDIAN_SYNC.md` §3. Pierce asked to "view the website back end Obsidian, no gate to get in, and a good visual," and chose **the whole personal vault, ungated** over two narrower scopes.

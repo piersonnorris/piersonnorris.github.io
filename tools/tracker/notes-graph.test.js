@@ -251,6 +251,22 @@ function main() {
       'an empty bundle bakes nothing rather than an empty shell');
   }
 
+  /* A note documenting the link syntax was inventing edges to notes
+     nobody meant to reference — and inflating the unresolved count with
+     the vault's own documentation about itself. */
+  {
+    const { wikiTargets } = window.PNGraphify;
+    assert.deepEqual(wikiTargets('a real [[Beta]] link'), ['Beta']);
+    assert.deepEqual(wikiTargets('the `[[wikilink]]` syntax'), [],
+      'a wikilink inside a code span is documentation, not a link');
+    assert.deepEqual(wikiTargets('```\n[[Fenced]]\n```'), [],
+      'a wikilink inside a fenced block is not a link either');
+    assert.deepEqual(wikiTargets('`[[Doc]]` but also [[Real]]'), ['Real'],
+      'stripping code must not swallow the real links around it');
+    assert.deepEqual(wikiTargets('an unclosed ``` fence [[Swallowed]]'), [],
+      'an unterminated fence runs to the end of the note, as it renders');
+  }
+
   console.log('notes-graph + obsidian-sync + build seam: all assertions passed');
 }
 

@@ -63,6 +63,45 @@ Output is one `pn-vault-bundle` JSON: `{format, version, scope, generatedAt, sou
 
 ---
 
+## 3. The public route — `--public` (added 2026-09-08, R17)
+
+The third destination for a bundle, after the Import button and the encrypted build: a committed file the
+public `/vault/` page reads. Design and reasoning live in `docs/BACKSTAGE_PLAN.md`; the mechanics are here.
+
+```bash
+node tools/obsidian-sync.js --vault "<dir>" --report                  # what WOULD publish. Writes nothing.
+node tools/obsidian-sync.js --vault "<dir>" --public --prefix notes   # → assets/data/vault-public.js
+```
+
+| Flag | Effect |
+|---|---|
+| `--report` | Every note that would publish — path, word count, title — plus scrubber hits. No note text. |
+| `--public` | Writes the public bundle. Default `assets/data/vault-public.js`. |
+| `--label <name>` | What the page calls the snapshot. |
+| `--prefix <dir>` | Nests published paths under a folder, so the tree has something to draw. |
+| `--waive <ids>` | Skip named scrub rules for this run. Printed loudly and recorded in the bundle. |
+| `--no-link-paths` | Leave inline path references alone instead of resolving them into wikilinks. |
+
+Three things are worth knowing before running it against a real vault:
+
+- **Default is publish, and the opt-outs are Pierce's.** `publish: false` in frontmatter, a `#private` tag, or a
+  `nopublish/` folder. That default was his decision (2026-09-08), taken over two narrower scopes.
+- **The scrubber refuses; it never redacts.** Dollar amounts, share counts, addresses, phone numbers,
+  key-shaped tokens, plus literal terms from `private/.publish-blocklist` (gitignored — a committed list of
+  names you must never publish is itself a published list of those names). A hit prints `path:line`, never the
+  matched text, and stops the write. The fix belongs in the vault.
+- **Output is `.js`, not `.json`.** It loads with a `<script>` tag, exactly like `atlas-data.js`, so the page
+  works over `file://` with no fetch and no CORS. A `.json` path is still honoured if you ask for one.
+
+A publish-time transform runs on the way out: an inline-code path pointing at another published note
+(`` `docs/CONTENT.md` ``) becomes a `[[wikilink]]`. Vaults link with brackets; the site's own docs link by
+writing a path, and both are the author saying "this connects to that". Only the exact inline-code form is
+rewritten — guessing inside prose or fenced blocks would invent edges nobody wrote. The count lands in the
+bundle as `linkedPaths` so the page can say it happened.
+
+The first published snapshot is the site's own `docs/` folder, which was already public in this repo. The
+personal vault is not published; that step is P4 in the plan and waits on Pierce.
+
 ## Known boundary
 
 Same as `docs/PORTFOLIO_CALENDAR_PLAN.md` says about Google Calendar, and for the same reason: **this is a snapshot, not live sync.**

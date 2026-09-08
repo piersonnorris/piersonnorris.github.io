@@ -86,6 +86,13 @@ function parseNote(text, fallbackTitle) {
       const clean = String(tag).replace(/^#/, '').trim();
       if (clean && note.tags.indexOf(clean) === -1) note.tags.push(clean);
     }
+    /* `publish: false` is the one-line opt-out from the public snapshot
+       (docs/BACKSTAGE_PLAN.md §4). Only an explicit false counts — a note
+       with no opinion publishes, because default-publish was the decision. */
+    const pub = /^\s*publish\s*:\s*(.+?)\s*$/im.exec(fm[1]);
+    if (pub && /^(false|no|off|0|private)$/i.test(pub[1].replace(/^["']|["']$/g, ''))) {
+      note.publish = false;
+    }
   }
   return note;
 }
@@ -132,7 +139,10 @@ function readVault(dir, opts) {
       ticker: parsed.ticker,
       outlook: parsed.outlook,
       created: parsed.created || stats.birthtime.toISOString(),
-      updated: parsed.updated || stats.mtime.toISOString()
+      updated: parsed.updated || stats.mtime.toISOString(),
+      /* only carried when the note explicitly opted out; undefined
+         otherwise, so the bundle shape the tracker reads is unchanged */
+      publish: parsed.publish === false ? false : undefined
     };
   }).sort((a, b) => a.path.localeCompare(b.path));
 
@@ -172,6 +182,189 @@ function report(bundle, listTitles) {
   return lines.join('\n');
 }
 
+// ------------------------------------------------------------- publishing
+/* Everything from here down exists for one purpose: producing the file
+   /vault/ reads. Publishing is a one-way door — a note committed to a
+   public repo is public permanently, git history included — so this half
+   is built to make Pierce look before it happens, not to be clever.
+   Design and reasoning: docs/BACKSTAGE_PLAN.md §4. */
+
+/* --- the opt-outs. Default is publish; these three are the ways out. --- */
+const PRIVATE_TAG = /^(private|nopublish|no-publish|secret)$/i;
+const PRIVATE_DIR = /(^|\/)(nopublish|private)\//i;
+
+function excludedBecause(note) {
+  if (note.publish === false) return 'publish: false';
+  const tag = (note.tags || []).filter((t) => PRIVATE_TAG.test(String(t)))[0];
+  if (tag) return `#${tag} tag`;
+  if (PRIVATE_DIR.test(note.path)) return 'in a nopublish/ folder';
+  return null;
+}
+
+/* --- the scrubber. It refuses; it never silently redacts. ---
+   A filter that quietly deletes a number teaches you nothing and rots the
+   moment someone writes the number a new way. A refusal that prints
+   path:line sends the fix back to the vault, where it belongs. */
+const SCRUB_RULES = [
+  { id: 'money',   label: 'dollar amount',      re: /\$\s?\d[\d,]*(?:\.\d+)?/ },
+  { id: 'shares',  label: 'share count',        re: /\b\d[\d,]*\s+shares?\b/i },
+  { id: 'phone',   label: 'phone number',       re: /\b\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b/ },
+  { id: 'address', label: 'street address',     re: /\b\d{1,5}\s+[A-Z][\w.]*(?:\s+[A-Z][\w.]*)*\s+(?:St|Street|Ave|Avenue|Rd|Road|Dr|Drive|Ln|Lane|Blvd|Ct|Court|Cir|Circle|Way|Pl|Place|Ter|Terrace)\b/ },
+  { id: 'secret',  label: 'key-shaped token',   re: /\b[A-Za-z0-9_-]{32,}\b/ }
+];
+
+/* Named terms — client names, employers, anything on CONTENT.md §7's
+   "never on the site" list — come from private/.publish-blocklist, one
+   per line, gitignored. They deliberately do NOT live in a tracked file:
+   a committed list of names you must never publish is itself a published
+   list of those names. */
+function loadBlocklist() {
+  const file = path.join(ROOT, 'private', '.publish-blocklist');
+  if (!fs.existsSync(file)) return { terms: [], configured: false };
+  const terms = fs.readFileSync(file, 'utf8').split(/\r?\n/)
+    .map((line) => line.replace(/#.*$/, '').trim())
+    .filter(Boolean);
+  return { terms, configured: true };
+}
+
+/* → [{path, line, rule, label}] — the location of a hit, never the text
+   of it. Printing the matched string would put the very thing the rule
+   caught into a terminal, a log and probably a chat transcript. */
+function scan(notes, opts) {
+  opts = opts || {};
+  const waived = new Set(opts.waive || []);
+  const terms = (opts.terms || []).map((t) => t.toLowerCase());
+  const hits = [];
+  for (const note of notes) {
+    const lines = String(note.body || '').split(/\r?\n/);
+    lines.forEach((line, i) => {
+      for (const rule of SCRUB_RULES) {
+        if (waived.has(rule.id)) continue;
+        if (rule.re.test(line)) hits.push({ path: note.path, line: i + 1, rule: rule.id, label: rule.label });
+      }
+      if (!waived.has('blocklist')) {
+        const low = line.toLowerCase();
+        for (const term of terms) {
+          if (term && low.indexOf(term) !== -1) {
+            hits.push({ path: note.path, line: i + 1, rule: 'blocklist', label: 'blocklisted term' });
+            break;
+          }
+        }
+      }
+    });
+  }
+  return hits;
+}
+
+/* --- publish-time link resolution ---
+   A vault links with [[wikilinks]]; the site's own docs link by writing a
+   path in backticks (`docs/CONTENT.md`). Both are the author saying "this
+   note connects to that one", and the graph should draw both. Only the
+   exact inline-code form is rewritten — a path inside a fenced block or a
+   sentence is left alone, because guessing there would invent edges the
+   author never wrote. Recorded in the bundle as `linkedPaths` so the page
+   can say it happened. */
+function linkPaths(notes) {
+  const byPath = new Map();
+  for (const note of notes) {
+    byPath.set(note.path.toLowerCase(), note.title);
+    byPath.set(note.path.replace(/\.(md|markdown)$/i, '').toLowerCase(), note.title);
+    byPath.set(path.basename(note.path).toLowerCase(), note.title);
+  }
+  let rewrites = 0;
+  for (const note of notes) {
+    note.body = String(note.body || '').replace(/`([^`\n]+)`/g, (whole, inner) => {
+      const title = byPath.get(inner.trim().toLowerCase());
+      if (!title || title === note.title) return whole;
+      rewrites += 1;
+      return `[[${title}]]`;
+    });
+  }
+  return rewrites;
+}
+
+/* The public bundle. A different `format` from pn-vault-bundle on purpose:
+   this one is committed and world-readable, and nothing should be able to
+   confuse it with the private one the tracker bakes in. */
+function toPublicBundle(bundle, opts) {
+  opts = opts || {};
+  /* --prefix nests every published path under a folder. Publishing a
+     subfolder of a vault otherwise flattens it: every note lands in the
+     root and the tree has nothing to draw. */
+  const prefix = opts.prefix ? String(opts.prefix).replace(/^\/+|\/+$/g, '') + '/' : '';
+  const kept = [];
+  const dropped = [];
+  for (const note of bundle.notes) {
+    const why = excludedBecause(note);
+    if (why) dropped.push({ path: note.path, why });
+    else {
+      const at = prefix + note.path;
+      kept.push({
+        path: at,
+        folder: at.indexOf('/') === -1 ? '' : at.slice(0, at.lastIndexOf('/')),
+        title: note.title,
+        body: note.body,
+        tags: note.tags || [],
+        created: note.created,
+        updated: note.updated
+      });
+    }
+  }
+  const linkedPaths = opts.linkPaths === false ? 0 : linkPaths(kept);
+  return {
+    bundle: {
+      format: 'pn-vault-public',
+      version: 1,
+      label: opts.label || bundle.source,
+      generatedAt: bundle.generatedAt,
+      linkedPaths,
+      waived: (opts.waive || []).slice(),
+      count: kept.length,
+      notes: kept
+    },
+    dropped
+  };
+}
+
+/* What Pierce reads before the first publish (plan §4, phase P1). Paths,
+   titles and sizes — never a line of note text. */
+function publishReport(bundle, result, hits, blocklist, willWrite) {
+  const words = (s) => String(s || '').split(/\s+/).filter(Boolean).length;
+  const out = result.bundle;
+  const lines = [
+    '',
+    `PUBLISH REPORT — "${out.label}"`,
+    `${out.count} note${out.count === 1 ? '' : 's'} would become public; ${result.dropped.length} held back.`,
+    '',
+    '  WOULD PUBLISH'
+  ];
+  for (const note of out.notes) {
+    lines.push(`    ${note.path}` + ' '.repeat(Math.max(1, 44 - note.path.length)) +
+      `${words(note.body)} words   ${note.title}`);
+  }
+  if (result.dropped.length) {
+    lines.push('', '  HELD BACK');
+    for (const d of result.dropped) lines.push(`    ${d.path}  —  ${d.why}`);
+  }
+  lines.push('', '  SCRUBBER');
+  if (!blocklist.configured) {
+    lines.push('    ! no private/.publish-blocklist — no names are being checked for.');
+  }
+  if (out.waived.length) lines.push(`    ! waived for this run: ${out.waived.join(', ')}`);
+  if (!hits.length) {
+    lines.push('    clean — no dollar amounts, share counts, addresses, phone numbers,');
+    lines.push('    key-shaped tokens or blocklisted terms in the text above.');
+  } else {
+    lines.push(`    ${hits.length} hit${hits.length === 1 ? '' : 's'} — --public will refuse until these are fixed in the vault:`);
+    for (const hit of hits) lines.push(`      ${hit.path}:${hit.line}  ${hit.label}`);
+  }
+  lines.push('', `  ${out.linkedPaths} inline path reference${out.linkedPaths === 1 ? '' : 's'} resolved into wikilinks.`);
+  lines.push('', willWrite
+    ? '  Writing the file below. Committing it is still a separate, deliberate act.'
+    : '  Nothing has been written. --public writes the file; committing it is still a separate act.');
+  return lines.join('\n');
+}
+
 // ------------------------------------------------------------- cli
 
 function arg(name, fallback) {
@@ -206,7 +399,21 @@ function main() {
       '  --no-body       index only: titles, tags and paths, no note text',
       '  --list          print orphan and unresolved titles (off by default)',
       '  --stdout        print the bundle instead of writing it',
-      '  --dry-run       report connectivity, write nothing'
+      '  --dry-run       report connectivity, write nothing',
+      '',
+      'Public snapshot (docs/BACKSTAGE_PLAN.md) — what /vault/ reads:',
+      '',
+      '  --report        list every note that WOULD publish + scrubber hits, write nothing',
+      '  --public        write the public bundle  [assets/data/vault-public.js]',
+      '  --label <name>  what the page calls this snapshot  [the folder name]',
+      '  --prefix <dir>  nest every published path under this folder',
+      '  --waive <ids>   comma-separated scrub rules to skip, printed loudly',
+      '                  (money, shares, phone, address, secret, blocklist)',
+      '  --no-link-paths do not resolve `inline/path.md` references into wikilinks',
+      '',
+      'A note opts out of publishing with `publish: false` in its frontmatter,',
+      'a #private tag, or by living in a nopublish/ folder. Named terms come',
+      'from private/.publish-blocklist (gitignored, one per line).'
     ].join('\n'));
     return;
   }
@@ -221,6 +428,43 @@ function main() {
   const bundle = readVault(dir, { body: !flag('no-body'), scope: arg('scope', 'general') });
   if (!bundle.count) throw new Error(`No .md files under ${dir}.`);
 
+  /* --- the public path. Deliberately its own branch: nothing about the
+     private bundle should be able to fall through into a committed file. */
+  if (flag('report') || flag('public')) {
+    if (!bundle.withBody) throw new Error('--no-body cannot be published: the public bundle is the note text.');
+    const waive = String(arg('waive', '')).split(',').map((s) => s.trim()).filter(Boolean);
+    const blocklist = loadBlocklist();
+    const result = toPublicBundle(bundle, {
+      label: arg('label', bundle.source),
+      prefix: arg('prefix', ''),
+      waive,
+      linkPaths: !flag('no-link-paths')
+    });
+    const hits = scan(result.bundle.notes, { waive, terms: blocklist.terms });
+
+    console.log(publishReport(bundle, result, hits, blocklist, flag('public') && !hits.length));
+    if (flag('report')) return;
+
+    if (hits.length) {
+      throw new Error(`${hits.length} scrubber hit${hits.length === 1 ? '' : 's'} — refusing to write. ` +
+        'Fix them in the vault (or waive the rule deliberately with --waive) and run again.');
+    }
+
+    const out = path.resolve(ROOT, arg('out', path.join('assets', 'data', 'vault-public.js')));
+    fs.mkdirSync(path.dirname(out), { recursive: true });
+    /* A .js file, not .json, for the same reason atlas-data.js is one:
+       it loads with a <script> tag, so the page works over file:// with
+       no fetch, no CORS and no server. .json is still honoured if asked. */
+    const json = JSON.stringify(result.bundle, null, /\.js$/i.test(out) ? 0 : 2);
+    fs.writeFileSync(out, /\.js$/i.test(out)
+      ? '/* Generated by tools/obsidian-sync.js --public. Do not edit by hand. */\n' +
+        'window.PNVaultPublic = ' + json + ';\n'
+      : json + '\n');
+    console.log(`\nWrote ${result.bundle.count} public notes → ${path.relative(ROOT, out)}` +
+      '\nThis file is committed and world-readable once you push it.');
+    return;
+  }
+
   console.log(report(bundle, flag('list')));
 
   if (flag('dry-run')) { console.log('\nDry run — nothing written.'); return; }
@@ -233,7 +477,10 @@ function main() {
     `\nImport it with the Import button on /notes/ (it takes .json bundles as well as .md files).`);
 }
 
-module.exports = { parseNote, readVault, report, blockLists };
+module.exports = {
+  parseNote, readVault, report, blockLists,
+  excludedBecause, scan, linkPaths, toPublicBundle, publishReport, loadBlocklist, SCRUB_RULES
+};
 
 if (require.main === module) {
   try { main(); }

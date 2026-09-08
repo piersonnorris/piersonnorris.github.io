@@ -21,6 +21,10 @@
 !/docs/**
 !/experience/
 !/experience/**
+!/atlas/
+!/atlas/index.html
+!/vault/
+!/vault/index.html
 !/notes/
 !/notes/index.html
 !/notes/README.md
@@ -36,6 +40,8 @@
 !/tools/tracker/taskboard.test.js
 !/tools/tracker/charts.test.js
 !/tools/tracker/notes-graph.test.js
+!/tools/tracker/markdown.test.js
+!/tools/tracker/vault-publish.test.js
 !/tools/obsidian-sync.js
 !/.github/
 !/.github/workflows/

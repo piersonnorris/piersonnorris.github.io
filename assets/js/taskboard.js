@@ -139,6 +139,20 @@
         dependencies: ['Pierce'], relatedLink: '#projects', created: now, updated: now
       },
       {
+        id: 'goal-backstage', title: 'R17 · Backstage — the vault in public, no gate (/vault/)', status: 'in-progress',
+        outcome: 'A public, read-only vault reader at /vault/ with no login: folder tree, rendered Markdown, backlinks inspector, ⌘K palette, and the real link graph. Fed by a new --public mode on tools/obsidian-sync.js that gates on publish:false / #private / nopublish/, refuses (never silently redacts) on anything shaped like a dollar figure, address, phone number or key, and resolves inline path references into wikilinks. New PNMarkdown renderer (assets/js/markdown.js), escape-first. Also fixed the .gitignore hole that had kept /atlas/ from ever deploying, and a real bug in PNGraphify: [[links]] inside code spans were being counted as links.',
+        nextAction: 'Phases P0–P3 are done and the first snapshot published is the site\'s own docs/ folder (already public in the repo). P4 — publishing the personal vault — waits on Pierce reading `node tools/obsidian-sync.js --report` against it and answering the four questions in docs/BACKSTAGE_PLAN.md §7.',
+        milestones: ['P0 unignore /atlas/', 'P1 --report', 'P2 --public + scrubber + tests', 'P3 /vault/ reader + markdown renderer', 'P4 publish the personal vault — needs Pierce'],
+        dependencies: ['Pierce'], relatedLink: 'https://piersonnorris.github.io/vault/', created: now, updated: now
+      },
+      {
+        id: 'goal-atlas', title: 'R16 · Knowledge atlas (/atlas/)', status: 'complete',
+        outcome: 'A public, third Obsidian-shaped surface that is not a vault: a three-pane workspace over 25 curated notes on what Pierce has learned and where. Explorer, reader with backlinks, and three views (Reader / Graph / Timeline). The graph is PNGraphify itself, so every edge is a real [[wikilink]] in the copy above it — 25 notes, 30 links, 2.4 per note, zero orphans, zero unresolved. Data lives in assets/js/atlas-data.js, every claim traced to CONTENT.md and respecting its §7 "never on the site" list.',
+        nextAction: 'Hand-maintained on purpose: when CONTENT.md changes, update atlas-data.js to match (same rule as this seed).',
+        milestones: ['atlas-data.js curated from CONTENT.md', 'Three-pane workspace + reader', 'Graph view via PNGraphify', 'Timeline view', 'Nav, sitemap, llms.txt'],
+        dependencies: [], relatedLink: 'https://piersonnorris.github.io/atlas/', created: now, updated: now
+      },
+      {
         id: 'goal-obsidian-graph', title: 'R15 · Obsidian connectivity — graph view + vault sync', status: 'complete',
         outcome: 'PNGraphify (assets/js/notes-graph.js) draws the vault as a force-directed graph behind a Graph button on /notes/ and this Obsidian tab — orphans and unresolved [[wikilinks]] counted as two separate numbers, clicking an unresolved node writes that note, and sharing a #tag deliberately does not count as a link. tools/obsidian-sync.js reads a real Obsidian vault folder into a gitignored pn-vault-bundle JSON plus a connectivity report, reusing PNVault.fromMarkdown rather than reimplementing the parser. Import now takes that bundle and upserts by vault path (source_path survives an export round trip) instead of skipping duplicates, and build.js loadObsidianVault() bakes it into the encrypted payload for a one-click merge here.',
         nextAction: 'Point it at the real vault: node tools/obsidian-sync.js --vault "<folder>", then Import the bundle on /notes/. Still a snapshot, not live sync — refreshing means re-running the script. Nobody has clicked the merge banner on this tab yet; it needs a real build to appear.',

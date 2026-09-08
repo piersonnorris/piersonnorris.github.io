@@ -66,6 +66,27 @@ Pierce supplied a Twelve Data key; it now lives in `private/.twelvedata-key` (gi
 ### R7. Public pages M2/M3 — **ChatGPT** (copy from CONTENT.md only)
 About, Projects, Contact, Tools hub, 404, `sitemap.xml`, per-page OG tags. Blocked partly on R4. Rules: copy verbatim from `CONTENT.md`, `[OPEN]` means ask Pierce, no frameworks, no build steps, keep `llms.txt` in sync.
 
+### R17. Backstage — the vault in public, no gate — ✅ P0–P3 done 2026-09-08, P4 waiting on Pierce
+Full plan and current status in `docs/BACKSTAGE_PLAN.md`; the tool half is written up in `docs/OBSIDIAN_SYNC.md` §3. Pierce asked to "view the website back end Obsidian, no gate to get in, and a good visual," and chose **the whole personal vault, ungated** over two narrower scopes.
+
+- **The gate was never the work.** `/notes/` has no server behind it — the vault is browser-local, PIN-derived AES, on one machine, so removing the PIN would publish nothing. Making a vault publicly viewable means *committing a snapshot of it into this repo* and building a reader. That is a one-way door, which is why the phases are cut where they are.
+- **Shipped:** `/vault/` ("Backstage"), read-only and ungated — folder tree, rendered Markdown, backlinks/outgoing/unresolved inspector, per-note table of contents, ⌘K palette over notes *and* headings, `#path/to/note.md` deep links, and Reader / Graph / Timeline. `/notes/` and its PIN are untouched: one is a writing surface, the other a reading surface.
+- **The publish pipe:** `tools/obsidian-sync.js` gained `--report`, `--public`, `--label`, `--prefix`, `--waive` and `--no-link-paths`. Default is publish; a note opts out with `publish: false`, a `#private` tag or a `nopublish/` folder. The scrubber **refuses and prints `path:line`** rather than silently redacting, and named terms come from a gitignored `private/.publish-blocklist`. 26 tests in `tools/tracker/vault-publish.test.js`.
+- **New: a Markdown renderer.** `assets/js/markdown.js` (`PNMarkdown`), ~250 lines, no dependency, **escape-first** — every character is escaped before a tag is emitted, so raw HTML in a note is shown rather than executed. Headings, lists, task boxes, tables, fences, quotes, Obsidian callouts, wikilinks. Images are described, never fetched; `javascript:`/`data:` hrefs render as text. 24 tests.
+- **Visual:** Slate command center (Version 1 in `notes/visual-options/`), which **closes R10** — built over the atlas's own three-pane shell (`atlas.css`) rather than a second copy of it.
+- **What is actually published: the site's own `docs/` folder** — 11 notes already public in this repo. Deliberate: it exercises the whole pipe and makes the look judgeable *before* anything private ships. Pointing it at the real vault is one flag, and it waits on Pierce (§5, and `BACKSTAGE_PLAN.md` §7).
+- **Two bugs found on the way.** (1) `atlas/index.html` was **gitignored and had never deployed** — the allowlist never got an `!/atlas/` pair, so R16 was linked from six pages and served a 404. Fixed, and `/vault/` allowlisted with it. (2) `PNGraphify` counted `[[links]]` written inside code spans, so a note documenting the syntax invented edges and inflated the unresolved count; fixed in the shared engine with tests, which took the `docs/` snapshot from 6 unresolved to 0. `/notes/` and `/atlas/` get the fix too.
+- **Also fixed:** `.atlas-head::before`'s glow bled 25% past the viewport and scrolled the page sideways at desktop widths. `overflow-x:clip` on both head sections.
+- **Not built on purpose:** tree virtualisation and the graph's largest-connected-component control. Eleven notes need neither; both become real work if P4 lands a few hundred.
+
+### R16. Knowledge atlas — `/atlas/` — ✅ done 2026-09-07
+A public, third Obsidian-shaped surface, and the first one that is **not** a vault: `/atlas/` is a three-pane workspace over 25 curated notes on what Pierce has learned and where. Explorer (domains → notes, plus source and tag filters), reader (frontmatter block, evidence chips, inline `[[wikilinks]]`, backlinks inspector), and three views — Reader, **Graph**, Timeline. ⌘K focuses search; `#note-id` deep-links a note.
+
+- **The graph is real.** It is `PNGraphify` — the same engine `/notes/` uses — fed the atlas notes, so every edge is an actual `[[wikilink]]` in the copy above it, not a decorative drawing. Tag nodes are toggled off on mount (33 tags against 25 notes buries the structure); the engine's own toggle puts them back. Current shape: 25 notes, 30 links, 2.4 per note, **0 orphans, 0 unresolved** — the status bar and the graph's stat strip count links the same way (unique undirected pairs) so they cannot disagree on one page.
+- **Data, not a vault.** `assets/js/atlas-data.js` is a curated public file. Every claim traces to `CONTENT.md` (§3 takeaways, §4 skills, §7 cleared numbers); note titles reuse Pierce's own documented wording where a takeaway exists. Nothing marked `[OPEN]` is asserted — Student Maintenance LLC is left out, and Oasis → True North is described as two dated chapters, not a rebrand. The §7 "never on the site" list is respected: no client names, portfolio values or former-employer figures.
+- **Wiring.** Nav entry on all six pages plus the tracker template, `sitemap.xml`, and an `llms.txt` line. Page-scoped `body.atlas-page main.wrap{max-width:1240px}` — a three-pane workspace does not fit the site's 900px reading column, and the header/footer keep the shared width.
+- **Still open:** the atlas is hand-maintained. When `CONTENT.md` changes, `atlas-data.js` has to change with it — same rule as the taskboard seed.
+
 ### R15. Obsidian connectivity — graph view + vault sync — ✅ done 2026-09-07
 Two halves, one goal: make the vault’s links visible, and get the real vault in front of them. Full write-up in `docs/OBSIDIAN_SYNC.md`.
 
@@ -136,7 +157,8 @@ A dedicated inbox for anything that specifically needs Pierce: an open question 
 
 ### Open questions for Pierce
 
-*(none open right now — the next one lands here, not buried in a reply)*
+- **Backstage (R17) — four calls before P4, the one irreversible step.** `/vault/` is live and ungated, but it is publishing the site's own `docs/` folder, not the personal vault. Before pointing it at the real one: run `node tools/obsidian-sync.js --vault "<vault>" --report`, read the list it prints, and answer these. (1) Is the first `--report` allowed to change the answer, if it turns out to be 300 short daily notes? (2) Client and colleague names appear in the vault — publish, initial, or omit? (3) Is the `docs/` snapshot a stepping stone, or is "Backstage = how this site is built" actually the better permanent page? (4) Seven top-level nav links is a lot — does `/vault/` group under Notes, or stand alone? Detail in `docs/BACKSTAGE_PLAN.md` §7.
+  **Source:** Claude, drafting the Backstage plan, 2026-09-08.
 
 ### Idea backlog — needs Pierce's decision before anyone builds it
 

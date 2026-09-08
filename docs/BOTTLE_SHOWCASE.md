@@ -1,8 +1,10 @@
 # SHIP IN A BOTTLE — the Obsidian showcase
 
-**Status: direction 01 picked 2026-09-08. Scope raised to a full home-page UI update. Nothing built yet —
-phase A is a refine pass, on purpose.** ROADMAP **R18**.
-Live previews (local only, not committed): `vault/concepts/index.html`.
+**Status 2026-09-08: phases A, B and C done. `PNObservatory` is real code. D, E and F remain; E is blocked on
+R19's lane labels.** ROADMAP **R18**.
+Component: `assets/js/observatory.js` + `assets/css/observatory.css`.
+Local routes: `vault/concepts/index.html` (the five directions), `vault/concepts/observatory/` (the phase-A
+comp), `vault/concepts/observatory/live/` (the live component).
 Companion: `docs/ISLAND_TO_ISLAND.md` (R19) — direction 02's chart, pointed at the work history instead.
 
 > **Pierce, 2026-09-08:** *"i like 1 … before this starts add in to refine the visual and build it out because
@@ -189,6 +191,53 @@ drawing, and it belongs in phase B.
 **Verdict: 01 holds up at full size.** The fallback to Vault OS is not needed. Proceed to phase B — with C
 re-scoped from "camera" to "layout morph".
 
+## 2a-0b. Phase B — done 2026-09-08. And C came with it.
+
+**`assets/js/observatory.js` + `assets/css/observatory.css`** — production files, not comp scaffolding.
+`PNObservatory.mount(el, {data, orientation, depth, onOpen})`. Scratch route:
+`vault/concepts/observatory/live/`. Phase F is now a swap, not a rewrite.
+
+**Phase C shipped with it.** The morph was supposed to be its own risky phase; it turned out to be ~40 lines
+once the two layouts existed, so it is built: opening runs one `requestAnimationFrame` loop that walks every
+node from its place in the glass to its place in the room, redrawing edges each frame. **The frame-rate worry
+was unfounded at this scale** — 13 transforms and 17 line segments. What keeps it that way is phase D's node
+cap, which is now load-bearing rather than nice-to-have.
+
+### What's in it
+
+- **Two compositions, not one with breakpoints.** `LANDSCAPE` lies the bottle on its side (base left, cork
+  right); `PORTRAIT` stands it on its base. Each carries its own viewBox, silhouette, node field, cork travel,
+  glint path and furniture position. An orientation flip **rebuilds** rather than reflows — phase A's finding,
+  encoded in the data structure rather than remembered in a comment.
+- **The glass: three stops and two marks.** Bright where the curve turns away at the top, nearly clear through
+  the belly, bright again at the base where the floor reflects up; one travelling glint on the shoulder and
+  one rim light. Everything beyond that read as noise at full size.
+- **Ambient life that costs nothing:** three swaying light shafts, two drifting caustic lines on the floor,
+  rising bubbles, a bobbing ship with a faint reflection, and pulses that run down the links — every one an
+  opacity, a transform or a `stroke-dashoffset`, so none of them touch layout.
+- **The structure is real.** Edges are `[[wikilinks]]` actually written in the notes, code spans stripped, so
+  the counts here and on `/vault/` agree by construction.
+- **Reduced motion is a path, not a switch:** the morph becomes an instant placement and every ambient loop
+  stops. The page still works; it just stops moving.
+
+### Three bugs worth writing down
+
+- **Every node came out the same colour.** `seedOf` used `h * 16777619`, which overflows 2^53 — JS silently
+  drops the low bits, so every seed was a multiple of 4 and `seed % 4` picked colour 0 thirteen times out of
+  thirteen. It looked deliberate, which is why it survived a screenshot. `Math.imul` fixes it.
+- **CSS animation beats the SVG `transform` attribute.** Drift and bob were applied to the same elements the
+  script positions, so a node snapped to the viewBox origin the instant its animation delay elapsed — the ship
+  was already sitting at `left: -75px`. Position and animation now live on separate nested groups. This is a
+  rule for anything else that animates SVG here.
+- **The ship stayed for the inside state**, becoming a twenty-foot schooner moored in the middle of the
+  constellation. The ship and waterline are what you see *through* the glass, so they fade with it.
+
+### Still open
+
+- One portrait label (`PORTFOLIO_TASKBOARD_PLAN`) still crowds the right edge at the widest filenames.
+  Truncation belongs with phase D's node cap.
+- Nothing has been looked at on real hardware yet — only this machine's browser.
+
 ## 2a-1. R19 is the data layer for the rest of the page
 
 Pierce, 2026-09-08: *"add to the note that R19 will be started as the data for the home page when its updates."*
@@ -223,8 +272,8 @@ while everything is still cheap to throw away.
 | Phase | What | Status / why it's cut here |
 |---|---|---|
 | **A — Refine the visual** | Direction 01 taken from a one-fifth-scale sketch to a **full-size, full-viewport comp**: real geometry, real node count from `vault-public.js`, real type, three states, two depths, desktop and phone. | ✅ **done 2026-09-08** — findings in §2a-0. Verdict: 01 holds up; proceed. |
-| **B — The glass** | The bottle as a real component at the geometry A settled: base-left/cork-right silhouette, one specular sweep, one rim light, body-only node region. Static, no motion. **Plus the upright-bottle portrait treatment** A deferred. | Next. The glass is the whole illusion — if it doesn't convince standing still, motion won't rescue it. |
-| **C — The layout morph** *(was "the camera")* | **Re-scoped by A.** Not a viewBox push: a morph between the sealed layout and the inside layout, every node travelling its own path, glass resolving into a rim vignette. 60fps or it doesn't ship; `prefers-reduced-motion` gets a straight cut. | Highest-risk piece, and now a bigger one than the plan assumed. Isolated so it can be cut without losing A and B. |
+| **B — The glass** | The bottle as a real component, plus the upright-bottle portrait composition. | ✅ **done 2026-09-08** — `assets/js/observatory.js` + `assets/css/observatory.css`. §2a-0b. |
+| **C — The layout morph** | Every node walks its own path between the two layouts; glass resolves into a rim vignette. | ✅ **built with B** — ~40 lines once both layouts existed. Frame-rate worry unfounded at 13 nodes. **Unverified on real hardware.** |
 | **D — The constellation** | `PNGraphify` re-skinned as the star-field: real notes, real `[[wikilinks]]`, neighbourhood highlight on read, unresolved links as corked empty bottles. Node cap + largest-connected-component view. | The structure must be real. This is the phase that keeps it honest — and the cap is what stops R17's P4 from silting the glass up. |
 | **E — The home page around it** | The nav, the footer, the contact route, and **the console tiles replaced by R19's voyage data** (§2a-1). | Most likely to be underestimated. A gorgeous page that buries the contact details is a worse home page. **Blocked on R19's lane labels.** |
 | **F — Ship it** | Swap `/` over, keep the old hero on a fallback route until it has been looked at on real hardware. | Was "fold in R19"; R19 moved into E, so F is the cutover. |

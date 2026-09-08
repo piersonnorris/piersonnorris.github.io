@@ -1,0 +1,223 @@
+/* ============================================================
+   PNObservatory — R18 phase B. The glass, as a real component.
+
+   Paired with assets/js/observatory.js. The JS builds the scene; this
+   file owns colour, motion and the two depth palettes. Nothing here is
+   page-specific, so /
+   and the scratch route can mount the same component.
+
+   Motion budget: everything animated below is either an opacity, a
+   transform, or a stroke-dashoffset — no layout, no filters animated
+   per-frame. The morph between the two layouts is the only rAF loop,
+   and it touches 13 transforms.
+   ============================================================ */
+
+.obs{
+  /* --- deep water (default) --- */
+  --sea-far:#0a1a28;
+  --sea-near:#04070c;
+  --glass:#9fe3ff;
+  --glass-edge:#d8f4ff;
+  --shaft:#bfefff;
+  --shaft-a:.15;
+  --caustic-a:.13;
+  --node-a:#8ed18a;
+  --node-b:#4CC9F0;
+  --node-c:#c084fc;
+  --node-d:#E8A33D;
+  --link:#8ed18a;
+  --link-a:.28;
+  --hull:#e8dcc0;
+  --sail:#f2ead6;
+  --cork:#8a6838;
+  --cork-dark:#5d4523;
+
+  position:relative;
+  display:block;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:var(--sea-near);
+}
+
+.obs[data-depth="dusk"]{
+  --sea-far:#1d4a63;
+  --sea-near:#07111c;
+  --shaft-a:.26;
+  --caustic-a:.2;
+}
+
+.obs svg{display:block;width:100%;height:100%}
+
+/* ---------------- the glass ---------------- */
+
+/* The bottle fades out as you go inside — it doesn't shrink away, it
+   stops being an object and becomes the room. */
+.obs-bottle{transition:opacity .55s ease}
+.obs[data-state="inside"] .obs-bottle{opacity:0}
+
+/* The ship and the waterline belong to the sealed picture — they are
+   what you see *through* the glass. Left up, the ship ends up a
+   twenty-foot schooner moored in the middle of the constellation. */
+.obs-inner{transition:opacity .5s ease}
+.obs[data-state="inside"] .obs-inner{opacity:0}
+
+.obs-rim{opacity:0;transition:opacity .7s ease .15s}
+.obs[data-state="inside"] .obs-rim{opacity:1}
+
+/* One glint, travelling the length of the shoulder. It is the single
+   mark that most makes the surface read as glass rather than as a
+   coloured shape — so it gets a long, slow, uneven cycle instead of a
+   metronome. */
+.obs-glint{
+  stroke-dasharray:190 620;
+  animation:obs-glint 9s cubic-bezier(.5,0,.5,1) infinite;
+}
+@keyframes obs-glint{
+  0%   {stroke-dashoffset:640;opacity:0}
+  12%  {opacity:.55}
+  46%  {opacity:.5}
+  62%  {stroke-dashoffset:-190;opacity:0}
+  100% {stroke-dashoffset:-190;opacity:0}
+}
+
+/* ---------------- water ---------------- */
+
+.obs-shaft{animation:obs-sway 17s ease-in-out infinite;transform-origin:50% 0}
+.obs-shaft:nth-of-type(2){animation-duration:23s;animation-delay:-6s}
+.obs-shaft:nth-of-type(3){animation-duration:19s;animation-delay:-11s}
+@keyframes obs-sway{
+  0%,100%{transform:skewX(0deg)}
+  50%    {transform:skewX(1.6deg)}
+}
+
+.obs-caustic{
+  stroke-dasharray:26 22;
+  animation:obs-caustic 14s linear infinite;
+}
+.obs-caustic:nth-of-type(2){animation-duration:19s;animation-direction:reverse}
+@keyframes obs-caustic{to{stroke-dashoffset:-480}}
+
+.obs-bubble{animation:obs-rise 9s ease-in infinite;opacity:0}
+@keyframes obs-rise{
+  0%  {transform:translateY(0) translateX(0);opacity:0}
+  10% {opacity:.55}
+  80% {opacity:.4}
+  100%{transform:translateY(-190px) translateX(9px);opacity:0}
+}
+
+/* ---------------- the vault inside ---------------- */
+
+.obs-node{cursor:pointer}
+.obs-node-core{transition:r .25s ease}
+.obs-node-halo{opacity:0;transition:opacity .25s ease}
+.obs-node:hover .obs-node-halo,
+.obs-node:focus-visible .obs-node-halo{opacity:.5}
+/* Two-class selector, so it outranks the generic [tabindex] focus rule
+   in site.css for the same reason .pg-node and .vg-node had to (U2). */
+.obs .obs-node:focus-visible{outline:none}
+.obs .obs-node:focus-visible .obs-node-core{stroke:#fff;stroke-width:2.5}
+
+.obs-drift{animation:obs-drift 11s ease-in-out infinite}
+@keyframes obs-drift{
+  0%,100%{transform:translate(0,0)}
+  50%    {transform:translate(5px,-7px)}
+}
+
+/* A pulse running down a link: the vault is not a still picture, it is
+   a set of connections that were actually written. */
+.obs-pulse{
+  stroke-dasharray:3 999;
+  animation:obs-pulse 6s linear infinite;
+  opacity:.85;
+}
+@keyframes obs-pulse{
+  0%  {stroke-dashoffset:0;opacity:0}
+  8%  {opacity:.9}
+  70% {opacity:.5}
+  100%{stroke-dashoffset:-320;opacity:0}
+}
+
+.obs-label{
+  opacity:0;transition:opacity .45s ease .2s;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-size:12.5px;letter-spacing:.02em;fill:#e9edf3;
+  pointer-events:none;
+}
+.obs[data-state="inside"] .obs-label{opacity:.82}
+
+.obs-ship{animation:obs-bob 7s ease-in-out infinite;transform-origin:center}
+@keyframes obs-bob{
+  0%,100%{transform:translate(-14px,0) rotate(-1.2deg)}
+  50%    {transform:translate(14px,-3px) rotate(1.2deg)}
+}
+
+/* ---------------- the cork ---------------- */
+
+.obs-cork{transition:transform .5s cubic-bezier(.4,1.6,.5,1)}
+.obs[data-state="opening"] .obs-cork,
+.obs[data-state="inside"] .obs-cork{transform:var(--cork-pull)}
+
+/* ---------------- affordance ---------------- */
+
+.obs-pull{
+  position:absolute;z-index:4;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;
+  font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--glass-edge);background:none;border:0;padding:8px 4px;cursor:pointer;
+  transition:opacity .4s ease,transform .3s ease;
+  text-shadow:0 1px 12px rgba(0,0,0,.7);
+}
+.obs-pull small{
+  display:block;letter-spacing:.05em;font-size:10px;text-transform:none;
+  color:#8b95a5;margin-top:6px;
+}
+.obs-pull:hover{transform:scale(1.04)}
+.obs-pull .obs-ring{
+  display:block;width:34px;height:34px;margin:0 auto 10px;border-radius:50%;
+  border:1px solid currentColor;position:relative;opacity:.75;
+}
+.obs-pull .obs-ring::after{
+  content:"";position:absolute;inset:-1px;border-radius:50%;
+  border:1px solid currentColor;animation:obs-ping 2.8s ease-out infinite;
+}
+@keyframes obs-ping{
+  0%  {transform:scale(1);opacity:.7}
+  70% {transform:scale(1.9);opacity:0}
+  100%{opacity:0}
+}
+.obs[data-state="opening"] .obs-pull,
+.obs[data-state="inside"] .obs-pull{opacity:0;pointer-events:none}
+
+/* ---------------- back to the surface ---------------- */
+
+.obs-surface{
+  position:absolute;z-index:5;top:16px;right:18px;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;
+  color:#8b95a5;background:rgba(14,17,22,.55);backdrop-filter:blur(6px);
+  border:1px solid #2e3947;border-radius:999px;padding:7px 14px;cursor:pointer;
+  opacity:0;pointer-events:none;transition:opacity .5s ease .2s,color .15s;
+}
+.obs-surface:hover{color:#e9edf3}
+.obs[data-state="inside"] .obs-surface{opacity:1;pointer-events:auto}
+
+/* ---------------- readout ---------------- */
+
+.obs-readout{
+  position:absolute;z-index:5;left:clamp(16px,4vw,40px);bottom:clamp(14px,3vh,30px);
+  display:flex;gap:16px;flex-wrap:wrap;
+  font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:10.5px;
+  letter-spacing:.06em;color:#7a8392;
+  opacity:0;transition:opacity .5s ease .3s;pointer-events:none;
+}
+.obs[data-state="inside"] .obs-readout{opacity:1}
+.obs-readout b{color:#8ed18a;font-weight:500}
+
+/* ---------------- honesty about motion ---------------- */
+
+@media (prefers-reduced-motion:reduce){
+  .obs *{animation:none!important}
+  .obs-bottle,.obs-rim,.obs-cork,.obs-label,.obs-surface,.obs-readout,.obs-pull{
+    transition-duration:.01ms!important;
+  }
+}

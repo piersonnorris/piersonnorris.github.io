@@ -20,7 +20,7 @@ Live now:
 - /vault/: "Backstage" — the working documents behind the site, published from a real Obsidian vault and readable with no login: folder tree, rendered Markdown, backlinks, and a link graph whose every edge is a link somebody wrote. The current snapshot is the site's own docs/ folder. Read-only, and a snapshot rather than live sync. The private vault stays behind /notes/.
 - /island/: public project roadmap and open-source-style to-do board, presented as a deserted island
 
-Not for crawling (password-gated, noindex): /notes/, /tools/tracker/
+Not for crawling (noindex): /notes/ (PIN-gated), /tools/tracker/ (open, but it carries real holdings — please do not index or reproduce it)
 
 Planned, not yet live (pending final content decisions — see docs/ROADMAP.md R4/R7):
 - /about/: full story

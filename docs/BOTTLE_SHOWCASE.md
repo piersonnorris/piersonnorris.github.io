@@ -238,6 +238,60 @@ cap, which is now load-bearing rather than nice-to-have.
   Truncation belongs with phase D's node cap.
 - Nothing has been looked at on real hardware yet — only this machine's browser.
 
+## 2a-0c. Phase D — spec. Written 2026-09-08, not built.
+
+Two things, one of them new. Pierce, 2026-09-08: *"add in D in addition add a button to find groups for
+obsidian and labeling them."*
+
+### D1 — the node cap and the largest connected component
+
+Phase C is cheap at 13 notes and 17 edges. It will not be at 300. The morph walks every node every frame, so
+cost is linear in node count and the glass silts up visually long before it stutters.
+
+- **Cap the drawn set.** Default ~90 nodes, ranked by degree then recency, with an honest readout: *"showing
+  90 of 312 — ranked by connections."* Never silently truncate; a vault that looks smaller than it is
+  misrepresents the thing being showcased.
+- **Largest-connected-component view.** A toggle that drops everything not reachable from the biggest cluster.
+  Orphans stay *counted* in the readout even when hidden — R15's whole argument was that hiding them flatters
+  the vault.
+- This is what makes R17's P4 (pointing `/vault/` at the personal vault) safe to do later.
+
+### D2 — "Find groups": clustering, and labels that are earned
+
+A button in the inside state. Press it and the constellation resolves into its actual communities: each
+cluster tinted, given a soft hull, and named.
+
+**Detection.** Label propagation over the `[[wikilink]]` graph — every node starts in its own group, then
+repeatedly adopts the most common group among its neighbours until stable. Chosen over modularity methods
+because it is ~30 lines, has no tuning knob to fake, and runs in milliseconds at this size. **Iteration order
+must be seeded**, not `Object.keys` order, or the same vault clusters differently on every load and the
+feature becomes a random-colour generator.
+
+**Labelling — the part that has to stay honest.** A label is *derived*, never invented, in this order:
+
+1. **Shared folder.** If ≥60% of a cluster lives in one folder, that folder is the name (`docs/`, `daily/`).
+2. **Shared tag.** Else if ≥60% carry one tag, that's the name (`#systems`).
+3. **The hub.** Else the title of the cluster's most-linked note, phrased as *"around BLUEPRINT"*.
+4. **Nothing.** Else — **"unnamed group · 6 notes"**, and it stays unnamed.
+
+Rule 4 is the important one. The tempting version of this feature reads the notes and writes a clever theme
+for each blob. That would be the page inventing a claim about Pierce's thinking that no data supports, on a
+page whose entire premise is that the structure is real. **If the vault has not earned a name for a cluster,
+the cluster does not get one.**
+
+**Drawing it.** Convex hull per cluster, expanded and rounded, filled at very low alpha in the cluster's hue,
+label set on the hull's top edge. Singletons get no hull — a circle around one dot is noise. Clusters keep
+the existing palette; tinting is a hue *shift* per group so a node's identity colour survives.
+
+**State.** Grouping is a toggle, off by default: the ungrouped constellation is the honest default view, and
+groups are an interpretation laid over it. Off returns to exactly the previous positions — no re-layout,
+because a button that scrambles the picture reads as a bug.
+
+**Testing.** `build`-style split, same as `PNGraphify`: a pure `groups(notes)` returning
+`{clusters, labels, stats}` with unit tests (a known two-cluster fixture, a fully-connected fixture that must
+return one group, an all-orphans fixture that must return none, and a determinism check that the same input
+gives the same output twice). The drawing half is left to the browser.
+
 ## 2a-1. R19 is the data layer for the rest of the page
 
 Pierce, 2026-09-08: *"add to the note that R19 will be started as the data for the home page when its updates."*
@@ -274,7 +328,7 @@ while everything is still cheap to throw away.
 | **A — Refine the visual** | Direction 01 taken from a one-fifth-scale sketch to a **full-size, full-viewport comp**: real geometry, real node count from `vault-public.js`, real type, three states, two depths, desktop and phone. | ✅ **done 2026-09-08** — findings in §2a-0. Verdict: 01 holds up; proceed. |
 | **B — The glass** | The bottle as a real component, plus the upright-bottle portrait composition. | ✅ **done 2026-09-08** — `assets/js/observatory.js` + `assets/css/observatory.css`. §2a-0b. |
 | **C — The layout morph** | Every node walks its own path between the two layouts; glass resolves into a rim vignette. | ✅ **built with B** — ~40 lines once both layouts existed. Frame-rate worry unfounded at 13 nodes. **Unverified on real hardware.** |
-| **D — The constellation** | `PNGraphify` re-skinned as the star-field: real notes, real `[[wikilinks]]`, neighbourhood highlight on read, unresolved links as corked empty bottles. Node cap + largest-connected-component view. | The structure must be real. This is the phase that keeps it honest — and the cap is what stops R17's P4 from silting the glass up. |
+| **D — The constellation** | **D1** node cap + largest-connected-component view. **D2** a *Find groups* button: label-propagation clustering with labels derived from folder, tag or hub — never invented. Spec in §2a-0c. | Next. The cap is what stops R17 P4 from silting the glass up; the grouping is what makes it read as a vault rather than a starfield. |
 | **E — The home page around it** | The nav, the footer, the contact route, and **the console tiles replaced by R19's voyage data** (§2a-1). | Most likely to be underestimated. A gorgeous page that buries the contact details is a worse home page. **Blocked on R19's lane labels.** |
 | **F — Ship it** | Swap `/` over, keep the old hero on a fallback route until it has been looked at on real hardware. | Was "fold in R19"; R19 moved into E, so F is the cutover. |
 

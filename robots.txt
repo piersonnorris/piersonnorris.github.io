@@ -1,37 +1,47 @@
 # piersonnorris.com — crawlers welcome, AI crawlers explicitly so.
 
+# The tracker holds real figures in the page now, so its Disallow lives in
+# this group rather than a second "User-agent: *" block further down. Most
+# crawlers merge same-agent groups; the ones that take only the first would
+# have read "Allow: /" and walked straight in.
 User-agent: *
 Allow: /
+Disallow: /tools/tracker/
 
 User-agent: GPTBot
 Allow: /
+Disallow: /tools/tracker/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /tools/tracker/
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /tools/tracker/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /tools/tracker/
 
 User-agent: Claude-User
 Allow: /
+Disallow: /tools/tracker/
 
 User-agent: Claude-SearchBot
 Allow: /
+Disallow: /tools/tracker/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /tools/tracker/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /tools/tracker/
 
 User-agent: CCBot
 Allow: /
-
-# The tracker is private by design.
-User-agent: *
 Disallow: /tools/tracker/
 
 Sitemap: https://piersonnorris.github.io/sitemap.xml

@@ -274,11 +274,13 @@
       title: 'Encrypt in the browser, not on a server',
       domain: 'web', source: 'site', learned: '2026-08',
       tags: ['privacy', 'engineering', 'guardrails'],
-      evidence: ['5 platforms, 0 published'],
-      body: 'The portfolio tracker ships as an encrypted payload baked into the page and decrypts in the visitor’s own browser ' +
-        'behind a PIN — there is no server to trust and nothing readable in the repo. The notes vault works the same way. ' +
-        'That is what makes [[Track your own money]] publishable at all, and it is [[Approval-gated by design]] applied to data ' +
-        'instead of email.'
+      evidence: ['5 platforms, 1 toggle'],
+      body: 'The notes vault ships as an encrypted payload and decrypts in the visitor’s own browser behind a PIN — there is ' +
+        'no server to trust and nothing readable in the repo. The portfolio tracker started there too, then in September 2026 ' +
+        'went the other way: the figures now sit in the page in the clear, with a censor toggle that stars out every number ' +
+        'saying how much is held while leaving market prices legible. That is a different trade, not a stronger one — a toggle ' +
+        'is a courtesy to whoever is reading over your shoulder, and View Source is still View Source. Worth knowing which of ' +
+        'the two you are actually relying on: see [[Track your own money]] and [[Approval-gated by design]].'
     },
     {
       id: 'forms-to-sheets',

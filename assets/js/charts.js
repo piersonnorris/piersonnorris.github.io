@@ -52,7 +52,24 @@
     return RAMP[i % RAMP.length];
   }
 
-  function money(n) {
+  /* ---- the censor ---------------------------------------------------
+     The tracker publishes real holdings now, so every figure that says
+     how much is owned can be starred out on demand. Two rules shape it:
+
+     1. The mask is a FIXED width. A mask that grew with the number would
+        leak the magnitude it is hiding — '$*******' and '$***' are an
+        answer. Everything censored reads the same width.
+     2. Market data is never censored. A stock's close, its range — that
+        is public information, the same number on every screen in the
+        world, and starring it only breaks the price chart. Market
+        surfaces call moneyRaw/pctRaw, which the censor cannot reach.
+
+     '—' is never masked either: absence is not a secret, and masking it
+     would invent a figure that does not exist. */
+  var MASK_MONEY = '$****', MASK_PCT = '**%', MASK_NUM = '****';
+  var censoring = false;
+
+  function moneyRaw(n) {
     if (n == null || !isFinite(n)) return '—';
     var abs = Math.abs(n);
     if (abs >= 1000000) return '$' + (n / 1000000).toFixed(2) + 'M';
@@ -60,16 +77,26 @@
     return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  function pct(n) {
+  function pctRaw(n) {
     if (n == null || !isFinite(n)) return '—';
     return (n * 100).toFixed(n * 100 < 10 ? 1 : 0) + '%';
+  }
+
+  function money(n) {
+    if (censoring && n != null && isFinite(n)) return MASK_MONEY;
+    return moneyRaw(n);
+  }
+
+  function pct(n) {
+    if (censoring && n != null && isFinite(n)) return MASK_PCT;
+    return pctRaw(n);
   }
 
   function fmt(v, kind) {
     if (kind === 'money') return money(v);
     if (kind === 'pct') return pct(v);
     if (v == null || !isFinite(v)) return '—';
-    return v.toLocaleString('en-US', { maximumFractionDigits: 4 });
+    return censoring ? MASK_NUM : v.toLocaleString('en-US', { maximumFractionDigits: 4 });
   }
 
   function empty(el, message) {
@@ -380,7 +407,7 @@
     for (var g = 0; g < 5; g++) {
       var ratio = g / 4, value = max - span * ratio, y = padT + plotH * ratio;
       grid += '<line x1="' + padL + '" y1="' + y.toFixed(1) + '" x2="' + (w - padR) + '" y2="' + y.toFixed(1) + '" stroke="' + LINE + '" stroke-width="1"/>' +
-        '<text x="' + (padL - 11) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="10">' + esc(money(value)) + '</text>';
+        '<text x="' + (padL - 11) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end" fill="' + DIM + '" font-family="IBM Plex Mono,monospace" font-size="10">' + esc(moneyRaw(value)) + '</text>';
     }
 
     var volumeBars = maxVolume ? pts.map(function (p, i) {
@@ -577,13 +604,13 @@
       tooltip.hidden = false;
       tooltip.style.left = Math.max(12, Math.min(88, x / w * 100)) + '%';
       tooltip.style.top = Math.max(8, y / h * 100 - 4) + '%';
-      tooltip.innerHTML = '<b>' + esc(p.date || p.label) + '</b><span>Close ' + esc(money(p.value)) + '</span>' +
-        (isFinite(p.high) && isFinite(p.low) ? '<span>High ' + esc(money(p.high)) + ' · Low ' + esc(money(p.low)) + '</span>' : '') +
+      tooltip.innerHTML = '<b>' + esc(p.date || p.label) + '</b><span>Close ' + esc(moneyRaw(p.value)) + '</span>' +
+        (isFinite(p.high) && isFinite(p.low) ? '<span>High ' + esc(moneyRaw(p.high)) + ' · Low ' + esc(moneyRaw(p.low)) + '</span>' : '') +
         '<span>' + (dayMove == null ? '' : (dayMove >= 0 ? '+' : '') + dayMove.toFixed(2) + '% day') + (maxVolume ? ' · Vol ' + esc(compactNumber(p.volume)) : '') + '</span>' +
         overlays.map(function (o) {
           var v = o.values[activeIndex];
           return Number.isFinite(v)
-            ? '<span style="color:' + (o.color || MUT) + '">' + esc(o.label || '') + ' ' + esc(money(v)) + '</span>'
+            ? '<span style="color:' + (o.color || MUT) + '">' + esc(o.label || '') + ' ' + esc(moneyRaw(v)) + '</span>'
             : '';
         }).join('') +
         panels.map(function (panel) {
@@ -951,6 +978,10 @@
     spark: spark,
     money: money,
     pct: pct,
+    moneyRaw: moneyRaw,
+    pctRaw: pctRaw,
+    censor: function (on) { censoring = !!on; },
+    censored: function () { return censoring; },
     palette: PALETTE,
     ramp: RAMP
   };

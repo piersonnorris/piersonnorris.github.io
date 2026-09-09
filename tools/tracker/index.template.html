@@ -532,6 +532,7 @@
         <div class="bar">
           <h1>Portfolio Tracker</h1>
           <span class="spacer"></span>
+          <button id="censortoggle" class="btn" type="button" aria-pressed="true"></button>
           <button id="themetoggle" class="btn" type="button" title="Switch the tracker between the Deep and Underwater skins"></button>
           <button id="relock" class="btn" type="button" title="Lock, and forget the saved unlock on this device">Lock</button>
         </div>
@@ -679,6 +680,15 @@
        is a fabricated fixture only; it is never displayed by this source. */
     var PAYLOAD = /*__PAYLOAD__*/null/*__END__*/;
 
+    /* Two payload shapes reach that line. {salt,iv,ct,iter} is the sealed
+       build: the PIN is the AES key, and nothing renders without it.
+       {open:true,data:{...}} is the published build (build.js --public) —
+       the real holdings in the clear, no lock screen, and the censor
+       below is the only thing between a visitor and the figures. It
+       hides them on screen; it does not hide them from View Source, and
+       it was never meant to. */
+    var OPEN = !!(PAYLOAD && PAYLOAD.open && PAYLOAD.data);
+
     var SAMPLE = {
       generatedAt: '2026-08-23T11:00:00Z',
       sample: true,
@@ -731,7 +741,50 @@
         .replace(/"/g, '&quot;');
     }
     function $(id) { return document.getElementById(id); }
+    /* Censor-aware: a figure that says how much is held. */
     function money(n) { return window.PNCharts.money(n); }
+
+    /* ---- what the censor covers, and what it deliberately does not --
+       A market price is public information: a stock's close is the same
+       number on every screen in the world, and starring it would break
+       the price chart to protect nothing. Prices, ranges and market
+       moves go through priceOf() and stay legible. What gets starred is
+       the answer to how much is owned: position values, share and coin
+       counts, cost basis, P/L, dividend income, portfolio totals.
+       Price stays visible and quantity does not, so price x quantity
+       still cannot be reconstructed off the screen. */
+    function priceOf(n) { return window.PNCharts.moneyRaw(n); }
+    function units(n, digits) {
+      if (n == null || !isFinite(n)) return '—';
+      if (censored) return '****';
+      return n.toLocaleString('en-US', { maximumFractionDigits: digits == null ? 4 : digits });
+    }
+    function signedPct(n, digits) {
+      if (n == null || !isFinite(n)) return '—';
+      if (censored) return '**%';
+      return (n >= 0 ? '+' : '') + n.toFixed(digits == null ? 1 : digits) + '%';
+    }
+
+    /* Default on. The numbers sit in this page's source either way, so
+       the default only decides whether they are on screen before anyone
+       asks for them — and shut is the cheaper mistake. */
+    var censored = loadCensor();
+    function loadCensor() {
+      try {
+        var saved = localStorage.getItem('pn.tracker.censor');
+        return saved === null ? true : saved === '1';
+      } catch (e) { return true; }
+    }
+    function applyCensor() {
+      window.PNCharts.censor(censored);
+      var button = $('censortoggle');
+      if (!button) return;
+      button.textContent = censored ? '✱ Figures hidden' : '✱ Figures shown';
+      button.setAttribute('aria-pressed', String(censored));
+      button.setAttribute('title', censored
+        ? 'Show the real values, counts and totals'
+        : 'Star out every figure that says how much is held');
+    }
     function positionKey(r) { return String(r.platform || '') + '\u241f' + String(r.label || ''); }
     function exclusionMap() {
       try { return JSON.parse(localStorage.getItem('pn.tracker.exclusions') || '{}') || {}; }
@@ -918,7 +971,7 @@
        remember, so the demo page never offers the checkbox. */
     var rememberEl = $('remember'), rememberRow = $('rememberrow'), rememberNote = $('remembernote');
 
-    if (PAYLOAD) {
+    if (PAYLOAD && !OPEN) {
       rememberRow.hidden = false;
       rememberNote.hidden = false;
       rememberLoad().then(function (rec) {
@@ -1495,16 +1548,16 @@
       host.innerHTML = hoardGoldSvg() +
         '<div class="hoard-head"><h3>' + esc(ticker) + ' hoard</h3><span>what the chest is sitting on</span></div>' +
         '<div class="hoard-grid">' +
-        cell('Shares held', esc(shares.toLocaleString('en-US', { maximumFractionDigits: 6 }))) +
+        cell('Shares held', esc(units(shares, 6))) +
         cell('Position value', value ? esc(money(value)) : '—') +
-        cell('Last close', Number.isFinite(stats.latest) ? esc(money(stats.latest)) : '—') +
-        cell('Average close', Number.isFinite(stats.average) ? esc(money(stats.average)) : '—') +
-        cell('Range high / low', esc(money(stats.high)) + ' · ' + esc(money(stats.low))) +
+        cell('Last close', Number.isFinite(stats.latest) ? esc(priceOf(stats.latest)) : '—') +
+        cell('Average close', Number.isFinite(stats.average) ? esc(priceOf(stats.average)) : '—') +
+        cell('Range high / low', esc(priceOf(stats.high)) + ' · ' + esc(priceOf(stats.low))) +
         cell('Held at', esc(Object.keys(platforms).join(', ') || '—')) +
-        cell('Tracked buys', trackedShares ? esc(trackedShares.toLocaleString('en-US', { maximumFractionDigits: 6 })) + ' sh' : (unlocked ? 'none logged' : 'vault locked')) +
+        cell('Tracked buys', trackedShares ? esc(units(trackedShares, 6)) + ' sh' : (unlocked ? 'none logged' : 'vault locked')) +
         cell('Average buy', Number.isFinite(avgBuy) ? esc(money(avgBuy)) : '—') +
         cell('Tracked P/L', Number.isFinite(gain)
-          ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (Number.isFinite(gainPct) ? ' · ' + (gainPct >= 0 ? '+' : '') + gainPct.toFixed(1) + '%' : '')
+          ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (Number.isFinite(gainPct) ? ' · ' + signedPct(gainPct, 1) : '')
           : '—', gainDir) +
         '</div>' +
         '<p class="hoard-note">' + esc(stats.sessions + ' sessions · ' + stats.source) +
@@ -1673,7 +1726,7 @@
       $('stockchart').innerHTML =
         '<div class="market-layout"><div class="stock-sidelist" id="stocksidelist" aria-label="Choose an owned stock"></div><div class="market-main">' +
         '<div class="market-head"><div class="market-title"><div class="market-symbol"><b>' + esc(activeChartSymbol) + '</b><span>owned</span></div><p class="chart-copy">Price, volume, and position context</p></div>' +
-        '<div class="market-quote" id="marketquote"><strong>' + (isFinite(holding.price) ? esc(money(holding.price)) : '—') + '</strong><span class="flat">Waiting for history</span></div></div>' +
+        '<div class="market-quote" id="marketquote"><strong>' + (isFinite(holding.price) ? esc(priceOf(holding.price)) : '—') + '</strong><span class="flat">Waiting for history</span></div></div>' +
         '<div class="market-controls">' +
         '<div class="ctrl-group"><span class="ctrl-label">Range</span><div class="rangebar" aria-label="Chart range">' + CHART_RANGES.map(function (range) {
           return '<button type="button" class="rangebtn" data-range="' + range + '" aria-pressed="' + (range === activeChartRange) + '">' + range + '</button>';
@@ -1697,7 +1750,7 @@
             '" aria-pressed="' + !!loadChartPrefs()[item[0]] + '">' + item[1] + '</button>';
         }).join('') + '</div></div></div><div class="market-chart-shell" id="c-stock"></div>' +
         (underwater ? '<div class="treasure">' + treasureChestSvg() : '') + '<div class="market-kpis" id="marketkpis">' +
-        '<div class="market-kpi"><span>Range return</span><b>—</b></div><div class="market-kpi"><span>Range high</span><b>—</b></div><div class="market-kpi"><span>Range low</span><b>—</b></div><div class="market-kpi"><span>Average close</span><b>—</b></div><div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' shares</b></div>' +
+        '<div class="market-kpi"><span>Range return</span><b>—</b></div><div class="market-kpi"><span>Range high</span><b>—</b></div><div class="market-kpi"><span>Range low</span><b>—</b></div><div class="market-kpi"><span>Average close</span><b>—</b></div><div class="market-kpi"><span>Your position</span><b>' + esc(units(holding.shares, 4)) + ' shares</b></div>' +
         '</div>' + (underwater ? '</div>' : '') + (underwater ? '<div class="hoard" id="hoardpanel"></div>' : '') +
         '<p class="stockchart-status" id="stockchartstatus"></p></div></div>' +
         (underwater ? bubblesMarkup() : '');
@@ -1754,13 +1807,13 @@
         var low = Math.min.apply(null, series.map(function (point) { return isFinite(point.low) ? point.low : point.value; }));
         var average = series.reduce(function (sum, point) { return sum + point.value; }, 0) / series.length;
         var direction = change > 0 ? 'up' : change < 0 ? 'down' : 'flat';
-        $('marketquote').innerHTML = '<strong>' + esc(money(latest)) + '</strong><span class="' + direction + '">' + (change >= 0 ? '+' : '−') + esc(money(Math.abs(change))) + ' · ' + (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%</span>';
+        $('marketquote').innerHTML = '<strong>' + esc(priceOf(latest)) + '</strong><span class="' + direction + '">' + (change >= 0 ? '+' : '−') + esc(priceOf(Math.abs(change))) + ' · ' + (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%</span>';
         $('marketkpis').innerHTML =
           '<div class="market-kpi"><span>' + esc(requestedRange) + ' return</span><b class="' + direction + '">' + (changePct >= 0 ? '+' : '') + changePct.toFixed(2) + '%</b></div>' +
-          '<div class="market-kpi"><span>Range high</span><b>' + esc(money(high)) + '</b></div>' +
-          '<div class="market-kpi"><span>Range low</span><b>' + esc(money(low)) + '</b></div>' +
-          '<div class="market-kpi"><span>Average close</span><b>' + esc(money(average)) + '</b></div>' +
-          '<div class="market-kpi"><span>Your position</span><b>' + esc(holding.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) + ' sh · ' + (holding.value ? esc(money(holding.value)) : 'unpriced') + '</b></div>';
+          '<div class="market-kpi"><span>Range high</span><b>' + esc(priceOf(high)) + '</b></div>' +
+          '<div class="market-kpi"><span>Range low</span><b>' + esc(priceOf(low)) + '</b></div>' +
+          '<div class="market-kpi"><span>Average close</span><b>' + esc(priceOf(average)) + '</b></div>' +
+          '<div class="market-kpi"><span>Your position</span><b>' + esc(units(holding.shares, 4)) + ' sh · ' + (holding.value ? esc(money(holding.value)) : 'unpriced') + '</b></div>';
         renderHoard(requestedSymbol, {
           latest: latest, high: high, low: low, average: average,
           sessions: series.length, source: sourceLabel
@@ -1940,7 +1993,7 @@
         '</div><div class="tscroll"><table><thead><tr><th>Symbol</th><th class="r">Included shares</th><th class="r">Annual / share</th><th class="r">Est. annual income</th><th>Ex-date</th><th>Payment date</th></tr></thead><tbody>' +
         displaySymbols.map(function (symbol) {
           var row = summary.grouped[symbol], saved = map[symbol] || {}, payout = Number(saved.annual) || 0;
-          return '<tr><td class="label">' + esc(symbol) + '</td><td class="num">' + esc(row.shares.toLocaleString('en-US', { maximumFractionDigits: 4 })) +
+          return '<tr><td class="label">' + esc(symbol) + '</td><td class="num">' + esc(units(row.shares, 4)) +
             '</td><td class="num"><input class="dividend-input" data-symbol="' + esc(symbol) + '" data-field="annual" inputmode="decimal" value="' + (payout || '') + '" placeholder="0.00" aria-label="Annual dividend per share for ' + esc(symbol) + '"></td>' +
             '<td class="num">' + (payout ? esc(money(row.shares * payout)) : '—') + '</td><td><input class="dividend-date" data-symbol="' + esc(symbol) + '" data-field="exDate" type="date" value="' + esc(saved.exDate || '') + '" aria-label="Next ex-dividend date for ' + esc(symbol) + '"></td><td><input class="dividend-date" data-symbol="' + esc(symbol) + '" data-field="payDate" type="date" value="' + esc(saved.payDate || '') + '" aria-label="Dividend payment date for ' + esc(symbol) + '"></td></tr>';
         }).join('') + '</tbody></table></div>' +
@@ -2517,15 +2570,15 @@
       }).map(function (purchase) {
         var shares = Number(purchase.shares), price = Number(purchase.price);
         return '<div class="pj-lot"><b>' + esc(purchase.date ? new Date(purchase.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Undated') + '</b>' +
-          '<span>' + esc(shares.toLocaleString('en-US', { maximumFractionDigits: 6 })) + ' shares</span><span>' + esc(money(price)) + ' buy</span><span>' + esc(money(shares * price)) + ' cost</span>' +
+          '<span>' + esc(units(shares, 6)) + ' shares</span><span>' + esc(money(price)) + ' buy</span><span>' + esc(money(shares * price)) + ' cost</span>' +
           '<button type="button" class="pj-delete" data-key="' + esc(key) + '" data-lot-index="' + purchases.indexOf(purchase) + '" aria-label="Delete ' + esc(ticker) + ' buy from ' + esc(purchase.date || 'undated entry') + '">×</button></div>';
       }).join('') + '</div>' : '<p class="pj-empty">No buy prices tracked yet. Add the first purchase below.</p>';
 
       return '<tr class="position-detail" id="' + detailId + '"><td colspan="8"><section class="purchase-journal" aria-label="' + esc(ticker) + ' purchase journal">' +
         '<div class="pj-top"><div><h4>' + esc(ticker) + ' purchase journal</h4><p>' + esc(row.platform) + ' · saved inside your encrypted stock vault</p></div><span class="pj-badge">private · this device</span></div>' +
-        '<div class="pj-metrics"><div class="pj-metric"><span>Tracked shares</span><b>' + (trackedShares ? esc(trackedShares.toLocaleString('en-US', { maximumFractionDigits: 6 })) : '—') + '</b></div>' +
+        '<div class="pj-metrics"><div class="pj-metric"><span>Tracked shares</span><b>' + esc(units(trackedShares, 6)) + '</b></div>' +
         '<div class="pj-metric"><span>Average buy</span><b>' + (Number.isFinite(average) ? esc(money(average)) : '—') + '</b></div><div class="pj-metric"><span>Tracked cost</span><b>' + (cost ? esc(money(cost)) : '—') + '</b></div>' +
-        '<div class="pj-metric"><span>Tracked P/L</span><b class="' + direction + '">' + (Number.isFinite(gain) ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (Number.isFinite(gainPct) ? ' · ' + (gainPct >= 0 ? '+' : '') + gainPct.toFixed(1) + '%' : '') : '—') + '</b></div></div>' +
+        '<div class="pj-metric"><span>Tracked P/L</span><b class="' + direction + '">' + (Number.isFinite(gain) ? (gain >= 0 ? '+' : '−') + esc(money(Math.abs(gain))) + (Number.isFinite(gainPct) ? ' · ' + signedPct(gainPct, 1) : '') : '—') + '</b></div></div>' +
         lotRows + '<form class="pj-entry" data-key="' + esc(key) + '"><label class="fld"><span>Buy date</span><input type="date" name="date"></label>' +
         '<label class="fld"><span>Shares bought</span><input type="number" name="shares" inputmode="decimal" min="0" step="any" placeholder="0.00" required></label>' +
         '<label class="fld"><span>Buy price</span><input type="number" name="price" inputmode="decimal" min="0" step="any" placeholder="$0.00" required></label><button class="btn primary" type="submit">Add buy</button></form>' +
@@ -2567,9 +2620,9 @@
             var detailId = 'position-detail-' + platformIndex + '-' + rowIndex;
             var rowHtml = '<tr class="' + (included ? '' : 'is-excluded') + '">' +
               '<td class="label">' + esc(r.label) + '</td>' +
-              '<td class="num">' + r.amount.toLocaleString('en-US', { maximumFractionDigits: 4 }) + '</td>' +
+              '<td class="num">' + esc(units(r.amount, 4)) + '</td>' +
               '<td class="unit">' + esc(r.unit) + '</td>' +
-              '<td class="num">' + (isFinite(r.price) && r.price ? esc(money(r.price)) : '<span class="nopr">—</span>') + '</td>' +
+              '<td class="num">' + (isFinite(r.price) && r.price ? esc(priceOf(r.price)) : '<span class="nopr">—</span>') + '</td>' +
               '<td class="num">' + (isFinite(r.value) ? esc(money(r.value)) : '<span class="nopr">unpriced</span>') + '</td>' +
               '<td class="notes">' + esc(r.notes) + '</td>' +
               '<td><input class="rowtoggle" type="checkbox" data-key="' + esc(key) + '" ' + (included ? 'checked' : '') + ' aria-label="Include ' + esc(r.label) + ' in calculations"></td>' +
@@ -2679,7 +2732,7 @@
 
       host.innerHTML =
         '<h2>Data freshness</h2>' +
-        '<p>This page is a sealed snapshot of the Asset Tracking Sheet — it cannot read the Sheet live. ' +
+        '<p>This page is a ' + (OPEN ? 'published' : 'sealed') + ' snapshot of the Asset Tracking Sheet — it cannot read the Sheet live. ' +
         '"Refresh" here means: rebuild from the Sheet, then this button tells you when the newer build is published.</p>' +
         '<div class="upd-facts">' +
           '<div class="upd-fact"><span>Sealed</span><b class="' + (stale ? 'warn' : 'ok') + '">' +
@@ -2705,6 +2758,14 @@
       renderTimeline();
     }
 
+    /* A sealed build is identified by its ciphertext, an open one by
+       the time it was generated. Either changes on every rebuild,
+       which is all this comparison needs. */
+    function buildStamp(p) {
+      if (!p) return null;
+      return p.ct || (p.data && p.data.generatedAt) || null;
+    }
+
     function checkForNewerBuild() {
       var status = $('updstatus');
       status.textContent = 'checking the published tracker…';
@@ -2714,16 +2775,18 @@
           return res.text();
         })
         .then(function (text) {
-          var match = text.match(/var PAYLOAD = \/\*__PAYLOAD__\*\/(\{[\s\S]*?\})\/\*__END__\*\//);
+          /* Greedy on purpose: an open payload nests braces, and the lazy
+             form stopped at the first brace and never parsed. */
+          var match = text.match(/var PAYLOAD = \/\*__PAYLOAD__\*\/(\{[\s\S]*\})\/\*__END__\*\//);
           if (!match) {
             status.textContent = 'No encrypted build is published at /tools/tracker/ yet — run the build and push.';
             return;
           }
           var remote = JSON.parse(match[1]);
-          if (PAYLOAD && remote.ct === PAYLOAD.ct) {
+          if (PAYLOAD && buildStamp(remote) && buildStamp(remote) === buildStamp(PAYLOAD)) {
             status.textContent = 'You are on the latest published build. To pull newer Sheet data, rebuild first — see the note below.';
           } else if (PAYLOAD) {
-            status.textContent = 'A newer build is published. Reload, unlock again, and you have the fresh data.';
+            status.textContent = 'A newer build is published. Reload' + (OPEN ? '' : ', unlock again,') + ' and you have the fresh data.';
             $('reloadbuild').hidden = false;
           } else {
             status.textContent = 'An encrypted build is published at /tools/tracker/ — this demo page never shows it. Open the real tracker and unlock with the PIN.';
@@ -2837,6 +2900,27 @@
           renderObsidianSync();
         });
       }
+    }
+    /* ---- censor wiring ---------------------------------------------
+       refresh(false) is the repaint path for every money surface, so a
+       flip of the switch reruns exactly what a price refresh reruns. */
+    applyCensor();
+    $('censortoggle').addEventListener('click', function () {
+      censored = !censored;
+      try { localStorage.setItem('pn.tracker.censor', censored ? '1' : '0'); } catch (e) { /* ignore */ }
+      applyCensor();
+      if (DATA) refresh(false);
+    });
+
+    /* ---- open build: no key to ask for, so no lock screen -----------
+       Last statement in the IIFE so every binding boot() reaches is
+       already assigned. The sealed build still enters through the PIN
+       form and never runs this. */
+    if (OPEN) {
+      $('relock').hidden = true;
+      lockSection.style.display = 'none';
+      vaultSection.style.display = 'block';
+      boot(PAYLOAD.data, null);
     }
   })();
   </script>

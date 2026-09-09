@@ -158,6 +158,9 @@ function markup() {
     ${grab('bubblesMarkup')}
     var esc = function (s) { return String(s); };
     var money = function (n) { return '$' + Number(n).toFixed(2); };
+    var priceOf = function (n) { return '$' + Number(n).toFixed(2); };
+    var censored = false;
+    ${grab('units')}
     var activeChartSymbol = 'VDE', activeChartRange = '3M';
     var CHART_RANGES = ['1M','3M','6M','1Y'];
     var EMA_PERIODS = [10,20,50,200];
@@ -211,11 +214,24 @@ function hoard() {
   assert.ok(i >= 0, 'renderHoard() not found in the template');
   const body = src.slice(i, src.indexOf('\n    }', i) + 6);
 
-  const build = (rows, journals, unlocked) => new Function(`
+  /* Same trick as markup(): the censor helpers come out of the shipped
+     template rather than being reimplemented here, so a change to what
+     the mask looks like fails this test instead of quietly passing it. */
+  const grab = (name) => {
+    const j = src.indexOf('function ' + name + '(');
+    assert.ok(j >= 0, `${name}() not found in the template`);
+    return src.slice(j, src.indexOf('\n    }', j) + 6);
+  };
+
+  const build = (rows, journals, unlocked, censor) => new Function(`
     var host = { innerHTML: '' };
     var $ = function (id) { return id === 'hoardpanel' ? host : null; };
     var esc = function (s) { return String(s); };
-    var money = function (n) { return '$' + Number(n).toFixed(2); };
+    var money = function (n) { return ${!!censor} ? '$****' : '$' + Number(n).toFixed(2); };
+    var priceOf = function (n) { return '$' + Number(n).toFixed(2); };
+    var censored = ${!!censor};
+    ${grab('units')}
+    ${grab('signedPct')}
     var hoardGoldSvg = function () { return '<svg></svg>'; };
     var valued = ${JSON.stringify(rows)};
     var journalMap = ${JSON.stringify(journals)};
@@ -246,6 +262,19 @@ function hoard() {
   assert.ok(withLots.includes('+21.3%'), 'P/L percentage shows');
   /* 1 lot against 1.5 shares held — say so rather than implying full cover. */
   assert.ok(withLots.includes('partial'), 'flags that tracked buys only partly cover the position');
+
+  /* The censor. The published page carries real holdings, so the split it
+     draws is the whole point: how much is held goes behind stars, what
+     the market did does not. A hoard panel that starred the close would
+     be hiding public information; one that showed the share count would
+     be leaking the thing the toggle exists for. */
+  const hidden = build(rows, { Sofi: { purchases: [{ shares: 1, price: 100 }] } }, true, true)('VDE', stats);
+  assert.ok(!hidden.includes('1.5'), `share count must not survive the censor: ${hidden.slice(0, 400)}`);
+  assert.ok(!hidden.includes('$198.40'), 'position value must not survive the censor');
+  assert.ok(!hidden.includes('+21.3%'), 'P/L percentage must not survive the censor');
+  assert.ok(hidden.includes('****'), 'censored counts read as stars');
+  assert.ok(hidden.includes('$121.27'), 'the last close is public market data and stays legible');
+  assert.ok(hidden.includes('$124.94') && hidden.includes('$105.71'), 'the range stays legible too');
 }
 
 main();

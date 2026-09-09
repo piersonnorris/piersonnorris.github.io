@@ -2,8 +2,9 @@
    PNCalendar — private portfolio-calendar helpers.
 
    This module is deliberately storage- and provider-agnostic. The
-   password-gated tracker supplies events only after unlock, while the
-   encrypted stock vault owns user-created reminders.
+   tracker supplies dividend and sheet-derived events, while the
+   encrypted stock vault owns user-created reminders and still needs
+   its PIN before it hands any over.
    ============================================================ */
 (function (global) {
   'use strict';

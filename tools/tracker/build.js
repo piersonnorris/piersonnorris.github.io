@@ -1,5 +1,15 @@
-/* Build the password-gated tracker in CI or from the ignored local snapshot. This file never prints holdings,
-   calendar data, spreadsheet IDs, credentials, or the tracker password. */
+/* Build the tracker in CI or from the ignored local snapshot. This file never prints holdings,
+   calendar data, spreadsheet IDs, credentials, or the tracker password.
+
+   Two output shapes:
+     default    holdings sealed under AES-256-GCM; the PIN is the key, and the
+                published file is safe in a public repo because it is ciphertext.
+     --public   holdings written in the CLEAR. The generated index.html is a
+                tracked file in a public repo, so this puts real positions,
+                counts and totals on the open web and into git history, where
+                deleting them later does not take them back. Pierce chose this
+                deliberately (2026-09-08); the page's censor toggle stars the
+                figures on screen but is not a secrecy mechanism and cannot be. */
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -183,34 +193,50 @@ function seal(data, password) {
   return { salt: salt.toString('base64'), iv: iv.toString('base64'), ct: ciphertext.toString('base64'), iter: 600000 };
 }
 
+/* The open counterpart to seal(). No key, no ciphertext: the page reads
+   payload.data directly and skips its lock screen entirely. */
+function publish(data) {
+  return { open: true, data };
+}
+
 function render(payload) {
   const source = fs.readFileSync(TEMPLATE, 'utf8');
+  /* The payload is inlined into a <script> block. A sealed payload is
+     base64 and can hold nothing dangerous, but an open one carries note
+     bodies and labels verbatim — one '</script>' in a stock note would
+     end the script early and blank the page. Escaping '<' costs nothing
+     and closes that off; U+2028/9 are escaped for old parsers. */
+  const json = JSON.stringify(payload)
+    .replace(/</g, '\\u003c')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
   const next = source.replace(
     /var PAYLOAD = \/\*__PAYLOAD__\*\/null\/\*__END__\*\//,
-    `var PAYLOAD = /*__PAYLOAD__*/${JSON.stringify(payload)}/*__END__*/`
+    () => `var PAYLOAD = /*__PAYLOAD__*/${json}/*__END__*/`
   );
   if (next === source) fail('Tracker template payload marker was not found.');
   fs.writeFileSync(OUTPUT, next);
 }
 
-function reuseEncryptedPayload() {
-  if (!fs.existsSync(OUTPUT)) fail('Existing encrypted tracker output was not found.');
+function reuseExistingPayload() {
+  if (!fs.existsSync(OUTPUT)) fail('Existing tracker output was not found.');
   const existing = fs.readFileSync(OUTPUT, 'utf8');
   const match = existing.match(/var PAYLOAD = (?:\/\*__PAYLOAD__\*\/)?(\{[^\r\n]+\})(?:\/\*__END__\*\/)?;/);
-  if (!match) fail('Existing encrypted tracker payload was not found.');
+  if (!match) fail('Existing tracker payload was not found.');
   let payload;
   try { payload = JSON.parse(match[1]); }
-  catch { fail('Existing encrypted tracker payload is invalid.'); }
-  if (!payload || !payload.salt || !payload.iv || !payload.ct || !payload.iter) {
-    fail('Existing tracker payload is not a supported encrypted payload.');
-  }
+  catch { fail('Existing tracker payload is invalid.'); }
+  const sealed = payload && payload.salt && payload.iv && payload.ct && payload.iter;
+  const open = payload && payload.open === true && payload.data;
+  if (!sealed && !open) fail('Existing tracker payload is neither a sealed nor an open payload.');
   render(payload);
 }
 
-async function buildFromLocalSnapshot() {
+async function buildFromLocalSnapshot(openBuild) {
   const handoffPath = path.join(ROOT, 'private', 'STOCK_HANDOFF.md');
   const pinPath = path.join(ROOT, 'private', '.tracker-pin');
-  if (!fs.existsSync(handoffPath) || !fs.existsSync(pinPath)) fail('Private local tracker inputs were not found.');
+  if (!fs.existsSync(handoffPath)) fail('Private local tracker inputs were not found.');
+  if (!openBuild && !fs.existsSync(pinPath)) fail('Private local tracker inputs were not found.');
   const handoff = fs.readFileSync(handoffPath, 'utf8');
   const match = /## Machine-readable snapshot[\s\S]*?```json\s*([\s\S]*?)```/.exec(handoff);
   if (!match) fail('Private local tracker snapshot was not found.');
@@ -223,10 +249,27 @@ async function buildFromLocalSnapshot() {
   for (const month of months) {
     if (!month || !Array.isArray(month.holdings) || !month.holdings.length) fail('A private local tracker month has no holdings.');
   }
-  const password = fs.readFileSync(pinPath, 'utf8').trim();
-  if (!password) fail('Private local tracker PIN is empty.');
+  let password = null;
+  if (!openBuild) {
+    password = fs.readFileSync(pinPath, 'utf8').trim();
+    if (!password) fail('Private local tracker PIN is empty.');
+  }
   const quotes = await fetchQuotes(months);
-  render(seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(), obsidianVault: loadObsidianVault() }, password));
+  const data = { generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(), obsidianVault: loadObsidianVault() };
+  render(openBuild ? publish(data) : seal(data, password));
+  if (openBuild) warnPublic();
+}
+
+/* Loud on purpose, and the one thing this file is allowed to say about
+   the holdings: that they are no longer hidden. Still prints no data. */
+function warnPublic() {
+  console.log('');
+  console.log('  !!  OPEN BUILD — tools/tracker/index.html now holds the real');
+  console.log('      holdings in plaintext. It is a tracked file in a public');
+  console.log('      repo: committing it publishes them, and git history keeps');
+  console.log('      them after any later deletion. The page\'s censor toggle');
+  console.log('      hides the figures on screen, not in the source.');
+  console.log('');
 }
 
 async function fetchMonths() {
@@ -248,21 +291,23 @@ async function fetchMonths() {
 }
 
 async function main() {
+  const openBuild = process.argv.includes('--public');
   if (process.argv.includes('--local-snapshot')) {
-    await buildFromLocalSnapshot();
+    await buildFromLocalSnapshot(openBuild);
     return;
   }
   if (process.argv.includes('--reuse-payload')) {
-    reuseEncryptedPayload();
+    reuseExistingPayload();
     return;
   }
   const password = process.env.TRACKER_PASSWORD;
-  if (!password) fail('TRACKER_PASSWORD is required.');
+  if (!openBuild && !password) fail('TRACKER_PASSWORD is required.');
   const months = await fetchMonths();
   if (!months.length) fail('No month-named tabs were found.');
   const quotes = await fetchQuotes(months);
-  const payload = seal({ generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(), obsidianVault: loadObsidianVault() }, password);
-  render(payload);
+  const data = { generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(), obsidianVault: loadObsidianVault() };
+  render(openBuild ? publish(data) : seal(data, password));
+  if (openBuild) warnPublic();
 }
 
 /* Exported so the payload seams can be tested without running a build

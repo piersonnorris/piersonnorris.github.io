@@ -1,236 +1,634 @@
 /* ============================================================
-   /atlas/ — the knowledge atlas workspace.
-   A three-pane reading surface in the site's own dark system
-   (site.css tokens, no new palette). Borrows the graph styles
-   from notes.css, which is where PNGraphify's .pg-* rules live.
+   /atlas/ — the knowledge atlas, read as a night sky.
+
+   /island/ is this island at midday. This is the same island
+   after dark: same sand, same palms, same waves, sun down and
+   the sky full of stars. One star per note, one jar per domain,
+   one telescope that draws the [[wikilinks]] between them.
+
+   Its own palette by design (the night version of island.css's
+   sand/sky/ocean), not the dark site theme — site.css is here
+   for the resets and the header/footer shared with every page.
    ============================================================ */
 
-/* A three-pane workspace does not fit the site's 900px reading column,
-   so this page (and only this page) widens its main container. The
-   header/footer keep the shared width so the site still lines up. */
-body.atlas-page main.wrap{max-width:1240px}
-
-/* overflow-x:clip, not hidden: the glow below bleeds 25% past the
-   section on each side, which scrolls the whole page sideways at desktop
-   widths. `clip` cuts it without creating a scroll container, so
-   overflow-y stays visible and nothing else about the layout moves. */
-.atlas-head{position:relative;padding:44px 0 22px;overflow-x:clip}
-.atlas-head::before{
-  content:"";position:absolute;inset:-44px -25% auto -25%;height:300px;pointer-events:none;
-  background:radial-gradient(ellipse at 22% 0%,rgba(95,174,90,.10),transparent 62%);
-}
-.atlas-head > *{position:relative}
-.atlas-head h1{font-size:clamp(30px,5.4vw,44px);margin:12px 0 10px}
-.atlas-head .lede{color:var(--mut);max-width:64ch;margin:0 0 18px;font-size:15.5px}
-.atlas-head .lede b{color:var(--ink);font-weight:600}
-
-/* ---------------- the workspace shell ---------------- */
-.workspace{
-  display:grid;
-  grid-template-columns:minmax(210px,240px) minmax(0,1fr) minmax(190px,230px);
-  gap:1px;background:var(--line);
-  border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;
-  min-height:600px;
-}
-.workspace > *{background:var(--bg)}
-/* graph and timeline have no note selected, so the inspector column is
-   dropped rather than left standing empty */
-.workspace.ins-off{grid-template-columns:minmax(210px,240px) minmax(0,1fr)}
-
-/* toolbar spans all three columns */
-.wbar{
-  grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:10px;
-  padding:10px 12px;background:var(--panel);border-bottom:1px solid var(--line);
-}
-.wbar .brandmark{
-  display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10px;
-  letter-spacing:.14em;text-transform:uppercase;color:var(--acc-hi);
-}
-.wbar .brandmark i{width:8px;height:8px;border-radius:2px;background:var(--acc);display:block}
-.searchwrap{position:relative;flex:1 1 220px;min-width:170px}
-.searchwrap input{
-  width:100%;padding:8px 58px 8px 30px;font-family:var(--mono);font-size:12.5px;
-  background:var(--bg);border:1px solid var(--line2);border-radius:8px;color:var(--ink);
-}
-.searchwrap input:focus{outline:2px solid var(--acc);outline-offset:1px;border-color:var(--acc)}
-.searchwrap .mag{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:12px;pointer-events:none}
-.searchwrap kbd{
-  position:absolute;right:8px;top:50%;transform:translateY(-50%);
-  font-family:var(--mono);font-size:9.5px;color:var(--dim);
-  border:1px solid var(--line2);border-radius:4px;padding:2px 5px;pointer-events:none;
-}
-.views{display:flex;gap:4px;flex:none}
-.vtab{
-  font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--mut);background:var(--bg);border:1px solid var(--line2);border-radius:7px;
-  padding:7px 12px;cursor:pointer;transition:color .15s,border-color .15s,background .15s;
-}
-.vtab:hover{color:var(--ink);border-color:var(--mut)}
-.vtab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:#0e1116;font-weight:500}
-
-/* ---------------- left: explorer ---------------- */
-.wside{padding:14px 12px;overflow:auto;max-height:760px}
-.wside h2{
-  font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--dim);margin:0 0 9px;font-weight:400;
-}
-.wside h2:not(:first-child){margin-top:20px}
-
-.chips{display:flex;flex-wrap:wrap;gap:5px}
-.chip{
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:10.5px;color:var(--mut);
-  background:var(--panel);border:1px solid var(--line);border-radius:7px;
-  padding:5px 8px;cursor:pointer;text-align:left;transition:color .15s,border-color .15s;
-}
-.chip:hover{color:var(--ink);border-color:var(--line2)}
-.chip i{font-style:normal;font-size:9.5px;color:var(--dim);margin-left:auto}
-.chip[aria-pressed="true"]{color:var(--ink);border-color:var(--acc);background:var(--acc-soft)}
-.chip.dom{width:100%}
-
-.ex-swatch{width:8px;height:8px;border-radius:2px;display:inline-block;flex:none}
-
-.ex-group{margin:0 0 14px}
-.ex-head{
-  display:flex;align-items:center;gap:7px;margin:0 0 5px;
-  font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--mut);font-weight:400;
-}
-.ex-count{margin-left:auto;color:var(--dim);font-size:9.5px}
-.ex-list{list-style:none;margin:0;padding:0 0 0 3px;border-left:1px solid var(--line)}
-.ex-item{
-  display:block;width:100%;text-align:left;padding:5px 8px;
-  background:none;border:0;border-radius:6px;cursor:pointer;
-  color:var(--mut);font-family:var(--sans);font-size:13px;line-height:1.35;
-  transition:background .12s,color .12s;
-}
-.ex-item:hover{background:var(--panel);color:var(--ink)}
-.ex-item.on{background:var(--acc-soft);color:var(--ink);box-shadow:inset 2px 0 0 var(--acc)}
-.ex-empty{color:var(--dim);font-size:13px;margin:6px 0}
-.linkish{background:none;border:0;padding:0;color:var(--acc);cursor:pointer;font:inherit;text-decoration:underline}
-
-.tag{
-  display:inline-flex;align-items:center;gap:5px;
-  font-family:var(--mono);font-size:10px;color:var(--info);
-  background:rgba(76,201,240,.08);border:1px solid rgba(76,201,240,.22);
-  border-radius:999px;padding:3px 8px;cursor:pointer;transition:background .15s;
-}
-.tag:hover{background:rgba(76,201,240,.18)}
-.tag[aria-pressed="true"]{background:var(--info);color:#0e1116;border-color:var(--info)}
-.tag i{font-style:normal;color:var(--dim);font-size:9px}
-.tag[aria-pressed="true"] i{color:rgba(14,17,22,.6)}
-.tag.mini{font-size:9.5px;padding:2px 7px}
-
-/* ---------------- center: reader / graph / timeline ---------------- */
-.wmain{padding:0;overflow:hidden;display:flex;flex-direction:column}
-.wpane{padding:26px 30px;overflow:auto;max-height:760px}
-.wpane[hidden]{display:none}
-
-.note{--dc:var(--acc)}
-.note-crumb{
-  font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--dc);margin:0 0 10px;
-}
-.note-title{font-size:clamp(23px,3.4vw,32px);line-height:1.15;margin:0 0 18px;max-width:22ch}
-
-.frontmatter{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px 18px;
-  margin:0 0 18px;padding:14px 16px;
-  background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--dc);border-radius:8px;
-}
-.frontmatter div{min-width:0}
-.frontmatter dt{
-  font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 3px;
-}
-.frontmatter dd{margin:0;font-size:13px;color:var(--ink)}
-
-.evidence{
-  list-style:none;display:flex;flex-wrap:wrap;gap:7px;margin:0 0 20px;padding:0;
-}
-.evidence li{
-  font-family:var(--mono);font-size:11px;color:var(--acc-hi);
-  background:var(--acc-soft);border:1px solid rgba(142,209,138,.24);border-radius:6px;padding:4px 9px;
+:root{
+  /* sky, deepest to horizon */
+  --n-top:#060b1c; --n-high:#0b1430; --n-mid:#132349; --n-low:#1d3560; --n-horizon:#2b4d76;
+  /* sea after dark */
+  --n-sea-far:#204a68; --n-sea-near:#0a1c2e;
+  /* sand under a moon */
+  --n-sand-lt:#655843; --n-sand-md:#4c4234; --n-sand-dk:#332d22;
+  /* the island's own timber, unlit */
+  --n-wood:#5c3f26; --n-wood-dk:#3d2917; --n-wood-lt:#7d5634; --n-rope:#b08d52;
+  --n-paper:#f3e8ca; --n-ink:#3a2a14; --n-ink-soft:#5f4726;
+  /* light sources */
+  --n-moon:#f7f2dc;
+  /* ink that sits on the sky */
+  --sky-ink:#d8e3f7; --sky-mut:#93a7c9; --sky-dim:#7f92b4;
+  --hand:'Kalam', cursive;
 }
 
-.note-body p{font-size:15.5px;line-height:1.72;color:var(--mut);margin:0 0 14px;max-width:68ch}
+html:has(.atlas-page){background:#060b1c}
+body.atlas-page{
+  background:#060b1c;
+  color:var(--sky-ink);
+  font-family:var(--sans);
+  overflow-x:hidden;
+}
+.atlas-page ::selection{background:rgba(160,196,255,.3);color:#fff}
+.atlas-page main{padding:0}
+
+/* ---- header + footer, restyled for the dark half of the island ---- */
+.atlas-page .sitehead{background:transparent;border-bottom:1px solid rgba(178,205,255,.14)}
+.atlas-page .brand{color:var(--sky-ink)}
+.atlas-page .navlinks a{color:var(--sky-mut)}
+.atlas-page .navlinks a:hover{color:#fff}
+.atlas-page .navlinks a[aria-current="page"]{color:#fff;border-bottom-color:var(--n-moon)}
+.atlas-page .lockicon{color:var(--sky-dim)}
+.atlas-page .navtoggle{color:var(--sky-ink);border-color:rgba(178,205,255,.28)}
+.atlas-page .navtoggle:hover{border-color:var(--sky-ink)}
+.atlas-page .navlinks.is-open{border-top-color:rgba(178,205,255,.14)}
+.atlas-page .sitefoot{border-top-color:rgba(243,232,202,.18);margin-top:34px}
+.atlas-page .sitefoot address{color:rgba(243,232,202,.72)}
+.atlas-page .sitefoot address a{color:rgba(243,232,202,.9);border-bottom-color:rgba(243,232,202,.35)}
+.atlas-page .sitefoot address a:hover{color:#fff;border-bottom-color:var(--n-moon)}
+
+/* ============================================================
+   the shore: sky -> sea -> sand, three bands in normal flow.
+   Padded on the right (desktop only) when the field log opens,
+   so the panel never covers the constellation it describes —
+   stars are positioned in percentages, so they simply reflow.
+   ============================================================ */
+.shore{transition:padding-right .34s cubic-bezier(.2,.8,.25,1)}
+
+/* ---------------- sky ---------------- */
+.scene{
+  background:linear-gradient(180deg,
+    var(--n-top) 0%, var(--n-high) 26%, var(--n-mid) 58%, var(--n-low) 84%, var(--n-horizon) 100%);
+}
+.atlas-hero{position:relative;z-index:3;text-align:center;padding:30px 20px 4px;max-width:62ch;margin:0 auto}
+.atlas-hero .eyebrow{
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--sky-dim);margin:0 0 8px;
+}
+.atlas-hero h1{
+  font-family:var(--hand);font-weight:700;font-size:clamp(30px,6vw,46px);line-height:1.1;
+  color:#fff;margin:0 0 10px;text-shadow:0 0 26px rgba(150,185,255,.35);
+}
+.atlas-hero .lede{color:var(--sky-mut);font-size:15px;margin:0 auto;max-width:58ch}
+.atlas-hero .lede b{color:var(--sky-ink);font-weight:600}
+
+.sky{
+  position:relative;
+  height:clamp(430px,54vh,600px);
+  margin:6px 0 0;
+}
+.sky *{-webkit-tap-highlight-color:transparent}
+
+/* background dust — decoration only, never focusable */
+.dust{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.dust i{
+  position:absolute;width:var(--s,2px);height:var(--s,2px);border-radius:50%;background:#dce7ff;
+  opacity:var(--o,.4);animation:dustblink var(--dur,5s) ease-in-out infinite var(--dl,0s);
+}
+@keyframes dustblink{0%,100%{opacity:calc(var(--o,.4) * .3)}50%{opacity:var(--o,.4)}}
+
+.moon{
+  position:absolute;right:6%;top:8%;width:clamp(54px,7vw,82px);aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle at 37% 33%,#fffdf4,var(--n-moon) 55%,#ded3ac 100%);
+  box-shadow:0 0 44px 14px rgba(247,242,220,.20), 0 0 130px 46px rgba(150,185,255,.10);
+  pointer-events:none;
+}
+.moon::after{
+  content:"";position:absolute;inset:0;border-radius:50%;opacity:.45;
+  background:
+    radial-gradient(circle at 62% 30%,rgba(180,168,132,.55) 0 9%,transparent 10%),
+    radial-gradient(circle at 40% 62%,rgba(180,168,132,.45) 0 13%,transparent 14%),
+    radial-gradient(circle at 72% 68%,rgba(180,168,132,.4) 0 7%,transparent 8%);
+}
+
+.shooter{
+  position:absolute;left:-14%;top:6%;width:130px;height:2px;border-radius:2px;opacity:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.95));
+  animation:shoot 19s linear infinite;
+}
+.shooter.s2{top:2%;animation-duration:27s;animation-delay:11s;width:90px}
+@keyframes shoot{
+  0%{opacity:0;transform:translate(0,0) rotate(20deg)}
+  1.5%{opacity:.95}
+  7%{opacity:0}
+  8%,100%{opacity:0;transform:translate(84vw,30vh) rotate(20deg)}
+}
+
+/* ---- the constellation lines: every one is a real [[wikilink]] ---- */
+.lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.ln{
+  stroke:transparent;stroke-width:1;stroke-linecap:round;
+  stroke-dasharray:1;stroke-dashoffset:1;
+}
+@keyframes draw{to{stroke-dashoffset:0}}
+/* `scoping`, not `scope`: the telescope button below is `.scope`, and
+   `.scope svg` would otherwise also match the constellation's own <svg>
+   and squash it to the telescope's width. */
+.sky.scoping .ln{
+  stroke:rgba(168,198,255,.32);
+  animation:draw .85s ease forwards;animation-delay:calc(var(--i,0) * 18ms);
+}
+.ln.lit,.sky.scoping .ln.lit{
+  stroke:rgba(238,245,255,.92);stroke-width:1.8;
+  animation:draw .45s ease forwards;animation-delay:0s;
+  filter:drop-shadow(0 0 4px rgba(190,215,255,.7));
+}
+.sky.scoping .ln.faded{stroke:rgba(168,198,255,.06);animation-delay:0s}
+
+/* A 1px line is not a hit target. Each line gets an invisible fat twin
+   underneath it, live only while the telescope is out — hover one and both
+   lessons it joins light up and say their names. */
+.lnhit{stroke:transparent;stroke-width:15;fill:none;pointer-events:none}
+.sky.scoping .lnhit{pointer-events:stroke;cursor:pointer}
+
+/* ---- stars ---- */
+.stars{position:absolute;inset:0}
+.star{
+  position:absolute;width:38px;height:38px;margin:-19px 0 0 -19px;
+  background:none;border:0;padding:0;cursor:pointer;
+  transition:opacity .28s ease;
+}
+.star-glow{
+  position:absolute;left:50%;top:50%;width:var(--sz,10px);height:var(--sz,10px);
+  margin:calc(var(--sz,10px) / -2) 0 0 calc(var(--sz,10px) / -2);
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#fff 0 20%,var(--sc,#fff) 42%,rgba(255,255,255,0) 74%);
+  box-shadow:0 0 calc(var(--sz,10px) * .8) rgba(255,255,255,.35),
+             0 0 calc(var(--sz,10px) * 2) var(--sc,#fff);
+  animation:twinkle var(--dur,4s) ease-in-out infinite var(--dl,0s);
+  transition:box-shadow .2s,transform .2s;
+}
+/* the four-point flare that makes a dot read as a star */
+.star-glow::before,.star-glow::after{
+  content:"";position:absolute;left:50%;top:50%;
+  width:calc(var(--sz,10px) * 3.2);height:1.5px;transform:translate(-50%,-50%);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);
+  border-radius:2px;pointer-events:none;
+}
+.star-glow::after{transform:translate(-50%,-50%) rotate(90deg)}
+@keyframes twinkle{0%,100%{opacity:.74;transform:scale(1)}50%{opacity:1;transform:scale(1.13)}}
+
+.star-name{
+  position:absolute;left:50%;top:calc(50% + var(--sz,10px) / 2 + 9px);transform:translateX(-50%);
+  font-family:var(--hand);font-size:12.5px;line-height:1.2;white-space:nowrap;
+  max-width:162px;overflow:hidden;text-overflow:ellipsis;
+  color:#eef3ff;text-shadow:0 1px 7px rgba(0,0,0,.95);
+  background:rgba(6,11,28,.62);border-radius:5px;padding:1px 6px;
+  opacity:0;transition:opacity .2s;pointer-events:none;
+}
+/* A cluster is five stars inside 200px; five labels all hanging below it
+   would overlap. Alternating sides, plus the pill above, keeps them
+   readable where they still cross. */
+.star:nth-child(2n) .star-name{top:auto;bottom:calc(50% + var(--sz,10px) / 2 + 9px)}
+.sky.named .star:not(.dim) .star-name{opacity:.94}
+.star:hover .star-name,.star:focus-visible .star-name,.star.on .star-name{opacity:1}
+.star:hover,.star:focus-visible{z-index:4}
+.star.on{z-index:3}
+
+.star:hover .star-glow,.star:focus-visible .star-glow{
+  transform:scale(1.35);
+  box-shadow:0 0 calc(var(--sz,10px) * 1.4) rgba(255,255,255,.6),
+             0 0 calc(var(--sz,10px) * 3) var(--sc,#fff);
+}
+.star:focus-visible{outline:none}
+.star:focus-visible::after{
+  content:"";position:absolute;inset:3px;border-radius:50%;
+  border:1.5px dashed rgba(255,255,255,.85);
+}
+.star.on .star-glow{
+  transform:scale(1.5);animation-play-state:paused;
+  box-shadow:0 0 0 3px rgba(255,255,255,.22),
+             0 0 calc(var(--sz,10px) * 1.8) rgba(255,255,255,.75),
+             0 0 calc(var(--sz,10px) * 3.6) var(--sc,#fff);
+}
+.star.on .star-name{
+  font-size:13.5px;color:#fff;padding:2px 8px;
+  background:rgba(6,11,28,.82);box-shadow:0 0 0 1px rgba(255,255,255,.16);
+}
+.star.kin .star-glow{transform:scale(1.2);box-shadow:0 0 calc(var(--sz,10px) * 2.4) var(--sc,#fff)}
+.star.dim{opacity:.09;filter:saturate(.55);pointer-events:none}
+
+/* ---- pointing at a star ----------------------------------------------
+   Hovering does everything selecting does except open the panel: the star
+   swells, its own lines light, its neighbours lift, and the rest of the sky
+   steps back. Sweeping the mouse across the sky reads the graph. */
+.star.hot .star-glow{
+  transform:scale(1.5);
+  box-shadow:0 0 calc(var(--sz,10px) * 1.5) rgba(255,255,255,.7),
+             0 0 calc(var(--sz,10px) * 3.2) var(--sc,#fff);
+}
+/* :not(.dim) or this would out-specify the filter and re-light stars whose
+   jar is shut */
+.sky.peeking .star:not(.dim):not(.hot):not(.kin):not(.on){opacity:.38}
+.star.shown .star-name{opacity:1}
+
+/* the ring a star throws off when you press it */
+.ping{
+  position:absolute;left:50%;top:50%;width:16px;height:16px;margin:-8px 0 0 -8px;
+  border-radius:50%;border:2px solid rgba(255,255,255,.9);opacity:0;pointer-events:none;
+}
+.star.pinged .ping{animation:ping .62s cubic-bezier(.2,.7,.3,1)}
+@keyframes ping{from{opacity:.85;transform:scale(.35)}to{opacity:0;transform:scale(3.6)}}
+
+/* ---- the peek card: what a star is, without opening it ---- */
+/* Deliberately small. It sits in a sky whose other stars are the point, so
+   every line it does not need is a star it would cover up. */
+.peek{
+  position:absolute;z-index:6;pointer-events:none;
+  width:min(224px,72vw);
+  background:rgba(7,13,30,.94);
+  border:1px solid rgba(178,205,255,.2);border-radius:10px;
+  padding:8px 11px 7px;
+  box-shadow:0 12px 30px rgba(0,0,0,.62);
+  opacity:0;transform:translateY(4px);transition:opacity .15s ease,transform .15s ease;
+}
+.peek.show{opacity:1;transform:none}
+.peek::before{
+  content:"";position:absolute;left:11px;right:11px;top:0;height:2px;border-radius:0 0 2px 2px;
+  background:var(--pc,#fff);box-shadow:0 0 10px var(--pc,#fff);
+}
+.pk-crumb{
+  font-family:var(--mono);font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--pc,#fff);margin:0 0 3px;
+}
+.pk-title{font-family:var(--hand);font-weight:700;font-size:15.5px;line-height:1.18;color:#fff;margin:0 0 4px}
+.pk-meta{font-family:var(--mono);font-size:9px;line-height:1.5;color:var(--sky-mut);margin:0 0 6px}
+.pk-meta b{color:var(--sky-ink);font-weight:500}
+.pk-hint{
+  font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--sky-dim);margin:0;padding-top:6px;border-top:1px dashed rgba(178,205,255,.16);
+}
+/* the card already says the title — the label under the star would just
+   be the same words twice */
+.sky.carded .star.hot .star-name{opacity:0}
+
+/* ---------------- sea ---------------- */
+.sea{
+  position:relative;height:60px;overflow:hidden;
+  background:linear-gradient(180deg,var(--n-sea-far),var(--n-sea-near) 88%);
+}
+/* the moon's road on the water, lined up under the moon itself */
+.sea::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 14% 150% at 88% 0%,rgba(247,242,220,.34),transparent 70%);
+}
+.wave-row{position:absolute;left:0;width:200%;height:22px}
+.wave-row svg{display:block;height:100%;width:100%}
+.wave-row.w1{top:4px;animation:wave 9s linear infinite}
+.wave-row.w2{top:22px;opacity:.6;animation:wave 13s linear infinite reverse}
+@keyframes wave{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------------- sand ---------------- */
+.sand{
+  position:relative;padding:0 0 44px;overflow:hidden;
+  background:
+    radial-gradient(ellipse 26% 46% at 88% -4%,rgba(247,242,220,.16),transparent 64%),
+    radial-gradient(ellipse 60% 34% at 20% 4%,rgba(160,190,235,.07),transparent 62%),
+    linear-gradient(180deg,var(--n-sand-lt),var(--n-sand-md) 42%,var(--n-sand-dk) 100%);
+}
+/* wet sand: the strip the last wave left behind, still holding the moon */
+.sand::before{
+  content:"";position:absolute;left:0;right:0;top:0;height:26px;pointer-events:none;
+  background:linear-gradient(180deg,rgba(203,233,240,.16),rgba(203,233,240,0));
+  mask:radial-gradient(ellipse 34px 20px at 50% 0,transparent 68%,#000 70%) 0 0/68px 26px repeat-x;
+  -webkit-mask:radial-gradient(ellipse 34px 20px at 50% 0,transparent 68%,#000 70%) 0 0/68px 26px repeat-x;
+}
+.palm{position:absolute;top:-16px;width:168px;transform-origin:bottom center;z-index:1;pointer-events:none}
+.palm.left{left:0}
+.palm.right{right:0;transform:scaleX(-1)}
+.palm svg{display:block;overflow:visible}
+.palm .leaves{transform-origin:180px 70px;animation:sway 6s ease-in-out infinite}
+.palm.right .leaves{animation-duration:7.1s}
+@keyframes sway{0%,100%{transform:rotate(-2.2deg)}50%{transform:rotate(2.2deg)}}
+
+.shell{position:absolute;font-size:16px;opacity:.32;filter:grayscale(.6) brightness(.85);pointer-events:none}
+
+/* ---- the beach: telescope on the left, the jars in the sand ---- */
+.beach{
+  position:relative;z-index:2;max-width:1120px;margin:0 auto;padding:14px 22px 0;
+  display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 26px;align-items:end;
+}
+
+/* the telescope */
+.scope{
+  background:none;border:0;padding:0 4px;cursor:pointer;display:block;text-align:center;
+}
+.scope svg{display:block;width:clamp(104px,13vw,142px);height:auto;overflow:visible}
+.scope .tripod{stroke:var(--n-wood);stroke-width:6;stroke-linecap:round;fill:none}
+.scope .tube{fill:#8a6a3c;stroke:#5d4524;stroke-width:1.5}
+.scope .tube2{fill:#a9863f}
+.scope .ring{fill:#5d4524}
+.scope .lens{fill:#2b3a4e;transition:fill .25s}
+.scope .beam{opacity:0;filter:blur(5px);transition:opacity .35s}
+.scope .barrel{transform-origin:66px 56px;transition:transform .45s cubic-bezier(.2,.8,.25,1)}
+.scope:hover .barrel{transform:rotate(-4deg)}
+.scope[aria-pressed="true"] .barrel{transform:rotate(-10deg)}
+.scope[aria-pressed="true"] .lens{fill:#ffeaa6}
+.scope[aria-pressed="true"] .beam{opacity:.45}
+.scopelabel{
+  display:block;margin:4px auto 0;max-width:17ch;
+  font-family:var(--hand);font-size:14px;line-height:1.25;color:rgba(243,232,202,.78);
+}
+.scope:hover .scopelabel{color:var(--n-paper)}
+.scope[aria-pressed="true"] .scopelabel{color:#ffeaa6}
+.scope:focus-visible{outline:2px dashed var(--n-moon);outline-offset:5px;border-radius:10px}
+
+/* the jars — tops aligned, so tags of different lengths hang below
+   instead of see-sawing the jars they belong to */
+.jars{display:flex;flex-wrap:wrap;gap:10px 6px;align-items:flex-start;justify-content:space-between}
+.jar{
+  position:relative;background:none;border:0;padding:0 2px;cursor:pointer;
+  color:var(--jc,#fff);display:block;text-align:center;
+  transition:transform .2s;
+}
+.jar:hover{transform:translateY(-3px)}
+.jar:focus-visible{outline:2px dashed var(--n-moon);outline-offset:3px;border-radius:10px}
+.jar svg{display:block;width:clamp(62px,7.4vw,94px);height:auto;margin:0 auto;overflow:visible}
+.jar .glass{fill:rgba(206,232,240,.09);stroke:rgba(214,238,246,.5);stroke-width:1.6;transition:fill .3s,stroke .3s}
+.jar .shine{fill:rgba(255,255,255,.2)}
+.jar .lid{fill:var(--n-wood-dk)}
+.jar .lidtop{fill:var(--n-wood)}
+.jar .band{stroke:var(--n-rope);stroke-width:2.4;fill:none;stroke-linecap:round}
+.jar .halo{fill:currentColor;opacity:.14;filter:blur(9px);transition:opacity .3s}
+.jar .mound{fill:var(--n-sand-md)}
+.jar .lidgrp{transform-origin:38px 22px;transition:transform .35s cubic-bezier(.2,.8,.25,1)}
+.jar .fly{
+  fill:currentColor;
+  filter:drop-shadow(0 0 3px currentColor);
+  animation:float var(--fdur,4s) ease-in-out infinite var(--fdl,0s);
+  transform-box:fill-box;transform-origin:center;
+}
+@keyframes float{
+  0%,100%{transform:translate(0,0);opacity:.55}
+  30%{transform:translate(3px,-5px);opacity:1}
+  65%{transform:translate(-3px,3px);opacity:.75}
+}
+.jar:hover .halo{opacity:.24}
+.jar[aria-pressed="true"] .halo{opacity:.42}
+.jar[aria-pressed="true"] .lidgrp{transform:translateY(-8px) rotate(-10deg)}
+.jar[aria-pressed="true"] .glass{stroke:currentColor;fill:rgba(206,232,240,.15)}
+/* fireflies let out of an opened jar */
+.jar .escape{opacity:0;transform-box:fill-box;transform-origin:center}
+.jar[aria-pressed="true"] .escape{animation:rise 2.8s ease-out infinite}
+.jar[aria-pressed="true"] .escape.e2{animation-delay:.95s}
+.jar[aria-pressed="true"] .escape.e3{animation-delay:1.85s}
+@keyframes rise{
+  0%{opacity:0;transform:translate(0,0)}
+  18%{opacity:1}
+  100%{opacity:0;transform:translate(-7px,-48px)}
+}
+
+.jartag{
+  display:block;margin:6px auto 0;max-width:14ch;min-height:2.5em;
+  background:var(--n-paper);color:var(--n-ink);
+  font-family:var(--hand);font-size:11.5px;line-height:1.2;font-weight:700;
+  border-radius:3px;padding:3px 7px;
+  box-shadow:0 2px 5px rgba(0,0,0,.4);
+  transform:rotate(-1.5deg);
+}
+.jar:nth-child(even) .jartag{transform:rotate(1.6deg)}
+.jartag i{
+  display:inline-block;font-style:normal;font-family:var(--mono);font-size:9px;font-weight:400;
+  color:var(--n-ink-soft);margin-left:4px;
+}
+.jar[aria-pressed="true"] .jartag{
+  background:var(--jc,#fff);color:#10151f;box-shadow:0 0 14px var(--jc),0 2px 5px rgba(0,0,0,.4);
+}
+.jar[aria-pressed="true"] .jartag i{color:rgba(16,21,31,.65)}
+
+/* carved in the sand: the shape of the graph, and what's showing */
+.sandstat{
+  position:relative;z-index:2;max-width:1120px;margin:16px auto 0;padding:0 24px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;
+  color:rgba(243,232,202,.45);display:flex;flex-wrap:wrap;gap:4px 18px;
+}
+.sandstat b{color:rgba(243,232,202,.85);font-weight:500}
+.sandstat .showing{margin-left:auto;color:var(--n-moon)}
+
+/* ============================================================
+   the field log — a page of notes on a board, nailed at the corners
+   ============================================================ */
+.logcard{
+  position:fixed;z-index:60;right:0;top:0;bottom:0;width:min(420px,94vw);
+  transform:translateX(101%);transition:transform .34s cubic-bezier(.2,.8,.25,1);
+  padding:10px 10px 10px 0;
+}
+.logcard.open{transform:none}
+.logframe{
+  position:relative;height:100%;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,var(--n-wood-lt),var(--n-wood) 45%,var(--n-wood-dk));
+  border:6px solid var(--n-wood-dk);border-radius:12px;
+  box-shadow:-18px 0 40px rgba(0,0,0,.55),inset 0 0 0 2px rgba(255,255,255,.05);
+}
+.logframe .nail{
+  position:absolute;width:10px;height:10px;border-radius:50%;z-index:2;
+  background:radial-gradient(circle at 35% 35%,#e8e2d0,#8a8474 60%,#5a5548);
+  box-shadow:0 1px 2px rgba(0,0,0,.5);
+}
+.nail.tl{top:8px;left:8px} .nail.tr{top:8px;right:8px}
+.nail.bl{bottom:8px;left:8px} .nail.br{bottom:8px;right:8px}
+.logclose{
+  position:absolute;top:9px;right:26px;z-index:3;
+  width:28px;height:28px;border-radius:50%;cursor:pointer;line-height:1;
+  background:rgba(0,0,0,.32);border:1px solid rgba(243,232,202,.35);color:var(--n-paper);
+  font-size:16px;font-family:var(--sans);
+}
+.logclose:hover{background:rgba(0,0,0,.55);border-color:var(--n-paper)}
+.logpaper{
+  flex:1;margin:16px 12px;padding:20px 20px 26px;overflow:auto;
+  background:
+    radial-gradient(ellipse 70% 40% at 12% 0%,rgba(0,0,0,.05),transparent 60%),
+    var(--n-paper);
+  color:var(--n-ink);border-radius:4px;
+  box-shadow:0 4px 0 rgba(0,0,0,.22),0 10px 20px rgba(0,0,0,.3);
+}
+
+.logcrumb{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--n-ink-soft);margin:0 0 8px;font-weight:500;
+}
+.logtitle{
+  font-family:var(--hand);font-weight:700;font-size:25px;line-height:1.15;
+  color:var(--n-ink);margin:0 0 6px;
+}
+.logtitle::after{
+  content:"";display:block;width:56px;height:3px;border-radius:2px;margin-top:9px;
+  background:var(--dc,#5f4726);
+}
+.logwhen{
+  font-family:var(--mono);font-size:10px;letter-spacing:.05em;color:var(--n-ink-soft);
+  margin:10px 0 12px;
+}
+.logev{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:0}
+.logev li{
+  font-family:var(--mono);font-size:10.5px;color:var(--n-ink);
+  background:rgba(74,49,23,.09);border:1px solid rgba(74,49,23,.24);
+  border-radius:5px;padding:3px 8px;
+}
+.logtext p{font-size:14.5px;line-height:1.72;color:#4a3a20;margin:0 0 14px}
 .wl{
   background:none;border:0;padding:0 1px;cursor:pointer;font:inherit;
-  color:var(--acc-hi);border-bottom:1px solid rgba(142,209,138,.4);
+  color:#7a4a12;font-weight:600;border-bottom:1px solid rgba(122,74,18,.45);
 }
-.wl:hover{color:var(--ink);border-bottom-color:var(--acc)}
-.wl.broken{color:var(--warn);border-bottom:1px dashed var(--warn);cursor:help}
+.wl:hover{color:#4a2c07;border-bottom-color:#4a2c07;background:rgba(176,141,82,.22)}
+.wl.broken{color:#a0522d;border-bottom:1px dashed #a0522d;cursor:help;font-weight:400}
 
-/* timeline */
-.tl{list-style:none;margin:0;padding:0}
-.tl-row{
-  --dc:var(--acc);
-  display:grid;grid-template-columns:104px 16px 1fr;align-items:start;gap:10px;
-  padding:9px 0;border-bottom:1px solid var(--line);
+.loglinks{margin:16px 0 0;border-top:1px dashed rgba(74,49,23,.3);padding-top:12px}
+.loglinks h3{
+  display:flex;align-items:center;gap:7px;margin:0 0 8px;font-weight:400;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--n-ink-soft);
 }
-.tl-row:last-child{border-bottom:0}
-.tl-when{font-family:var(--mono);font-size:10.5px;color:var(--dim);padding-top:4px;letter-spacing:.03em}
-.tl-dot{
-  width:9px;height:9px;border-radius:50%;background:var(--dc);margin-top:7px;
-  box-shadow:0 0 0 3px rgba(255,255,255,.03);
+.loglinks h3 span{
+  font-size:9px;background:rgba(74,49,23,.14);border-radius:999px;padding:1px 6px;color:var(--n-ink);
 }
-.tl-note{
-  display:block;width:100%;text-align:left;background:none;border:0;padding:2px 6px;border-radius:6px;
-  cursor:pointer;color:var(--ink);font:inherit;transition:background .12s;
+.ropelinks{display:flex;flex-wrap:wrap;gap:5px}
+.ropelink{
+  font-family:var(--sans);font-size:12.5px;line-height:1.3;text-align:left;cursor:pointer;
+  background:rgba(255,255,255,.55);border:1px solid rgba(74,49,23,.3);
+  border-radius:999px;padding:4px 11px;color:var(--n-ink);
+  transition:background .15s,border-color .15s;
 }
-.tl-note:hover{background:var(--panel)}
-.tl-note b{display:block;font-size:14.5px;font-weight:600}
-.tl-meta{font-family:var(--mono);font-size:10px;color:var(--dim)}
+.ropelink::before{content:"\2726 ";color:var(--lc,#5f4726);font-size:10px}
+.ropelink:hover{background:#fff;border-color:var(--n-ink)}
+.ropelink.broken{opacity:.6;cursor:default;border-style:dashed}
+.logempty{font-family:var(--mono);font-size:10.5px;color:var(--n-ink-soft);margin:0;opacity:.75}
 
-/* graph pane: PNGraphify brings its own .pg-* styles from notes.css */
-#pane-graph{padding:16px}
-.graph-note{
-  margin:12px 0 0;font-family:var(--mono);font-size:10.5px;line-height:1.6;color:var(--dim);
-  border-top:1px solid var(--line);padding-top:11px;
-}
+/* ============================================================
+   the deck below the beach: search, the crates, provenance
+   ============================================================ */
+.deck{position:relative;z-index:2;max-width:1040px;margin:0 auto;padding:30px 24px 0}
 
-/* ---------------- right: inspector ---------------- */
-.wins{padding:16px 14px;overflow:auto;max-height:760px}
-.wins[hidden]{display:none}
-.ins-panel{margin:0 0 18px}
-.ins-panel h3{
-  display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;
-  font-family:var(--mono);font-size:9.5px;letter-spacing:.13em;text-transform:uppercase;
-  color:var(--dim);font-weight:400;
+.plankbar{
+  position:relative;display:flex;align-items:center;gap:8px;
+  background:linear-gradient(180deg,var(--n-wood-lt),var(--n-wood));
+  border:4px solid var(--n-wood-dk);border-radius:9px;
+  padding:8px 10px;box-shadow:0 5px 0 rgba(0,0,0,.25),0 10px 20px rgba(0,0,0,.3);
 }
-.ins-panel h3 span{color:var(--acc)}
-.ins-items{display:grid;gap:4px}
-.side-link{
-  display:block;width:100%;text-align:left;padding:6px 8px;border-radius:6px;cursor:pointer;
-  background:var(--panel);border:1px solid var(--line);color:var(--mut);
-  font-size:12.5px;line-height:1.35;transition:color .12s,border-color .12s;
+.plankbar .mag{color:rgba(243,232,202,.6);font-size:15px;padding-left:4px}
+.plankbar input{
+  flex:1;min-width:0;background:rgba(0,0,0,.24);border:1px solid rgba(243,232,202,.22);
+  border-radius:6px;padding:8px 11px;color:var(--n-paper);
+  font-family:var(--mono);font-size:12.5px;
 }
-.side-link:hover{color:var(--ink);border-color:var(--acc)}
-.side-link.broken{color:var(--warn);border-style:dashed;cursor:default}
-.ins-empty{font-family:var(--mono);font-size:10.5px;color:var(--dim);margin:0}
+.plankbar input::placeholder{color:rgba(243,232,202,.45)}
+.plankbar input:focus{outline:2px solid var(--n-moon);outline-offset:1px;border-color:var(--n-moon)}
+.plankbar kbd{
+  font-family:var(--mono);font-size:9.5px;color:rgba(243,232,202,.55);
+  border:1px solid rgba(243,232,202,.25);border-radius:4px;padding:3px 6px;
+}
+.clearall{
+  font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--n-ink);background:var(--n-paper);border:0;border-radius:999px;
+  padding:5px 11px;cursor:pointer;
+}
+.clearall:hover{background:#fff}
+.clearall[hidden]{display:none}
 
-/* ---------------- status bar ---------------- */
-.wstatus{
-  grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px 20px;align-items:center;
-  padding:9px 14px;background:var(--panel);border-top:1px solid var(--line);
-  font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.04em;
+.crate{
+  margin:12px 0 0;border:1px dashed rgba(243,232,202,.24);border-radius:9px;
+  background:rgba(0,0,0,.16);
 }
-.wstatus b{color:var(--acc-hi);font-weight:500}
-.wstatus .status-when{margin-left:auto}
+.crate > summary{
+  list-style:none;cursor:pointer;padding:11px 14px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(243,232,202,.75);display:flex;align-items:center;gap:9px;
+}
+.crate > summary::-webkit-details-marker{display:none}
+.crate > summary::before{content:"\25B8";font-size:10px;transition:transform .2s;color:var(--n-rope)}
+.crate[open] > summary::before{transform:rotate(90deg)}
+.crate > summary:hover{color:var(--n-paper)}
+.crate .cratebody{padding:2px 14px 16px}
+
+.fngroup{margin:0 0 14px}
+.fnhead{
+  display:flex;align-items:center;gap:8px;margin:0 0 7px;font-weight:400;
+  font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(243,232,202,.62);
+}
+.fnhead .dot{width:8px;height:8px;border-radius:50%;flex:none;box-shadow:0 0 8px currentColor}
+.fnhead .n{margin-left:auto;color:rgba(243,232,202,.45);font-size:9.5px}
+.fnlist{display:flex;flex-wrap:wrap;gap:5px}
+.fnitem{
+  cursor:pointer;text-align:left;font-family:var(--sans);font-size:12.5px;line-height:1.3;
+  background:rgba(243,232,202,.07);border:1px solid rgba(243,232,202,.18);border-radius:999px;
+  padding:4px 11px;color:rgba(243,232,202,.85);transition:background .14s,border-color .14s,color .14s;
+}
+.fnitem::before{content:"\2726 ";color:var(--dc,#fff);font-size:10px}
+.fnitem:hover{background:rgba(243,232,202,.16);color:#fff;border-color:rgba(243,232,202,.4)}
+.fnitem.on{background:var(--dc,#fff);color:#10151f;border-color:var(--dc,#fff);font-weight:500}
+.fnitem.on::before{color:rgba(16,21,31,.6)}
+.fnempty{font-family:var(--mono);font-size:11px;color:rgba(243,232,202,.55);margin:4px 0 10px}
+
+.log{list-style:none;margin:0;padding:0}
+.logrow{
+  display:grid;grid-template-columns:100px 14px 1fr;align-items:start;gap:10px;
+  padding:7px 0;border-bottom:1px solid rgba(243,232,202,.1);
+}
+.logrow:last-child{border-bottom:0}
+.logdate{font-family:var(--mono);font-size:10px;color:rgba(243,232,202,.5);padding-top:5px}
+.logdot{width:9px;height:9px;border-radius:50%;background:var(--dc,#fff);margin-top:7px;box-shadow:0 0 9px var(--dc,#fff)}
+.logbtn{
+  display:block;width:100%;text-align:left;background:none;border:0;padding:3px 7px;border-radius:6px;
+  cursor:pointer;color:rgba(243,232,202,.9);font:inherit;transition:background .12s;
+}
+.logbtn:hover{background:rgba(243,232,202,.09);color:#fff}
+.logbtn b{display:block;font-family:var(--hand);font-size:15.5px;font-weight:700;line-height:1.25}
+.logbtn span{font-family:var(--mono);font-size:9.5px;color:rgba(243,232,202,.5)}
 
 .atlas-foot{
-  margin:22px 0 0;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--dim);
-  border:1px dashed var(--line2);border-radius:var(--r);padding:13px 15px;
+  margin:22px 0 0;font-family:var(--mono);font-size:11px;line-height:1.75;
+  color:rgba(243,232,202,.55);
+  border:1px dashed rgba(243,232,202,.22);border-radius:var(--r);padding:13px 15px;
 }
-.atlas-foot b{color:var(--mut)}
-.atlas-foot a{color:var(--acc)}
+.atlas-foot b{color:rgba(243,232,202,.85)}
+.atlas-foot a{color:var(--n-moon)}
+.atlas-foot .mono{font-family:var(--mono)}
 
-@media (max-width:900px){
-  .workspace,.workspace.ins-off{grid-template-columns:minmax(0,1fr)}
-  /* stacked, the note itself comes first — nobody wants to scroll past a
-     25-item explorer to reach what they clicked */
-  .wbar{order:0} .wmain{order:1} .wins{order:2} .wside{order:3} .wstatus{order:4}
-  .wside,.wins{max-height:none}
-  .wins{border-top:1px solid var(--line)}
-  .wpane{padding:20px 18px;max-height:none}
-  .tl-row{grid-template-columns:88px 14px 1fr}
+/* ---------------- responsive ---------------- */
+@media (min-width:900px){
+  /* room for a whole title once there is width for one — 162px was
+     clipping "A number you can actuall…" mid-word */
+  .star-name{max-width:208px}
+}
+@media (min-width:1080px){
+  body.atlas-page.logopen .shore{padding-right:min(420px,94vw)}
+}
+@media (max-width:1079px){
+  .logcard{
+    right:0;left:0;top:auto;bottom:0;width:auto;max-height:80vh;
+    padding:0 8px 8px;transform:translateY(101%);
+  }
+  .logframe{border-radius:14px 14px 0 0}
+  .logpaper{margin:14px 10px}
+}
+@media (max-width:860px){
+  .beach{grid-template-columns:minmax(0,1fr);gap:14px;justify-items:center;padding-top:10px}
+  .jars{justify-content:center}
+  .sky{height:clamp(400px,60vh,520px)}
+  .palm{width:118px}
+  .sandstat{font-size:9.5px;gap:3px 12px}
+  .sandstat .showing{margin-left:0}
+}
+@media (max-width:560px){
+  /* six jars flow 5 + 1 on a phone, which reads as a mistake — two rows
+     of three reads as a shelf */
+  .jars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 2px;justify-items:center;width:100%}
+  .jar svg{width:56px}
+  .jartag{font-size:10.5px;max-width:12ch}
+  .logrow{grid-template-columns:80px 12px 1fr}
+  .star-name{font-size:11.5px;max-width:130px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .dust i,.star-glow,.wave-row,.palm .leaves,.shooter,.jar .fly,.jar .escape,
+  .star.pinged .ping{animation:none !important}
+  .sky.scoping .ln,.ln.lit{animation:none !important;stroke-dashoffset:0 !important}
+  .shore,.logcard,.jar,.scope .barrel,.peek{transition:none !important}
 }

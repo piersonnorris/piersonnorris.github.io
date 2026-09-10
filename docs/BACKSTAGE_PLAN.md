@@ -154,7 +154,9 @@ one. It is the closest of the three to real Obsidian, it inherits the site's exi
 of fighting it, and it is the only one of the three that comfortably holds a file tree, a reader, a graph
 and an inspector at once. This also finally closes **R10**, parked on exactly this choice since 2026-09-06.
 
-Layout — the atlas's three-pane workspace shell, reused rather than rewritten:
+Layout — the three-pane workspace shell, reused rather than rewritten. It was written for the atlas and lived in
+`atlas.css` until R20 rebuilt `/atlas/` as a night sky; it now lives in `assets/css/workspace.css`, and `/vault/` is
+its only caller:
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐

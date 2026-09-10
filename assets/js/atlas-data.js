@@ -30,8 +30,8 @@
     { id: 'sales',   label: 'Sales & local marketing', color: '#E8A33D' },
     { id: 'finance', label: 'Finance & markets',       color: '#4CC9F0' },
     { id: 'ai',      label: 'AI & automation',         color: '#c084fc' },
-    { id: 'web',     label: 'Web & tools',             color: '#45c26b' },
-    { id: 'study',   label: 'School & language',       color: '#8b95a5' }
+    { id: 'web',     label: 'Web & tools',             color: '#37d7c2' },
+    { id: 'study',   label: 'School & language',       color: '#a9bcd6' }
   ];
 
   /* Where a lesson was actually learned — the atlas's second axis. */

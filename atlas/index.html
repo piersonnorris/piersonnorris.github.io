@@ -4,21 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Atlas — Pierson Norris</title>
-  <meta name="description" content="A knowledge atlas: what Pierson Norris has learned running True North Services LLC, interning at Screencastify, investing since 2020, and building his own tools — as linked notes, a graph, and a timeline.">
+  <meta name="description" content="A knowledge atlas read as a night sky: what Pierson Norris has learned running True North Services LLC, interning at Screencastify, investing since 2020, and building his own tools. One star per note, one jar per domain, a telescope that draws the links between them.">
   <link rel="canonical" href="https://piersonnorris.github.io/atlas/">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
-  <meta name="theme-color" content="#0e1116">
+  <meta name="theme-color" content="#060b1c">
 
   <meta property="og:type" content="website">
   <meta property="og:title" content="Atlas — Pierson Norris">
-  <meta property="og:description" content="What I've learned, where I learned it, and how the lessons link up — as linked notes, a graph, and a timeline.">
+  <meta property="og:description" content="What I've learned, where I learned it, and how the lessons link up — charted as a night sky over the island.">
   <meta property="og:url" content="https://piersonnorris.github.io/atlas/">
   <meta name="twitter:card" content="summary">
 
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&family=Kalam:wght@400;700&display=swap">
   <link rel="stylesheet" href="/assets/css/site.css">
-  <!-- notes.css carries PNGraphify's .pg-* graph styles; atlas.css is this page -->
-  <link rel="stylesheet" href="/assets/css/notes.css">
   <link rel="stylesheet" href="/assets/css/atlas.css">
 </head>
 <body class="atlas-page">
@@ -45,80 +43,150 @@
     </div>
   </header>
 
-  <main class="wrap" id="main">
-    <section class="atlas-head">
-      <p class="eyebrow">Knowledge atlas</p>
-      <h1>What I’ve learned, and where.</h1>
-      <p class="lede">Every note here is a lesson from documented work — running <b>True North Services LLC</b>, the
-        <b>Screencastify</b> internship, investing since 2020, and building these tools. Titles quote my own write-ups
-        where one exists. Read them as notes, as a link graph, or as a timeline.</p>
-    </section>
+  <main id="main">
+  <div class="shore" id="shore">
 
-    <div class="workspace">
-      <div class="wbar">
-        <span class="brandmark"><i aria-hidden="true"></i>Atlas</span>
-        <div class="searchwrap">
-          <span class="mag" aria-hidden="true">⌕</span>
-          <input type="search" id="search" placeholder="Search notes, tags, text…" aria-label="Search the atlas">
-          <kbd aria-hidden="true">⌘K</kbd>
-        </div>
-        <div class="views" role="tablist" aria-label="View">
-          <button type="button" class="vtab" id="view-reader" role="tab" aria-selected="true" aria-controls="pane-reader">Reader</button>
-          <button type="button" class="vtab" id="view-graph" role="tab" aria-selected="false" aria-controls="pane-graph" tabindex="-1">Graph</button>
-          <button type="button" class="vtab" id="view-timeline" role="tab" aria-selected="false" aria-controls="pane-timeline" tabindex="-1">Timeline</button>
-        </div>
+    <!-- ============ the sky: one star per note ============ -->
+    <div class="scene">
+      <section class="atlas-hero">
+        <p class="eyebrow">Knowledge atlas</p>
+        <h1>What I’ve learned, and where.</h1>
+        <p class="lede">The island after dark. Every star is a lesson from documented work — <b>True North
+          Services LLC</b>, the <b>Screencastify</b> internship, investing since 2020, building these tools.
+          Open a jar to light one domain, press a star to read it, and look through the telescope to see
+          how the lessons link up.</p>
+      </section>
+
+      <div class="sky" id="sky">
+        <div class="dust" id="dust" aria-hidden="true"></div>
+        <span class="moon" aria-hidden="true"></span>
+        <span class="shooter" aria-hidden="true"></span>
+        <span class="shooter s2" aria-hidden="true"></span>
+
+        <!-- every line here is a real [[wikilink]], drawn by atlas-ui.js -->
+        <svg class="lines" id="lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+        <div class="stars" id="stars" role="group"
+             aria-label="The notes, as stars. Activate a star to read its note; arrow keys move between them."></div>
+
+        <!-- what a star is, without having to open it. Filled by atlas-ui.js
+             on hover and on keyboard focus; aria-hidden because the star
+             button itself already carries the same words. -->
+        <div class="peek" id="peek" aria-hidden="true" hidden></div>
       </div>
-
-      <aside class="wside" aria-label="Atlas explorer">
-        <h2>Domains</h2>
-        <div class="chips" id="domains"></div>
-        <h2>Notes</h2>
-        <div id="explorer"></div>
-        <h2>Where it was learned</h2>
-        <div class="chips" id="sources"></div>
-        <h2>Tags</h2>
-        <div class="chips" id="tags"></div>
-      </aside>
-
-      <div class="wmain">
-        <div class="wpane" id="pane-reader" role="tabpanel" aria-labelledby="view-reader">
-          <div id="reader"></div>
-        </div>
-        <div class="wpane" id="pane-graph" role="tabpanel" aria-labelledby="view-graph" hidden>
-          <div id="graph"></div>
-          <p class="graph-note">Every edge is a real <span class="mono">[[wikilink]]</span> written in a note above —
-            drawn by <span class="mono">PNGraphify</span>, the same engine the private vault uses. Filters in the sidebar
-            narrow what the graph shows.</p>
-        </div>
-        <div class="wpane" id="pane-timeline" role="tabpanel" aria-labelledby="view-timeline" hidden>
-          <ul class="tl" id="timeline"></ul>
-        </div>
-      </div>
-
-      <aside class="wins" id="inspector" aria-label="Note details"></aside>
-
-      <div class="wstatus" id="status" aria-live="polite"></div>
     </div>
 
-    <p class="atlas-foot">
-      <b>How this page works.</b> The atlas is a curated, public data file
-      (<span class="mono">assets/js/atlas-data.js</span>) — not the encrypted vault behind
-      <a href="/notes/">/notes/</a>, and not a feed of anything private. Every claim traces to
-      <span class="mono">docs/CONTENT.md</span>, the site’s single source of truth; nothing marked open there is asserted
-      here, and no client names, portfolio values or former-employer figures appear anywhere on it.
-    </p>
+    <!-- ============ the sea ============ -->
+    <div class="sea" aria-hidden="true">
+      <div class="wave-row w1"><svg viewBox="0 0 200 22" preserveAspectRatio="none"><path d="M0 12 Q10 4 20 12 T40 12 T60 12 T80 12 T100 12 T120 12 T140 12 T160 12 T180 12 T200 12 V22 H0 Z" fill="#cbe9f0" opacity=".28"/></svg></div>
+      <div class="wave-row w2"><svg viewBox="0 0 200 22" preserveAspectRatio="none"><path d="M0 14 Q10 8 20 14 T40 14 T60 14 T80 14 T100 14 T120 14 T140 14 T160 14 T180 14 T200 14 V22 H0 Z" fill="#cbe9f0" opacity=".22"/></svg></div>
+    </div>
 
-    <footer class="sitefoot">
-      <address>
-        <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a><br>
-        <a href="https://www.linkedin.com/in/pierson-norris-634954246" rel="noopener">LinkedIn — Pierson Norris</a><br>
-        Built by hand — plain HTML, no framework.
-      </address>
-    </footer>
+    <!-- ============ the sand: the jars and the telescope ============ -->
+    <div class="sand">
+      <span class="shell" aria-hidden="true" style="left:9%;top:118px">🐚</span>
+      <span class="shell" aria-hidden="true" style="left:88%;top:150px">⭐</span>
+
+      <div class="palm left" aria-hidden="true">
+        <svg viewBox="0 0 190 260">
+          <path d="M96 260 C92 190 100 140 108 100" fill="none" stroke="#241a12" stroke-width="12" stroke-linecap="round"/>
+          <path d="M96 260 C92 190 100 140 108 100" fill="none" stroke="#3a2a1b" stroke-width="5" stroke-linecap="round"/>
+          <g class="leaves">
+            <path d="M108 100 C60 90 20 60 0 20 C50 30 90 55 108 100 Z" fill="#15251d"/>
+            <path d="M108 100 C150 75 190 60 190 15 C140 20 115 55 108 100 Z" fill="#1b2f25"/>
+            <path d="M108 100 C70 70 40 40 45 0 C85 15 105 55 108 100 Z" fill="#1b2f25"/>
+            <path d="M108 100 C130 60 150 30 140 0 C110 20 100 60 108 100 Z" fill="#15251d"/>
+            <path d="M108 100 C110 55 130 20 175 10 C155 45 130 70 108 100 Z" fill="#22392c"/>
+          </g>
+        </svg>
+      </div>
+      <div class="palm right" aria-hidden="true">
+        <svg viewBox="0 0 190 260">
+          <path d="M96 260 C92 190 100 140 108 100" fill="none" stroke="#241a12" stroke-width="12" stroke-linecap="round"/>
+          <path d="M96 260 C92 190 100 140 108 100" fill="none" stroke="#3a2a1b" stroke-width="5" stroke-linecap="round"/>
+          <g class="leaves">
+            <path d="M108 100 C60 90 20 60 0 20 C50 30 90 55 108 100 Z" fill="#15251d"/>
+            <path d="M108 100 C150 75 190 60 190 15 C140 20 115 55 108 100 Z" fill="#1b2f25"/>
+            <path d="M108 100 C70 70 40 40 45 0 C85 15 105 55 108 100 Z" fill="#1b2f25"/>
+            <path d="M108 100 C130 60 150 30 140 0 C110 20 100 60 108 100 Z" fill="#15251d"/>
+            <path d="M108 100 C110 55 130 20 175 10 C155 45 130 70 108 100 Z" fill="#22392c"/>
+          </g>
+        </svg>
+      </div>
+
+      <div class="beach">
+        <button type="button" class="scope" id="scope" aria-pressed="false">
+          <svg viewBox="0 0 150 125" aria-hidden="true">
+            <path class="tripod" d="M66 56 L40 116 M66 56 L66 118 M66 56 L92 116"/>
+            <g transform="rotate(-32 66 56)">
+              <g class="barrel">
+                <path class="beam" d="M112 44 L154 16 L154 98 L112 69 Z" fill="#ffeaa6"/>
+                <rect class="tube" x="14" y="51" width="14" height="11" rx="4"/>
+                <rect class="tube" x="27" y="46" width="58" height="21" rx="7"/>
+                <rect class="ring" x="58" y="44" width="5" height="25" rx="2"/>
+                <rect class="tube2" x="84" y="41" width="28" height="31" rx="8"/>
+                <rect class="ring" x="81" y="41" width="5" height="31" rx="2"/>
+                <ellipse class="lens" cx="110" cy="56.5" rx="4.5" ry="13"/>
+              </g>
+            </g>
+            <circle cx="66" cy="56" r="7" fill="#3d2917"/>
+          </svg>
+          <span class="scopelabel" id="scopelabel">Look through the telescope</span>
+        </button>
+
+        <div class="jars" id="jars" role="group" aria-label="The jars — one per domain. Open one to light only its stars."></div>
+      </div>
+
+      <p class="sandstat" id="status" aria-live="polite"></p>
+
+      <!-- ============ the deck ============ -->
+      <div class="deck">
+        <div class="plankbar">
+          <span class="mag" aria-hidden="true">⌕</span>
+          <input type="search" id="search" placeholder="Search the sky — notes, tags, text…" aria-label="Search the atlas">
+          <kbd aria-hidden="true">⌘K</kbd>
+          <button type="button" class="clearall" id="clearall" data-clear hidden>Clear</button>
+        </div>
+
+        <details class="crate" open>
+          <summary>Field notes — every star, by jar</summary>
+          <div class="cratebody"><div id="fieldnotes"></div></div>
+        </details>
+
+        <details class="crate">
+          <summary>Ship’s log — when each lesson was learned</summary>
+          <div class="cratebody"><ol class="log" id="timeline"></ol></div>
+        </details>
+
+        <noscript>
+          <p class="atlas-foot">The sky is drawn in the browser, so this page needs JavaScript to chart itself.
+            The notes it draws from live in plain sight at
+            <span class="mono">assets/js/atlas-data.js</span>.</p>
+        </noscript>
+
+        <footer class="sitefoot">
+          <address>
+            <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a><br>
+            <a href="https://www.linkedin.com/in/pierson-norris-634954246" rel="noopener">LinkedIn — Pierson Norris</a><br>
+            Built by hand — plain HTML, no framework.
+          </address>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ the field log ============ -->
+  <aside class="logcard" id="logcard" hidden aria-labelledby="log-title" tabindex="-1">
+    <div class="logframe">
+      <span class="nail tl" aria-hidden="true"></span><span class="nail tr" aria-hidden="true"></span>
+      <span class="nail bl" aria-hidden="true"></span><span class="nail br" aria-hidden="true"></span>
+      <button type="button" class="logclose" id="logclose" aria-label="Close the field log">×</button>
+      <div class="logpaper" id="logbody"></div>
+    </div>
+  </aside>
   </main>
 
   <script src="/assets/js/nav.js"></script>
-  <script src="/assets/js/notes-graph.js"></script>
   <script src="/assets/js/atlas-data.js"></script>
   <script src="/assets/js/atlas-ui.js"></script>
 </body>

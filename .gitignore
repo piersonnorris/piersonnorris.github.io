@@ -42,6 +42,8 @@
 !/tools/tracker/notes-graph.test.js
 !/tools/tracker/markdown.test.js
 !/tools/tracker/vault-publish.test.js
+!/tools/tracker/atlas-links.test.js
+!/tools/tracker/vault-groups.test.js
 !/tools/obsidian-sync.js
 !/.github/
 !/.github/workflows/

@@ -328,6 +328,36 @@ screenshot before measuring.
 - The lid, once lifted, parks at the top of the scene and is the only thing in OPEN that is not either a
   note or the room. It reads fine; it has not been designed.
 
+## 8c. Definition of done — every push, no exceptions
+
+Decided by Pierce, 2026-09-10, after the first push of this work went to a branch and he had no way to
+see any of it.
+
+**A step of this rebuild is not done when the code works, and not done when it is pushed. It is done
+when Pierce can see it on the live site in his pinned Chrome tab.** Four things, all of them, every
+time:
+
+1. Merged to **`master`** — the only branch GitHub Pages builds (`source: {branch: master, path: /}`).
+   A branch push deploys nothing.
+2. The `pages build and deployment` run finished green.
+3. The change **confirmed on `https://piersonnorris.github.io` in the pinned Chrome tab** — looked at,
+   not assumed. Deploys lag the push by a minute or so, so a check run too early lies.
+4. The console clean on whichever page changed.
+
+**This check runs on every single push, not once at the end of a phase.** The two things it catches are
+both already in this project's history: a branch that never reaches `master` (which is what happened on
+the first push of steps 1–3), and a green Pages build serving a 404 because `.gitignore` silently ate
+the file — `BACKSTAGE_PLAN.md` §1, six pages pointing at a live 404 for a week. This rebuild is
+especially exposed to the second one, because `.gitignore` here denies by default and every new file
+needs an allowlist line; `vault-groups.test.js` already needed one.
+
+Worth stating plainly so nobody expects otherwise: **pinning the tab is Pierce's action, not something
+the tooling can do.** Browser tab-strip state is outside what page automation can reach. What gets
+verified automatically is that the URL is live, correct and clean; the pinned tab is where he sees it.
+
+Also standing rule 8 in `docs/ROADMAP.md` §4, which is where it applies to the whole site rather than
+just this rebuild.
+
 ## 9. Open — need Pierce's call
 
 1. ~~**Reading surface.**~~ **Answered 2026-09-10: reading lives off-page at `/vault/`.** The jar

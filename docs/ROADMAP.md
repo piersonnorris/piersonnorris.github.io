@@ -199,6 +199,7 @@ A full pass over the live site (Home, Experience, Notes, Tracker, Island), verif
 5. **Board ↔ Obsidian ↔ this file stay in sync** (see sync rule at top).
 6. **Questions for Pierce get logged, not just asked in chat.** Anything Claude or ChatGPT can't resolve without Pierce goes in **§5 PN Tasks → Open questions** so it survives past one session.
 7. **Local rebuild + test loop:** `node tools/tracker/build.js --local-snapshot`, `node tools/tracker/calendar.test.js`, `node tools/tracker/taskboard.test.js`, `node tools/tracker/charts.test.js`, then click through the demo page.
+8. **A website task is not done until it is live and somebody has looked at it.** Working locally is not done. *Pushed* is not done either. Done means all four: merged to **`master`** (the only branch GitHub Pages builds — `source: {branch: master, path: /}`), the `pages build and deployment` run finished green, the change **seen on `https://piersonnorris.github.io` in the pinned Chrome tab**, and the console clean on the page that changed. Run that check **every single time anything is pushed**, not once at the end of a piece of work. Two failure modes this exists to catch, both of which have already happened here: a branch that never reaches `master` deploys nothing at all, and a Pages build can go green while the page 404s on a file `.gitignore` quietly ate — `docs/BACKSTAGE_PLAN.md` §1 is exactly that, six pages linking to a live 404 for a week. **If the pinned tab does not show it, the task is still open.**
 
 ## 5. PN Tasks — Pierce's queue
 

@@ -125,7 +125,29 @@ function main() {
 
   markup();
   hoard();
+  privacyDock();
   console.log('Chart indicator tests: OK');
+}
+
+/* The public tracker must never briefly offer a PIN prompt, and every
+   visit must start with portfolio-owned figures blocked. The switch is
+   deliberately fixed at the bottom instead of competing with chart and
+   theme controls in the header. */
+function privacyDock() {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const src = fs.readFileSync(path.join(__dirname, 'index.template.html'), 'utf8');
+
+  assert.match(src, /#lock\{display:none;/, 'the open build cannot flash the PIN screen');
+  assert.match(src, /if \(!OPEN\) lockSection\.style\.display = 'grid';/, 'sealed and demo builds still reveal their lock');
+  assert.match(src, /class="privacy-dock"/, 'privacy switch lives in the bottom dock');
+  assert.match(src, /id="censortoggle"[^>]+role="switch"[^>]+aria-checked="true"/, 'privacy control is an on-by-default switch');
+  assert.match(src, /var censored = true;/, 'every page load starts with figures hidden');
+  assert.doesNotMatch(src, /pn\.tracker\.censor/, 'a prior visitor cannot persist figures-visible state');
+
+  const bar = src.match(/<div class="bar">([\s\S]*?)<\/div>/);
+  assert.ok(bar, 'tracker header bar exists');
+  assert.ok(!bar[1].includes('censortoggle'), 'privacy control is no longer in the header');
 }
 
 /* The Charts panel is built by string concatenation with two optional

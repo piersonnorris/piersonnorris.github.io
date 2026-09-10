@@ -13,7 +13,7 @@ Six tabs: Positions, Dividends (income + 12-month payout projection + calendar),
 
 ## The censor toggle
 
-Header button, next to the theme switch. **Default on**, remembered per browser in `pn.tracker.censor`. It stars out every figure that says *how much is held* — position values, share and coin counts, cost basis, P/L, dividend income, portfolio totals, and the same numbers inside chart legends, tooltips and screen-reader tables.
+Fixed switch at the bottom of the screen. **Default on for every page load**; revealing figures is deliberately not remembered. It stars out every figure that says *how much is held* — position values, share and coin counts, cost basis, P/L, dividend income, portfolio totals, and the same numbers inside chart legends, tooltips and screen-reader tables.
 
 It deliberately leaves **market data legible**: a stock's close, its range, its session move. Those are public information, identical on every screen in the world, and starring them would break the price chart to protect nothing. Price stays visible while quantity does not, so price × quantity cannot be reconstructed on screen.
 

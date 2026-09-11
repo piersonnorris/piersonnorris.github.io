@@ -63,6 +63,14 @@
   var sky, starWrap, lineSvg, logcard, logpaper, searchEl, peek;
   var flight = null;   /* PNFlight — jar-to-star fireflies, atlas-flight.js */
 
+  /* The open jar's own layout, or null for "everyone is home". Stars are
+     placed in percentages and .star transitions left/top, so swapping the
+     lookup under place() IS the morph — there is no animation code here. */
+  var spread = null;
+
+  /* One question, asked in one place: where is this star right now. */
+  function at(id) { return (spread && spread[id]) || pos[id]; }
+
   function key(s) { return String(s == null ? '' : s).trim().toLowerCase(); }
 
   function esc(s) {
@@ -227,6 +235,133 @@
     }
   }
 
+  /* ---- the open jar's layout -------------------------------------------
+     Pierce, 2026-09-11: "make the jars have the stars spread out."
+
+     The home layout packs each domain into a tight cluster around its own
+     sky anchor, which is the right picture for the whole constellation and
+     the wrong one for reading a single domain: six stars inside ~200px, six
+     name labels, and atlas.css already says so in as many words — "five
+     labels all hanging below it would overlap". Alternating the labels above
+     and below bought two; it does not buy six.
+
+     So an open jar gets its own layout across the WHOLE sky. Same seeded
+     hash, same relaxation idea, one important difference: separation is
+     measured as an ellipse the size of a LABEL, not a circle the size of a
+     tap target. A star is 38px wide and its name is up to 162px, so the
+     thing that actually collides is the text, and pushing on a circular
+     radius solves the wrong problem.
+
+     Only ever 2-6 stars are in here (the biggest domain has 6), so the
+     relaxation has room to converge and this stays cheap. */
+  function layoutSpread(domainId) {
+    var ids = data.notes.filter(function (n) { return n.domain === domainId; })
+      .map(function (n) { return n.id; });
+    if (!ids.length) return null;
+
+    var W = sky.clientWidth || 1100;
+    var H = sky.clientHeight || 500;
+
+    /* MEASURE THE LABELS, do not model them. The first attempt at this
+       pushed stars apart on an ellipse the size of one assumed 172px
+       label, and it did not work: nine overlapping pairs on `ops` alone.
+       Two reasons, both invisible to a model. These titles run from "One
+       path per lead" to "No form, no distribution without it", so the
+       pills vary from ~70px to the 162px cap — a single assumed width is
+       wrong for nearly all of them. And atlas.css alternates the label
+       above and below the star (`.star:nth-child(2n)`), so two stars at
+       the same height may have labels 40px apart or perfectly aligned.
+
+       A label's SIZE does not depend on where its star is, so one read
+       per star is enough and the relaxation stays pure arithmetic after
+       that. Rectangles, not circles: two pills collide only when they
+       overlap on BOTH axes, and the cheap way out is whichever axis needs
+       the smaller shove. Pushing along a radius solves the wrong problem
+       — it moves labels that were never going to touch. */
+    var GAP = 10;
+    var boxes = {};
+    ids.forEach(function (id) {
+      var star = starWrap.querySelector('[data-note="' + cssEsc(id) + '"]');
+      var name = star && star.querySelector('.star-name');
+      var w = name ? name.getBoundingClientRect().width : 120;
+      var h = name ? name.getBoundingClientRect().height : 20;
+      /* how far the pill's centre sits from the star's, and on which side:
+         read it off the element rather than re-deriving the CSS sum */
+      var off = 0;
+      if (star && name) {
+        var sr = star.getBoundingClientRect(), nr = name.getBoundingClientRect();
+        off = (nr.top + nr.height / 2) - (sr.top + sr.height / 2);
+      }
+      boxes[id] = { w: w || 120, h: h || 20, off: off };
+    });
+
+    /* work in pixels — every constraint below is a real pixel measurement,
+       and converting each one into percentages first only invites the
+       aspect-ratio mistakes the home layout has to make on purpose */
+    var out = {};
+    var R = ids.length < 3 ? 0.18 : 0.30;
+    ids.forEach(function (id, i) {
+      var j = hash01(id + '~spread');
+      var ang = i * 2.39996 + j * 0.8;
+      var rad = Math.sqrt((i + 0.75) / ids.length) * (0.84 + j * 0.34);
+      out[id] = {
+        x: W * 0.5 + Math.cos(ang) * rad * R * W * 1.25,
+        y: H * 0.47 + Math.sin(ang) * rad * R * H * 1.55
+      };
+    });
+
+    var moonX = MOON.x / 100 * W, moonY = MOON.y / 100 * H;
+    var moonR = MOON.r + 18;
+
+    for (var pass = 0; pass < 260; pass++) {
+      for (var a = 0; a < ids.length; a++) {
+        for (var b = a + 1; b < ids.length; b++) {
+          var p = out[ids[a]], q = out[ids[b]];
+          var ba = boxes[ids[a]], bb = boxes[ids[b]];
+          var needX = (ba.w + bb.w) / 2 + GAP;
+          var needY = (ba.h + bb.h) / 2 + GAP;
+          var dx = q.x - p.x;
+          var dy = (q.y + bb.off) - (p.y + ba.off);   /* pill centre to pill centre */
+          var ox = needX - Math.abs(dx);
+          var oy = needY - Math.abs(dy);
+          if (ox <= 0 || oy <= 0) continue;           /* clear on one axis is clear */
+          if (ox / needX < oy / needY) {
+            var sx = (dx < 0 ? -1 : 1) * ox / 2 * 1.04;
+            p.x -= sx; q.x += sx;
+          } else {
+            var sy = (dy < 0 ? -1 : 1) * oy / 2 * 1.04;
+            p.y -= sy; q.y += sy;
+          }
+        }
+      }
+      ids.forEach(function (id) {
+        var p = out[id], bx = boxes[id];
+        /* the moon is a no-fly zone here too */
+        var mx = p.x - moonX, my = p.y - moonY;
+        var md = Math.sqrt(mx * mx + my * my) || 0.001;
+        if (md < moonR) { p.x += (mx / md) * (moonR - md); p.y += (my / md) * (moonR - md); }
+        /* keep the whole pill on screen, not just the star */
+        p.x = Math.min(W - bx.w / 2 - 8, Math.max(bx.w / 2 + 8, p.x));
+        p.y = Math.min(H - Math.abs(bx.off) - bx.h - 6, Math.max(Math.abs(bx.off) + bx.h + 6, p.y));
+      });
+    }
+
+    var pct = {};
+    ids.forEach(function (id) { pct[id] = { x: out[id].x / W * 100, y: out[id].y / H * 100 }; });
+    return pct;
+  }
+
+  /* Spread while a jar is open and the telescope is STOWED. With the
+     telescope out every star is on screen (see matches()), and one domain
+     fanned across the sky on top of the other nineteen would be a worse
+     picture than the one it replaced — the telescope's job is the true
+     shape, so everyone goes home for it. */
+  function applySpread() {
+    var want = (!state.scope && state.domain !== 'all') ? state.domain : null;
+    spread = want ? layoutSpread(want) : null;
+    place();
+  }
+
   /* Stars are placed in percentages (they reflow for free); the lines have
      to be placed in pixels. A stretched viewBox would need
      vector-effect:non-scaling-stroke to keep strokes even, and that makes
@@ -239,13 +374,13 @@
     lineSvg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
 
     Array.prototype.forEach.call(starWrap.children, function (el) {
-      var p = pos[el.dataset.note];
+      var p = at(el.dataset.note);
       if (!p) return;
       el.style.left = p.x.toFixed(2) + '%';
       el.style.top = p.y.toFixed(2) + '%';
     });
     Array.prototype.forEach.call(lineSvg.children, function (el) {
-      var a = pos[el.dataset.a], b = pos[el.dataset.b];
+      var a = at(el.dataset.a), b = at(el.dataset.b);
       if (!a || !b) return;
       el.setAttribute('x1', (a.x / 100 * W).toFixed(1));
       el.setAttribute('y1', (a.y / 100 * H).toFixed(1));
@@ -256,7 +391,18 @@
 
   /* ---- filtering ---- */
   function matches(note) {
+    /* Pierce, 2026-09-11: "the telascope should show all stars." The
+       telescope draws the links between lessons, and links cross domains —
+       so filtering to one jar made it least useful at exactly the moment
+       someone had chosen a subject: most of the 30 lines had one end dimmed
+       to 9%. Out telescope, out filter. A typed query still narrows, because
+       that is someone asking for something specific rather than browsing. */
+    if (state.scope) return queryMatches(note);
     if (state.domain !== 'all' && note.domain !== state.domain) return false;
+    return queryMatches(note);
+  }
+
+  function queryMatches(note) {
     if (!state.query) return true;
     var q = key(state.query);
     return key(note.title).indexOf(q) >= 0 ||
@@ -497,7 +643,10 @@
     var count = Object.keys(shown).length;
     sky.classList.toggle('scoping', state.scope);
     sky.classList.toggle('peeking', !!state.hoverId || !!state.tracePair);
-    sky.classList.toggle('named', state.domain !== 'all' || (!!state.query && count <= 8));
+    /* 25 names at once is not a legend, it is a wall of text — so an open
+       jar names its stars only while it is the only thing on screen. */
+    sky.classList.toggle('named',
+      (!state.scope && state.domain !== 'all') || (!!state.query && count <= 8));
   }
 
   /* ---- pointing at a star, without opening it ---- */
@@ -754,11 +903,11 @@
         searchEl.value = '';
       }
       syncJars();
+      /* spread first: the fireflies are aimed at where the stars are going
+         to be, not where they are leaving from */
+      applySpread();
       paintSky();
       renderDeck();
-      /* after paintSky, never before: the stars have to be in their
-         final positions and their final dim/named state before
-         anything measures where a firefly is supposed to land */
       flyDomain(wasDomain, state.domain);
     });
 
@@ -769,11 +918,31 @@
        inside release() means the outgoing swarm never overlaps the
        incoming one — two jars' worth of fireflies crossing mid-air
        reads as noise rather than as two jars. */
+    /* The star is MOVING while the firefly flies to it — .star transitions
+       left/top over .62s and the flight takes 1.05-1.67s. Reading a live
+       getBoundingClientRect() at launch would aim every firefly at a
+       halfway house nobody ends up at, so the target is computed from the
+       layout it is heading for instead. */
+    function starPoint(id) {
+      var p = at(id);
+      if (!p) return null;
+      var s = sky.getBoundingClientRect();
+      var host = document.querySelector('.shore').getBoundingClientRect();
+      return {
+        x: s.left - host.left + (p.x / 100) * s.width,
+        y: s.top - host.top + (p.y / 100) * s.height
+      };
+    }
+
     function starsOf(domainId) {
       if (!domainId || domainId === 'all') return [];
       return data.notes.filter(function (n) { return n.domain === domainId; })
         .map(function (n) {
-          return { id: n.id, el: starWrap.querySelector('[data-note="' + cssEsc(n.id) + '"]') };
+          return {
+            id: n.id,
+            el: starWrap.querySelector('[data-note="' + cssEsc(n.id) + '"]'),
+            pt: starPoint(n.id)
+          };
         })
         .filter(function (t) { return !!t.el; });
     }
@@ -822,7 +991,11 @@
       scope.setAttribute('aria-pressed', String(state.scope));
       $('#scopelabel').textContent = state.scope
         ? 'Stow the telescope' : 'Look through the telescope';
+      /* raising or stowing it changes both who is on screen and where they
+         stand, so the deck has to be redrawn with them */
+      applySpread();
       paintSky();
+      renderDeck();
     });
 
     /* search */
@@ -895,7 +1068,10 @@
       resizeTimer = setTimeout(function () {
         var aspect = (sky.clientWidth || 1) / (sky.clientHeight || 1);
         if (Math.abs(aspect - lastAspect) / lastAspect > 0.18) layout();
-        place();
+        /* the spread is sized in label-widths, and a label is a fixed pixel
+           size — so it has to be recomputed against the new sky, not just
+           re-placed with stale percentages */
+        if (spread) applySpread(); else place();
       }, 180);
     });
 

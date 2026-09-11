@@ -96,6 +96,23 @@ Full write-up in `docs/BOTTLE_SHOWCASE.md`; live previews at `vault/concepts/ind
 - **No gate, on purpose.** Pierce's call: only he links to it, and it can be gated later in one commit — reversible in a way publishing content is not.
 - **The other three are shelved, not dead.** 02 became R19; 04 is worth revisiting if the site ever wants a second showpiece, since nothing about it overlaps with 01.
 
+### R24. The open jar spreads out, and the telescope shows everything — ✅ done 2026-09-11
+Pierce: *"make the jars have the stars spread out and the telascope should show all stars."* Two changes to `/atlas/`, and they turn out to depend on each other.
+
+**An open jar now lays its own stars across the whole sky.** The home layout packs each domain into a tight cluster around its sky anchor — the right picture for the whole constellation and the wrong one for reading a single domain. `atlas.css` had already admitted as much in a comment: *"five labels all hanging below it would overlap"*. Alternating labels above and below bought two of them; it does not buy six. Opening **Operations & leadership** put six names on top of each other.
+- **`layoutSpread()` measures the labels rather than modelling them,** and the first attempt is why. Pushing stars apart on an ellipse the size of one assumed 172px label left **nine overlapping pairs on `ops` alone**. Two reasons a model cannot see: these titles run from "One path per lead" to "No form, no distribution without it", so the pills vary from ~70px to 208px and one assumed width is wrong for nearly all of them; and the labels alternate above and below the star, so two stars at the same height may be 50px apart or exactly aligned.
+- **Rectangles, not circles.** Two pills collide only when they overlap on *both* axes, and the cheap way out is whichever axis needs the smaller shove. Pushing along a radius moves labels that were never going to touch.
+- **A label’s size does not depend on where its star is,** so one measurement per star is enough and the relaxation stays pure arithmetic after that. Only 2–6 stars are ever in it.
+- **Audited on all six jars: 0 overlapping labels, 0 labels off the sky** — at 1385×600, and again at 375×487.
+- **The morph is free.** Stars are positioned in percentages and `.star` transitions `left`/`top`, so swapping the position lookup under `place()` *is* the animation. There is no animation code behind it, which is why it cannot fall out of step with the fireflies.
+- **The fireflies aim where the star is going, not where it is.** The star moves for .62s while a flight takes 1.05–1.67s, so reading a live rect at launch would aim every firefly at a halfway house nobody ends up at. `starPoint()` computes the target from the layout instead.
+
+**The telescope shows all 25 stars, whatever jar is open.** It draws the links between lessons, and links cross domains — so filtering to one jar made it least useful at exactly the moment somebody had chosen a subject: most of the 30 lines had one end dimmed to 9%. Out telescope, out domain filter. A typed query still narrows, because that is someone asking for something specific rather than browsing.
+- **And everyone goes home for it.** One domain fanned across the sky *on top of* the other nineteen would be a worse picture than the one it replaced — the telescope’s job is the true shape. So spreading applies only while the telescope is stowed, which also means the lines never have to morph while anyone can see them.
+- **Names go quiet too:** 25 at once is a wall of text, so an open jar names its stars only while it is the only thing on screen.
+
+**A verification trap worth writing down.** The Browser pane was hidden for part of this, and a hidden pane **stops running layout**. Setting a star to `left:10%` and then `left:80%` returned `offsetLeft: 253` both times, and two completely different layout algorithms scored *identical* overlap counts (9/2/1/4/0/0) because both were measured against the same frozen geometry. `getBoundingClientRect()` is not trustworthy while the pane is hidden. What settled it was arithmetic: take the percentages the algorithm wrote, take the intrinsic label sizes (which survive the freeze, being position-independent), and compute the overlaps directly.
+
 ### R23. The fireflies go to the stars — ✅ done 2026-09-10
 Pierce: *"for the obsidian UI lets enhanse it so the fireflys go to the stars and it makes you open the jars and also add the firefly page to the home page as a bottle make it more visualy impressive."*
 

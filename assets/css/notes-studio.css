@@ -1,0 +1,205 @@
+/* ============================================================
+   /notes/ — the "Research studio" direction from
+   notes/visual-options/ (ROADMAP R10), applied for real.
+   Picked by Pierce 2026-09-10 over Slate command center and
+   Paper canvas, together with the scope: a skin, not a rebuild.
+
+   SKIN-ONLY, AND THAT IS THE POINT. Not one line of
+   notes-ui.js or notes.css changes. Everything here is scoped
+   under `body.notes-page`, and this file is linked by
+   notes/index.html alone — so the two other surfaces that
+   share notes.css keep exactly the look they have:
+
+     /tools/tracker/  the stock desk (same PNNotes component,
+                      mode:'stocks'). Its turn is a second pass;
+                      porting is one <link> and one body class.
+     /vault/          Backstage links notes.css for PNGraphify's
+                      .pg-* rules. R17 built it on Slate. Nothing
+                      in here can reach it.
+
+   WHY STUDIO AND NOT SLATE. /vault/ is already Slate, and the
+   bottle's porthole offers both pages as doors. Two doors onto
+   the same picture is a worse answer than two rooms. Studio is
+   also the only one of the three drawn around visible backlinks,
+   which is the thing this page most lacked and the thing the
+   porthole's own copy advertises.
+
+   THE PALETTE IS MEASURED, NOT EYEBALLED — U1 exists because
+   that step got skipped once. Every ink/ground pair below was
+   run through a WCAG contrast check before it was written down.
+   Worst pair is --dim on the editor's lighter end at 4.83:1;
+   the AA floor is 4.5:1. If you change a colour here, measure
+   it again rather than trusting that it "looks fine".
+   ============================================================ */
+
+
+/* ---------------- the studio's tokens ----------------
+   Scoped to the mount point, not to <body>: the site header,
+   nav and footer stay on brand Fern green, and only the vault
+   itself goes slate-blue. Every .nv-*, .md and .pg-* rule in
+   notes.css reads these, so overriding ten custom properties
+   reskins the whole component without touching its CSS. */
+body.notes-page #vault{
+  --bg:#0f151d;
+  --panel:#131c26;
+  --line:#26313d;
+  --line2:#33404e;
+
+  --ink:#e4eaf1;
+  --mut:#a6b2c0;
+  --dim:#7d8b9c;   /* 4.83:1 on the editor — the floor, measured */
+
+  /* Fern gives way to the studio's slate blue, here and nowhere else */
+  --acc:#7d9daf;
+  --acc-hi:#9bbbc9;
+  --acc-soft:rgba(125,157,175,.16);
+}
+
+/* The hero is the studio's own label, so it takes the studio's accent
+   too — eyebrow, the tracker link, the inline code chips. The nav and
+   the footer above and below it stay brand Fern on purpose: the green
+   is the thread running through every page, and the blue is this room. */
+body.notes-page .head{--acc:#7d9daf;--acc-hi:#9bbbc9}
+
+/* ---------------- the room ----------------
+   notes.css hard-codes these two grounds rather than
+   tokenising them, so they are the one thing the token
+   override above cannot reach. */
+body.notes-page .nv-side{background:#10161e}
+body.notes-page .nv-main{background:linear-gradient(135deg,#151e2a,#121820)}
+body.notes-page .nv-app{box-shadow:inset 0 1px 0 rgba(155,187,201,.05)}
+
+/* the lock card is the first thing anyone sees; it belongs to the
+   same room as what it opens onto */
+body.notes-page .nv-lockcard{background:#131c26;border-color:#26313d}
+
+/* ---------------- the toolbar stops wrapping ----------------
+   Five buttons in a 252px rail wrapped into a ragged two rows
+   at every width. A 2-column grid with the primary spanning
+   both is the same five buttons in a shape somebody chose. */
+body.notes-page .nv-toolbar{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:13px;
+}
+body.notes-page .nv-toolbar .btn{
+  padding:9px 10px;justify-content:center;text-align:center;
+}
+body.notes-page .nv-new{grid-column:1 / -1}
+
+/* ---------------- the explorer ---------------- */
+body.notes-page .nv-search{
+  font-family:var(--mono);font-size:12.5px;
+}
+body.notes-page .nv-count{
+  padding-top:10px;border-top:1px solid var(--line);
+}
+body.notes-page .nv-item.on{
+  background:var(--acc-soft);border-color:transparent;
+  box-shadow:inset 2px 0 0 var(--acc);   /* the same "you are here" mark /vault/'s tree uses */
+}
+body.notes-page .nv-item.on .nv-itemtitle{color:#fff}
+
+/* ---------------- the editor ----------------
+   Studio's own proportions: the title is the loudest thing in
+   the room (25px in the comp, against Slate's 22px), and the
+   rule under it is the accent rather than a hairline. */
+body.notes-page .nv-title{
+  font-size:24px;padding:8px 2px;
+  border-bottom-color:var(--line2);
+}
+body.notes-page .nv-title:focus{border-bottom-color:var(--acc)}
+body.notes-page .nv-edithead{
+  margin-bottom:18px;padding-bottom:2px;
+}
+body.notes-page .nv-body{
+  font-size:14.5px;line-height:1.7;min-height:340px;
+}
+body.notes-page .nv-render{background:rgba(15,21,29,.66)}
+
+/* the graph's stage glow follows the accent off green */
+body.notes-page .pg-stage{
+  background:var(--bg) radial-gradient(ellipse at 50% 42%,rgba(125,157,175,.07),transparent 70%);
+}
+
+/* ---------------- the Linked pane ----------------
+   Studio's third column, and the reason this direction was
+   worth picking. It is built with grid placement on the form
+   that is ALREADY THERE rather than new markup: .nv-backlinks
+   is the last child of .nv-edit, so pinning it to column two
+   and everything else to column one produces the comp's
+   right-hand pane with no DOM change at all.
+
+   :has() gates it, because backlinks render conditionally —
+   without the gate a note with none would leave a 200px hole
+   where a pane should be. Browsers without :has() (none that
+   matter in 2026) simply get today's layout: backlinks in a
+   block at the bottom. That is the honest fallback, not a
+   broken one. */
+@media (min-width:1040px){
+  body.notes-page .nv-edit:has(.nv-backlinks){
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 208px;
+    column-gap:24px;
+    align-items:start;
+  }
+  body.notes-page .nv-edit:has(.nv-backlinks) > *{grid-column:1}
+  body.notes-page .nv-edit:has(.nv-backlinks) > .nv-backlinks{
+    grid-column:2;grid-row:1;
+    position:sticky;top:14px;
+    margin-top:0;padding:0 0 0 18px;
+    border-top:0;border-left:1px solid var(--line);
+  }
+}
+
+/* the pane's own look, at every width: a mono index, one entry
+   per row, not the pill cloud it used to be */
+body.notes-page .nv-backlinks .eyebrow{
+  color:var(--dim);margin-bottom:4px;
+}
+body.notes-page .nv-backlinks ul{
+  display:block;margin-top:0;
+}
+body.notes-page .nv-backlinks li{
+  border-bottom:1px solid var(--line);
+}
+body.notes-page .nv-blink{
+  display:block;width:100%;text-align:left;
+  background:none;border:0;border-radius:0;
+  padding:9px 2px;font-size:12px;line-height:1.4;color:var(--acc-hi);
+}
+body.notes-page .nv-blink:hover{color:#fff;background:var(--acc-soft)}
+
+/* ---------------- focus ----------------
+   Restated rather than inherited, and deliberately: the U2
+   finding on .pg-node was that a two-class selector outranks
+   the generic [tabindex]:focus-visible ring no matter what
+   order the files load in. These carry their own specificity
+   so the studio ring cannot lose that argument either. */
+body.notes-page #vault :focus-visible{
+  outline:2px solid var(--acc-hi);outline-offset:2px;
+}
+body.notes-page .nv-item:focus-visible,
+body.notes-page .nv-blink:focus-visible{
+  outline:2px solid var(--acc-hi);outline-offset:-2px;border-radius:6px;
+}
+
+/* ---------------- a mobile overflow that was already here ----------
+   Measured at 375px: .nv-side and .nv-main both render 573px wide
+   inside a 339px .nv-app, so the workspace hangs off the right of the
+   phone. It is NOT the studio's doing — the same numbers come back with
+   this stylesheet disabled, so it has been in notes.css since the
+   single-column breakpoint was written.
+
+   The cause is the grid default: a grid item's automatic minimum size
+   is min-content, and under 860px .nv-app collapses to one 1fr track,
+   so the longest unbreakable line in .nv-list becomes a floor the track
+   cannot go below. Hiding .nv-list alone drops the sidebar to 337px,
+   which is how it was pinned down. min-width:0 is the standard release
+   valve and changes nothing at desktop, where the columns are already
+   252px + minmax(0,1fr).
+
+   Scoped here rather than fixed in notes.css on purpose: that file is
+   shared with /vault/ and the tracker, and the tracker is its own pass.
+   CARRY THIS OVER when the stock desk gets the studio treatment — the
+   same bug is live there. */
+body.notes-page .nv-side,
+body.notes-page .nv-main{min-width:0}

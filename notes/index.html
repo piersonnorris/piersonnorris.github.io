@@ -11,30 +11,32 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="/assets/css/site.css">
   <link rel="stylesheet" href="/assets/css/notes.css">
+  <!-- The Research studio skin (ROADMAP R10, picked by Pierce 2026-09-10).
+       Linked here and nowhere else: notes.css is shared with /vault/ and the
+       tracker, and this page is the only one that changes look. -->
+  <link rel="stylesheet" href="/assets/css/notes-studio.css">
   <style>
     main{padding:0 0 80px}
-    .head{position:relative;padding:52px 0 26px}
+    /* clip, not hidden — the same fix .atlas-head and .vault-head already
+       carry. The glow below is inset -25% on both sides, so at 375px it
+       pushed the document to 442px and the whole page scrolled sideways.
+       Measured 2026-09-10; clip returns it to 375 and costs nothing. */
+    .head{position:relative;padding:52px 0 26px;overflow-x:clip}
     .head::before{
       content:"";position:absolute;inset:-52px -25% auto -25%;height:300px;pointer-events:none;
-      background:radial-gradient(ellipse at 20% 0%,rgba(95,174,90,.09),transparent 62%);
+      /* slate blue, not Fern: the glow is the studio's, and it sits
+         directly above the workspace it introduces */
+      background:radial-gradient(ellipse at 20% 0%,rgba(125,157,175,.10),transparent 62%);
     }
     .head > *{position:relative}
     .head h1{font-size:clamp(32px,6vw,46px);margin:14px 0 12px}
-    .howto{
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;
-      margin:0 0 30px;
-    }
-    .howto .panel{padding:15px 17px}
-    .howto h3{font-size:13px;font-family:var(--display);text-transform:uppercase;
-      letter-spacing:.05em;margin:0 0 6px;color:var(--ink)}
-    .howto p{margin:0;font-size:13.5px;color:var(--mut);line-height:1.6}
-    .howto code{
-      font-family:var(--mono);font-size:12px;background:var(--bg);
-      border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--acc);
-    }
+    .head .lede{margin-bottom:8px}
+    .head .lede + .lede{color:var(--mut);font-size:14px;margin-bottom:24px}
+    .head .lede code{font-family:var(--mono);font-size:12.5px;background:var(--panel);
+      border:1px solid var(--line);border-radius:4px;padding:1px 5px;color:var(--acc)}
   </style>
 </head>
-<body>
+<body class="notes-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="sitehead">
     <div class="wrap">
@@ -68,20 +70,7 @@
         <h1>Notes.</h1>
         <p class="lede">Everyday working notes: Markdown, tags, <b>[[wikilinks]]</b> and backlinks. Encrypted with your PIN and stored <b>in this browser only</b> — nothing is uploaded, and nothing lands in the repo. Stock notes live in their own separate vault inside the <a href="/tools/tracker/#stocknotes" style="color:var(--acc)">tracker</a>.</p>
 
-        <div class="howto">
-          <div class="panel">
-            <h3>Round-trips with Obsidian</h3>
-            <p><b>Export</b> gives you a <code>.zip</code> of one <code>.md</code> per note, with YAML frontmatter — unzip it into your vault. <b>Import</b> reads <code>.md</code> files straight back in.</p>
-          </div>
-          <div class="panel">
-            <h3>Linking works</h3>
-            <p>Type <code>[[Note title]]</code> and it becomes a link in preview. Click a link to a note that doesn't exist yet and it gets created. Backlinks show at the bottom of every note.</p>
-          </div>
-          <div class="panel">
-            <h3>Where it lives</h3>
-            <p>AES-256-GCM, key derived from your PIN with PBKDF2 at 600k iterations. Clearing site data or switching browsers loses the vault — <b>export regularly</b>.</p>
-          </div>
-        </div>
+        <p class="lede"><b>Export regularly.</b> AES-256-GCM, key derived from your PIN with PBKDF2 at 600k iterations — which also means clearing site data or switching browsers loses the vault. <b>Export</b> writes one <code>.md</code> per note with YAML frontmatter; <b>Import</b> reads them back, or takes a whole <code>.json</code> bundle from <code>tools/obsidian-sync.js</code>.</p>
       </section>
 
       <div id="vault"></div>

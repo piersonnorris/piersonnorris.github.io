@@ -30,4 +30,10 @@ That reads the real vault folder, prints a connectivity report, and writes `priv
 
 The site can't read a folder on disk, and never will: it is static, with no server and no OAuth. `obsidian-sync.js` runs outside the site, exactly like the Google Calendar pull. See `docs/OBSIDIAN_SYNC.md`.
 
-`visual-options/` is a local, untracked design exploration for this page's future look (ROADMAP R10).
+## The look
+
+`visual-options/` held three directions for this page (ROADMAP R10). Pierce picked **Research studio** on 2026-09-10 and it now ships: `assets/css/notes-studio.css`, linked by `index.html` alone.
+
+It is deliberately a **skin**. `notes-ui.js` and `notes.css` are untouched, and the whole file is scoped under `body.notes-page`, because `notes.css` is shared with `/vault/` and the tracker's stock desk — neither of which changes look. Most of the reskin is ten CSS custom properties overridden on the mount point; the "Linked" pane on the right is grid placement over the backlinks block that was already in the editor form, gated with `:has()` so a note without backlinks does not leave a hole.
+
+The accent is slate blue here and Fern green everywhere else on purpose. `/vault/` already wears Slate command center, and the ship-in-a-bottle porthole offers both pages as doors — two doors onto the same picture would be the worse answer.

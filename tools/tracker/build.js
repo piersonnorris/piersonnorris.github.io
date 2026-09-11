@@ -69,8 +69,17 @@ function loadCalendar() {
    private/tracker/google-calendar.json (gitignored), and this just bakes
    that snapshot into the encrypted payload, same as dividend dates.
    Missing/invalid input degrades to an empty list; the build never fails
-   over stale or absent calendar data. */
-function loadGoogleEvents() {
+   over stale or absent calendar data.
+
+   NEVER in an open build. These are real personal events -- course
+   times, deadlines, instructor names, room numbers, who is where and
+   when -- and an open payload is plaintext in a tracked file. This seam
+   was written for the sealed build, where the PIN is the only reader;
+   --public has no reader at all. An open build gets an empty list, and
+   the page hides the Calendar tab to match (index.template.html, OPEN).
+   Found 2026-09-10: a --public build had already published 130 events. */
+function loadGoogleEvents(openBuild) {
+  if (openBuild) return [];
   let source = process.env.GOOGLE_CALENDAR_EVENTS_JSON;
   const privateFile = path.join(ROOT, 'private', 'tracker', 'google-calendar.json');
   if (!source && fs.existsSync(privateFile)) source = fs.readFileSync(privateFile, 'utf8');
@@ -94,8 +103,15 @@ function loadGoogleEvents() {
 
    Only titles, tags and bodies travel, and only inside the AES payload —
    nothing here lands in the repo in the clear. Missing or malformed
-   input degrades to null; the build never fails over vault data. */
-function loadObsidianVault() {
+   input degrades to null; the build never fails over vault data.
+
+   That sentence is only true because of the guard below. An open
+   payload is plaintext, so --public would have written every synced
+   note body straight into a tracked file. Nothing had been dropped at
+   private/tracker/obsidian-vault.json yet when this was caught
+   (2026-09-10), so it never fired — but it was one file away. */
+function loadObsidianVault(openBuild) {
+  if (openBuild) return null;
   let source = process.env.OBSIDIAN_VAULT_JSON;
   const privateFile = path.join(ROOT, 'private', 'tracker', 'obsidian-vault.json');
   if (!source && fs.existsSync(privateFile)) source = fs.readFileSync(privateFile, 'utf8');
@@ -255,7 +271,7 @@ async function buildFromLocalSnapshot(openBuild) {
     if (!password) fail('Private local tracker PIN is empty.');
   }
   const quotes = await fetchQuotes(months);
-  const data = { generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(), obsidianVault: loadObsidianVault() };
+  const data = { generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(openBuild), obsidianVault: loadObsidianVault(openBuild) };
   render(openBuild ? publish(data) : seal(data, password));
   if (openBuild) warnPublic();
 }
@@ -305,7 +321,7 @@ async function main() {
   const months = await fetchMonths();
   if (!months.length) fail('No month-named tabs were found.');
   const quotes = await fetchQuotes(months);
-  const data = { generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(), obsidianVault: loadObsidianVault() };
+  const data = { generatedAt: new Date().toISOString(), months, quotes, dividendCalendar: loadCalendar(), googleEvents: loadGoogleEvents(openBuild), obsidianVault: loadObsidianVault(openBuild) };
   render(openBuild ? publish(data) : seal(data, password));
   if (openBuild) warnPublic();
 }

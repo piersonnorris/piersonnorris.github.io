@@ -493,6 +493,22 @@
     .tracker-tab{appearance:none;border:0;background:transparent;color:var(--mut);font:500 12px/1 var(--mono);letter-spacing:.04em;padding:11px 14px;border-radius:7px;cursor:pointer;white-space:nowrap}
     .tracker-tab:hover{color:var(--ink);background:rgba(255,255,255,.035)}.tracker-tab[aria-selected="true"]{background:var(--acc);color:#0e1116}
     .tracker-panel[hidden]{display:none}.tracker-panel{animation:panel-in .18s ease-out}@keyframes panel-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    /* ---- open build: the front desk, not the workshop -------------
+       A --public build has no PIN, so every control that routes into
+       the encrypted stock-notes vault is a dead end that advertises a
+       back room: "Unlock the vault below" pointing at a tab that is
+       not there. The tab buttons and the price-source panel are removed
+       in JS (hidePrivateSurfaces); these are the controls scattered
+       through the three panels that stay. Sealed builds are untouched.
+       Pierce, 2026-09-10: "too many tabs of unimportant data that can be
+       seen on the backend and should not be seen on the front desk." */
+    body.tracker-open .notebtn,
+    body.tracker-open .rowdetailbtn,
+    body.tracker-open .sidelist-notebtn,
+    body.tracker-open .obsidian-sync{display:none}
+    /* the Details column holds only those two buttons, so it goes with them */
+    body.tracker-open .platform table th:last-child,
+    body.tracker-open .platform table td:last-child{display:none}
     .dividend-chart{margin:18px 0 0;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:15px}.dividend-chart h3{font-size:16px;margin:0 0 2px}.dividend-chart .sub{font:11px var(--mono);color:var(--dim);text-transform:uppercase;letter-spacing:.07em;margin:0 0 12px}
     .obsidian-sync{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}.obsidian-sync .sync-status{font:12px var(--mono);color:var(--dim);margin:0}
     @media (max-width:900px){.cal-layout{grid-template-columns:1fr}.cal-summary,.proj-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.cal-filters{margin-left:0}.cal-side{padding:14px}}
@@ -867,6 +883,44 @@
       });
     }
 
+    /* ---- open build: strip the private surfaces ---------------------
+       The tracker template serves two builds. A sealed one is Pierce's
+       own tool and keeps all seven tabs. An open one (build.js --public)
+       is a public page, and four of those tabs are the workshop rather
+       than the product:
+
+         Calendar  real Google events -- course times, deadlines, named
+                   people, room numbers. build.js no longer bakes them
+                   into an open payload at all; this hides the empty tab.
+         Projects  the private goal board. /island/ is its public-safe
+                   counterpart and is already linked from the nav.
+         Updates   build ages, ROADMAP ids, and "run build.js and push" --
+                   the backend talking to itself.
+         Obsidian  a "create a vault" form aimed at a visitor's own
+                   browser. Meaningless without Pierce's PIN.
+
+       Only the tab BUTTONS are removed. The panels stay in the DOM,
+       hidden, because a dozen render paths still look their containers
+       up by id -- and activateTrackerPanel only ever unhides a panel
+       whose tab it can find, so a removed button keeps its panel shut
+       for good. A bad #hash falls through to Positions on its own.
+       Found and cut 2026-09-10 after a --public build had already
+       published a term of real calendar events. */
+    var PRIVATE_TABS = ['calendar', 'projects', 'updates', 'obsidian'];
+
+    function hidePrivateSurfaces() {
+      if (!OPEN) return;
+      document.body.classList.add('tracker-open');
+      PRIVATE_TABS.forEach(function (name) {
+        var tab = $('tab-' + name);
+        if (tab && tab.parentNode) tab.parentNode.removeChild(tab);
+      });
+      /* provider, API key, "forget key", manual price entry: plumbing,
+         and it asks a visitor to paste their own key into Pierce's page */
+      var prices = $('pricespanel');
+      if (prices) prices.hidden = true;
+    }
+
     function setupTrackerTabs() {
       if ($('tab-positions').dataset.ready) return;
       var tabs = Array.prototype.slice.call(document.querySelectorAll('.tracker-tab'));
@@ -1146,6 +1200,7 @@
         if (!projectGoals.length) projectGoals = window.PNTaskboard.seed();
       }
 
+      hidePrivateSurfaces();
       setupTrackerTabs();
       activateTrackerPanel(location.hash === '#stocknotes' ? 'obsidian' : location.hash === '#projects' ? 'projects' : location.hash === '#calendar' ? 'calendar' : location.hash === '#dividends' ? 'dividends' : location.hash === '#updates' ? 'updates' : location.hash === '#charts' ? 'charts' : 'positions', false);
 

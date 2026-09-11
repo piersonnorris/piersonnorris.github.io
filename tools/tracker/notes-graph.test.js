@@ -251,6 +251,47 @@ function main() {
       'an empty bundle bakes nothing rather than an empty shell');
   }
 
+  /* The open-build guard (2026-09-10). A --public payload is plaintext
+     in a tracked file, so neither of these private seams may reach it.
+     This is regression cover for something that had already happened:
+     a --public build published 130 real Google Calendar events --
+     course times, deadlines, instructor names, room numbers -- onto
+     GitHub Pages. The vault seam was one dropped file from doing the
+     same with note bodies. Both now take the flag and refuse. */
+  {
+    const { loadObsidianVault, loadGoogleEvents } = require('./build.js');
+    const withEnv = (name, value, fn) => {
+      const had = Object.prototype.hasOwnProperty.call(process.env, name);
+      const prev = process.env[name];
+      process.env[name] = value;
+      try { return fn(); }
+      finally {
+        if (had) process.env[name] = prev;
+        else delete process.env[name];
+      }
+    };
+
+    const bundle = JSON.stringify({
+      format: 'pn-vault-bundle', version: 1, source: 'DemoVault', count: 1,
+      notes: [{ path: 'a.md', title: 'Alpha', body: 'private text', tags: [] }]
+    });
+    const events = JSON.stringify([
+      { id: 'e1', date: '2026-09-08', title: 'Cost Accounting', notes: 'Someone Real, ROOM 355' }
+    ]);
+
+    /* sealed build: both seams load, because the PIN is the only reader */
+    assert.equal(withEnv('OBSIDIAN_VAULT_JSON', bundle, () => loadObsidianVault(false)).count, 1,
+      'a sealed build still bakes the vault bundle');
+    assert.equal(withEnv('GOOGLE_CALENDAR_EVENTS_JSON', events, () => loadGoogleEvents(false)).length, 1,
+      'a sealed build still bakes the calendar');
+
+    /* open build: neither does, whatever is sitting on disk or in env */
+    assert.equal(withEnv('OBSIDIAN_VAULT_JSON', bundle, () => loadObsidianVault(true)), null,
+      'an open build bakes no note bodies');
+    assert.deepEqual(withEnv('GOOGLE_CALENDAR_EVENTS_JSON', events, () => loadGoogleEvents(true)), [],
+      'an open build bakes no calendar events');
+  }
+
   /* A note documenting the link syntax was inventing edges to notes
      nobody meant to reference — and inflating the unresolved count with
      the vault's own documentation about itself. */

@@ -96,6 +96,33 @@ Full write-up in `docs/BOTTLE_SHOWCASE.md`; live previews at `vault/concepts/ind
 - **No gate, on purpose.** Pierce's call: only he links to it, and it can be gated later in one commit — reversible in a way publishing content is not.
 - **The other three are shelved, not dead.** 02 became R19; 04 is worth revisiting if the site ever wants a second showpiece, since nothing about it overlaps with 01.
 
+### R23. The fireflies go to the stars — ✅ done 2026-09-10
+Pierce: *"for the obsidian UI lets enhanse it so the fireflys go to the stars and it makes you open the jars and also add the firefly page to the home page as a bottle make it more visualy impressive."*
+
+**What was wrong with the old jar-opening.** Pressing a jar did two things that looked unrelated. Three decorative motes puffed out of the lid — inside that jar's own `viewBox="0 0 76 112"`, down in the sand — while somewhere else entirely, instantly, that domain's stars lit up. The fireflies never left the jar, so nothing connected the cause to the effect.
+
+**Now they make the trip.** New `assets/js/atlas-flight.js` (`PNFlight.mount/release/recall`) plus a `.flight` layer. Open a jar and the lid lifts, the glass empties, and **one firefly per note** rises out of the mouth on a quadratic Bézier, crosses the beach and the sky, and lands on its own star — which flares as it arrives. Seal the jar and they fly home and the glass fills again. The three old `.escape` motes are gone; they were a gesture at a journey rather than the journey.
+- **The layer hangs off `.shore`, not `.scene`, and that is the whole trick.** The page is `.shore > [.scene > .sky, .sand > .beach > #jars]` — the stars and the jars are in different sub-trees. `.scene` stops at the horizon (measured: bottom 843) and the jars start at 917, so a layer on `.scene` clips every flight before it begins. This is the same wall R21 hit and wrote down in `ONE_GREAT_JAR` §8b: *"a jar drawn in its own box cannot hold a swarm whose job is to fill the viewport."*
+- **Endpoints are measured at launch, never cached**, so the field log taking 420px and reflowing the percentage-positioned sky cannot leave a flight path pointing at where a star used to be.
+- **CSS `offset-path`, not requestAnimationFrame.** The compositor interpolates the curve; the script sets two custom properties and gets out of the way. 25 fireflies is the entire vault, so this never needs R21's 90-node frame budget.
+- **The control point sits high and only a third of the way across**, so a swarm blooms up out of the mouth before it fans toward its own corner of the sky — a firefly that travels a symmetric arc reads as a bullet.
+- **Verified by scrubbing the timeline, not by eye.** Sampling one flight at 0/25/50/75/100% gives (380,974) → (352,847) → (281,601) → (235,483) → (222,456): the jar mouth to the star, arcing up and left, with the dot lit only between the lid and the landing.
+- **`prefers-reduced-motion`** skips the flight entirely in JS and kindles the stars immediately; the CSS block is belt and braces for anything already airborne when the setting changes.
+
+**The sky was left lit** (Pierce's call, against the two gating options offered). Opening a jar is the reward, not the price of admission — so an arriving firefly makes an already-burning star *flare* rather than igniting a dark one. Nothing about what the sky **means** changed.
+
+**The home-page bottle got both halves.**
+- **Fireflies in the glass, before you click.** The bottle was a still life — a ship and two waves, and nothing on it moved until you touched it. Seven deterministic motes now drift inside, clipped to the body with everything else. They pick up `--pnb-acc-hi` from whichever page they are mounted on, so they are Fern green on Home and blue on `/island/` for free.
+- **The porthole tells the same story as the atlas.** It used to be a flat dotted sketch that sat there breathing. A jar now stands on the ground, nine fireflies rise to the nine points of the constellation, and each point lights as its firefly lands — hub first, because every line runs to the hub and lighting it last leaves the drawing looking broken for most of the cycle. A line may not appear until **both** of its ends are alight.
+- **SMIL `<animateMotion>` here, CSS `offset-path` on `/atlas/`,** and the difference is deliberate: the porthole is `width:100%` with a scaling `viewBox`, so a path in user units follows the scaling for free. `atlas-flight.js` pays the re-measuring cost only because it crosses real page boxes.
+- **One shared 7s period.** Every delay is a fraction of it, so the fireflies, the points they light and the lines between them cannot drift out of step the way three independent loops would.
+- **The copy did not change and did not need to.** It is still a generated sketch, still not a graph of anyone's notes, and the porthole still says so. Only the telling changed.
+- **Three keyframes were deleted, each checked for other users first:** `pnb-breathe` (points now light on arrival), `pnb-sail` and `.pnb-boat` (the little boat crossed the floor where the jar now stands), and `pnb-flow` (the line animates inside `pnb-edgein`, which has to own the whole cycle).
+
+**A bug that was not one.** At 375px a star near the right edge hangs its name label to x=400 and `scrollWidth` reports 401 against a 375 client width. That reads like sideways scroll and is not: `body.atlas-page` already carries `overflow-x:hidden`, so `scrollTo(9999,0)` leaves `scrollX` at 0. A clip was added, measured, found to fix nothing, and removed again — it would only have trimmed edge star names. R20 had already handled it.
+
+**This answers `ONE_GREAT_JAR` §9 Q3: the night sky stays.** R21's one-great-jar rebuild is parked as a concept at `vault/concepts/jar/` — Pierce's call, made with the fork stated. The firefly-to-star flight is the night sky's own idea finally paid off, and polishing a page that was about to be replaced would have been the wrong trade.
+
 ### R22. The studio, and the front desk — ✅ done 2026-09-10
 Two pieces of one sitting, both Pierce's calls, both about what a visitor should be looking at.
 

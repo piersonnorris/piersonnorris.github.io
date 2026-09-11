@@ -92,25 +92,109 @@
 }
 .pnb-panel h2{font-family:var(--pnb-display);font-size:22px;line-height:1.2;margin:0 0 12px;color:var(--pnb-ink)}
 
-/* the porthole: a sketch of a linked vault, drawn from nothing */
+/* the porthole: a constellation drawn by fireflies leaving a jar.
+   Timings here are fractions of PERIOD in bottle.js (7s) and TRAVEL
+   (1.5s). They are written as percentages of that one period rather
+   than as seconds, so the fireflies, the points and the lines share a
+   clock and cannot drift apart. If PERIOD changes, these do not. */
 .pnb-porthole{
   position:relative;border:1px solid var(--pnb-line);border-radius:10px;overflow:hidden;
   background:radial-gradient(ellipse at 50% 120%,var(--pnb-glass),var(--pnb-panel2) 70%);
 }
 .pnb-porthole svg{display:block;width:100%;height:auto}
-.pnb-edge{stroke:var(--pnb-glassline);stroke-width:1;opacity:.45;stroke-dasharray:3 4;animation:pnb-flow 9s linear infinite}
-.pnb-node{fill:var(--pnb-acc);opacity:.9;animation:pnb-breathe 4.5s ease-in-out infinite}
+
+/* the ground the jar stands on — barely there, but without it the jar
+   floats and the whole drawing loses its up */
+.pnb-ground{fill:var(--pnb-glassline);opacity:.13}
+
+/* the jar: source, not subject. Small enough to read as where the
+   lights come from rather than as the thing being drawn. */
+.pnb-jarglass{fill:var(--pnb-glass);stroke:var(--pnb-glassline);stroke-width:.9}
+.pnb-jarlid{fill:var(--pnb-cork)}
+.pnb-jarglow{fill:var(--pnb-acc-hi);opacity:.2;filter:blur(5px);animation:pnb-jarpulse 7s ease-in-out infinite}
+@keyframes pnb-jarpulse{0%,100%{opacity:.12}8%{opacity:.4}60%{opacity:.12}}
+
+/* a firefly in flight. The <g> is moved by <animateMotion>, so the dot
+   inside it is free to carry its own fade — one element cannot do both
+   without the motion transform and the CSS transform fighting. */
+.pnb-ffdot{
+  fill:var(--pnb-acc-hi);opacity:0;
+  filter:drop-shadow(0 0 3px var(--pnb-acc-hi));
+  animation:pnb-fflife 7s linear infinite var(--d,0s);
+}
+/* lit as it clears the lid, spent as it lands — the point it is flying
+   to takes over the light on exactly the frame this gives it up */
+@keyframes pnb-fflife{
+  0%{opacity:0}
+  4%{opacity:1}
+  17%{opacity:1}
+  22%{opacity:0}
+  100%{opacity:0}
+}
+
+/* a point of the constellation, dark until its firefly arrives.
+   21.4% of 7s is 1.5s, which is TRAVEL — the arrival frame. */
+.pnb-node{
+  fill:var(--pnb-acc);transform-box:fill-box;transform-origin:center;
+  animation:pnb-light 7s ease-out infinite var(--lit,0s);
+}
 .pnb-node.hub{fill:var(--pnb-acc-hi)}
-.pnb-halo{fill:none;stroke:var(--pnb-acc-hi);stroke-width:1;opacity:.28}
+@keyframes pnb-light{
+  0%{opacity:.1;transform:scale(.7)}
+  0.1%{opacity:.1;transform:scale(.7)}
+  6%{opacity:1;transform:scale(1.9)}
+  14%{opacity:.92;transform:scale(1)}
+  86%{opacity:.92;transform:scale(1)}
+  100%{opacity:.1;transform:scale(.7)}
+}
+.pnb-halo{
+  fill:none;stroke:var(--pnb-acc-hi);stroke-width:1;opacity:0;
+  animation:pnb-halo 7s ease-out infinite var(--lit,0s);
+}
+@keyframes pnb-halo{0%{opacity:0}6%{opacity:.5}20%{opacity:.28}86%{opacity:.28}100%{opacity:0}}
+
+/* a line may not exist before both of its ends do — its delay is the
+   later of the two arrivals, computed in bottle.js */
+.pnb-edge{
+  stroke:var(--pnb-glassline);stroke-width:1;stroke-dasharray:3 4;opacity:0;
+  animation:pnb-edgein 7s linear infinite var(--lit,0s);
+}
+@keyframes pnb-edgein{
+  0%{opacity:0;stroke-dashoffset:0}
+  7%{opacity:.5}
+  86%{opacity:.45;stroke-dashoffset:-50}
+  100%{opacity:0;stroke-dashoffset:-56}
+}
+
 .pnb-sail{fill:var(--pnb-ink);opacity:.9}
 .pnb-hull{fill:var(--pnb-acc-hi)}
-.pnb-boat{animation:pnb-sail 14s linear infinite}
-@keyframes pnb-flow{to{stroke-dashoffset:-70}}
-@keyframes pnb-breathe{0%,100%{opacity:.55}50%{opacity:1}}
-@keyframes pnb-sail{
-  0%{transform:translateX(-40px)}
-  100%{transform:translateX(300px)}
+/* ---- fireflies living in the bottle on the page ----
+   The bottle used to be a still life: nothing on it moved until you
+   clicked. These drift in the glass unprompted, which is what makes
+   a 150px graphic in a corner catch the eye at all. Clipped to the
+   body with the ship and the waves, so none escape the glass. */
+.pnb-fly{
+  fill:var(--pnb-acc-hi);
+  filter:drop-shadow(0 0 2.5px var(--pnb-acc-hi));
+  transform-box:fill-box;transform-origin:center;
+  animation:pnb-drift var(--fd,4s) ease-in-out infinite var(--fdl,0s);
 }
+@keyframes pnb-drift{
+  0%,100%{transform:translate(0,0) scale(.85);opacity:.45}
+  28%{transform:translate(4px,-5px) scale(1.1);opacity:1}
+  62%{transform:translate(-4px,3px) scale(.95);opacity:.7}
+}
+
+/* Three keyframes went with the porthole redraw, and all three were
+   checked for other users before they were deleted (grep: none):
+     pnb-flow     .pnb-edge drove its dashoffset from here. The line
+                  now animates inside pnb-edgein, which has to own the
+                  whole cycle — a line must not flow before the two
+                  points it joins have been lit.
+     pnb-breathe  .pnb-node pulsed on its own clock. It now lights on
+                  its firefly's arrival instead, which is the point.
+     pnb-sail     the little boat that crossed the porthole floor. The
+                  jar stands there now. */
 
 .pnb-state{
   display:flex;align-items:center;gap:8px;margin:14px 0 0;
@@ -135,7 +219,15 @@
 .pnb-btn.primary:hover{background:var(--pnb-acc-hi);border-color:var(--pnb-acc-hi)}
 
 @media (prefers-reduced-motion:reduce){
-  .pnb-bottle,.pnb-edge,.pnb-node,.pnb-boat,.pnb-panel{animation:none !important}
+  /* portholeSVG() emits no <animateMotion> at all under this query,
+     so there is nothing flying to stop — these hold the constellation
+     in its finished, fully-lit state instead of at frame zero. */
+  .pnb-bottle,.pnb-edge,.pnb-node,.pnb-panel,
+  .pnb-fly,.pnb-ffdot,.pnb-halo,.pnb-jarglow{animation:none !important}
+  .pnb-node{opacity:.92 !important}
+  .pnb-halo{opacity:.28 !important}
+  .pnb-edge{opacity:.45 !important}
+  .pnb-ffdot{opacity:0 !important}
   .pnb-cork,.pnb-ship{transition:none !important}
 }
 

@@ -61,6 +61,7 @@
   var lastFocus = null;
 
   var sky, starWrap, lineSvg, logcard, logpaper, searchEl, peek;
+  var flight = null;   /* PNFlight — jar-to-star fireflies, atlas-flight.js */
 
   function key(s) { return String(s == null ? '' : s).trim().toLowerCase(); }
 
@@ -341,9 +342,12 @@
           '<rect class="lidtop" x="14" y="13" width="48" height="9" rx="3.5"/>' +
           '<path class="band" d="M15 25 H61"/>' +
         '</g>' +
-        '<circle class="fly escape" cx="38" cy="30" r="2.2"/>' +
-        '<circle class="fly escape e2" cx="33" cy="32" r="1.8"/>' +
-        '<circle class="fly escape e3" cx="43" cy="31" r="2"/>' +
+        /* The three "escape" motes that used to puff out of the lid are
+           gone (2026-09-10). They were drawn inside this 76x112 viewBox,
+           so they could only ever escape as far as the jar's own edge —
+           a gesture at a journey rather than the journey. PNFlight now
+           launches one real firefly per note from this lid to that
+           note's star, across the whole scene. See atlas-flight.js. */
         '<path class="mound" d="M0 94 C16 87 60 87 76 94 L76 112 L0 112 Z"/>' +
       '</svg>';
   }
@@ -678,6 +682,10 @@
     peek = $('#peek');
     if (!sky) return;
 
+    /* one layer over the whole scene, because the trip crosses two
+       boxes — see atlas-flight.js for why it cannot live in the jar */
+    flight = global.PNFlight ? global.PNFlight.mount(document.querySelector('.shore')) : null;
+
     STATS = buildGraph();
     buildDust();
     buildStars();
@@ -737,6 +745,7 @@
         select(t.dataset.note, !!t.dataset.star);
         return;
       }
+      var wasDomain = state.domain;
       if (t.dataset.domain) {
         state.domain = state.domain === t.dataset.domain ? 'all' : t.dataset.domain;
       } else {
@@ -747,7 +756,58 @@
       syncJars();
       paintSky();
       renderDeck();
+      /* after paintSky, never before: the stars have to be in their
+         final positions and their final dim/named state before
+         anything measures where a firefly is supposed to land */
+      flyDomain(wasDomain, state.domain);
     });
+
+    /* ---- the flight ----
+       Opening a jar sends one firefly per note in that domain up to
+       its own star; sealing it sends them back down. Switching
+       straight from one jar to another does both, and the clear()
+       inside release() means the outgoing swarm never overlaps the
+       incoming one — two jars' worth of fireflies crossing mid-air
+       reads as noise rather than as two jars. */
+    function starsOf(domainId) {
+      if (!domainId || domainId === 'all') return [];
+      return data.notes.filter(function (n) { return n.domain === domainId; })
+        .map(function (n) {
+          return { id: n.id, el: starWrap.querySelector('[data-note="' + cssEsc(n.id) + '"]') };
+        })
+        .filter(function (t) { return !!t.el; });
+    }
+
+    function jarFor(domainId) {
+      return document.querySelector('.jar[data-domain="' + cssEsc(domainId) + '"]');
+    }
+
+    function colorOf(domainId) {
+      return (domainOf[domainId] || {}).color || '#ffe9a8';
+    }
+
+    function flyDomain(was, now) {
+      if (!flight || was === now) return;
+      if (was && was !== 'all') {
+        var oldJar = jarFor(was);
+        if (oldJar) flight.recall(oldJar, starsOf(was), colorOf(was));
+      }
+      if (now && now !== 'all') {
+        var jar = jarFor(now);
+        if (jar) flight.release(jar, starsOf(now), colorOf(now), kindle);
+      }
+    }
+
+    /* Restarted by hand, exactly like .star.pinged: re-adding a class
+       an element already carries does not replay its animation. */
+    function kindle(target) {
+      var el = target && target.el;
+      if (!el) return;
+      el.classList.remove('kindled');
+      void el.offsetWidth;
+      el.classList.add('kindled');
+      setTimeout(function () { el.classList.remove('kindled'); }, 800);
+    }
 
     function syncJars() {
       Array.prototype.forEach.call(document.querySelectorAll('.jar'), function (b) {

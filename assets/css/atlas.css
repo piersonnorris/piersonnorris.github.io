@@ -632,3 +632,87 @@ body.atlas-page{
   .sky.scoping .ln,.ln.lit{animation:none !important;stroke-dashoffset:0 !important}
   .shore,.logcard,.jar,.scope .barrel,.peek{transition:none !important}
 }
+
+/* ============================================================
+   The flight — fireflies crossing from the jars to their stars.
+   Drawn by assets/js/atlas-flight.js (PNFlight); see that file's
+   header for why this cannot live inside the jar's own SVG.
+   ============================================================ */
+
+/* The layer hangs off .shore, not .scene, and that is the whole point.
+   The page is .shore > [.scene > .sky, .sand > .beach > #jars] — the
+   stars and the jars are in two different sub-trees, ~75px apart at
+   their closest and 600px at their furthest. .scene stops at the
+   horizon (measured: bottom 843), and the jars start at 917, so a
+   layer on .scene clips every flight before it begins. .shore is the
+   first box that holds both.
+
+   .shore had no position of its own, so it gets one here. relative
+   with no z-index creates no stacking context, so the hero (3) and
+   the beach (2) keep the order they already had. */
+/* No overflow-x guard here, and that was checked rather than assumed.
+   At 375px a star near the right edge really does hang its 130px name
+   label out to x=400, and documentElement.scrollWidth duly reports 401
+   against a 375 client width — which reads like a sideways-scroll bug
+   and is not one. body.atlas-page already carries overflow-x:hidden and
+   html is visible, so the body value propagates to the viewport:
+   scrollTo(9999,0) leaves scrollX at 0 with or without a clip here.
+   R20 had already handled it. A clip on .shore would trim edge star
+   names to fix nothing, so there isn't one. */
+.shore{position:relative}
+.flight{
+  position:absolute;inset:0;z-index:3;
+  pointer-events:none;overflow:hidden;
+}
+
+/* Two elements per firefly, on purpose. The outer one rides the
+   Bezier and may not be transformed (offset-path owns its
+   transform); the inner one is free to wobble, which is what keeps
+   a dot travelling a smooth curve from reading as a bullet. */
+.ff{
+  position:absolute;left:0;top:0;width:7px;height:7px;
+  offset-rotate:0deg;
+  animation:ff-path var(--ff-dur,1200ms) cubic-bezier(.36,.06,.35,1) var(--ff-delay,0ms) both;
+}
+.ff b{
+  display:block;width:100%;height:100%;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#fff 0 30%,var(--ff-color,#ffe9a8) 60%,rgba(255,255,255,0) 78%);
+  box-shadow:0 0 7px var(--ff-color,#ffe9a8),0 0 16px var(--ff-color,#ffe9a8);
+  animation:ff-bob 620ms ease-in-out infinite alternate,
+            ff-fade var(--ff-dur,1200ms) ease-in var(--ff-delay,0ms) both;
+}
+@keyframes ff-path{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes ff-bob{from{transform:translate(-1.5px,1.5px) scale(.9)}to{transform:translate(1.5px,-1.5px) scale(1.12)}}
+/* lit on the way out, brightest mid-flight, spent on arrival — the
+   star takes over the light at exactly the moment it flares */
+@keyframes ff-fade{0%{opacity:0}14%{opacity:1}82%{opacity:1}100%{opacity:0}}
+
+/* ---- the arrival ----
+   The sky stays lit whether or not a jar is open (Pierce, 2026-09-10),
+   so this is a flare on an already-burning star rather than an ignition.
+   One shot, removed by the script, restarted by hand the same way
+   .star.pinged is. */
+.star.kindled .star-glow{animation:kindle .72s cubic-bezier(.18,.75,.3,1)}
+@keyframes kindle{
+  0%{transform:scale(1);box-shadow:0 0 calc(var(--sz,10px) * .8) rgba(255,255,255,.35),0 0 calc(var(--sz,10px) * 2) var(--sc,#fff)}
+  26%{transform:scale(2.15);box-shadow:0 0 calc(var(--sz,10px) * 2.4) #fff,0 0 calc(var(--sz,10px) * 5.5) var(--sc,#fff)}
+  100%{transform:scale(1);box-shadow:0 0 calc(var(--sz,10px) * .8) rgba(255,255,255,.35),0 0 calc(var(--sz,10px) * 2) var(--sc,#fff)}
+}
+
+/* ---- the jar it left ----
+   An open jar whose fireflies are out should be an empty jar. The
+   motes inside fade as the swarm crosses the beach and come back
+   when it is sealed; animation:none is needed because the float
+   keyframes own opacity and would otherwise win. */
+.jar[aria-pressed="true"] .fly{animation:none;opacity:0;transition:opacity .7s ease}
+.jar .fly{transition:opacity .7s ease .35s}
+
+@media (prefers-reduced-motion:reduce){
+  /* PNFlight.release() skips the flight entirely under this query and
+     calls the arrival straight away, so there is nothing in the air to
+     stop — these are belt and braces for anything already on screen
+     when the setting changes. */
+  .ff,.ff b,.star.kindled .star-glow{animation:none !important}
+  .ff{display:none !important}
+  .jar[aria-pressed="true"] .fly,.jar .fly{transition:none !important}
+}

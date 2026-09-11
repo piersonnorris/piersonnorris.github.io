@@ -43,9 +43,26 @@
 
   /* Presence only: is there a vault blob under this key? Never parsed,
      never decrypted. null means the browser blocked storage entirely. */
+  function prefersReduced() {
+    try { return global.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+    catch (err) { return false; }
+  }
+
   function vaultPresent(scope) {
     try { return !!localStorage.getItem('pn.vault.' + scope); }
     catch (err) { return null; }
+  }
+
+  /* Deterministic, so the bottle looks the same on every load and on
+     both of the pages it is mounted on. Same reason /atlas/ hashes its
+     star layout instead of randomising it. */
+  function bottleFlies() {
+    var pts = [[48, 22], [63, 34], [79, 19], [95, 30], [110, 22], [126, 33], [137, 24]];
+    return '<g class="pnb-flies">' + pts.map(function (p, i) {
+      return '<circle class="pnb-fly" cx="' + p[0] + '" cy="' + p[1] + '" r="' +
+        (1.3 + (i % 3) * 0.35).toFixed(2) + '" style="--fd:' + (3.4 + (i % 4) * 0.7).toFixed(1) +
+        's;--fdl:-' + (i * 0.63).toFixed(2) + 's"/>';
+    }).join('') + '</g>';
   }
 
   function bottleSVG() {
@@ -74,6 +91,13 @@
         '<g clip-path="url(#pnb-clip-' + seq + ')">' +
           '<path d="M30 48 q10 -6 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V66 H30 Z" fill="var(--pnb-glassline)" opacity=".35"/>' +
           '<path d="M30 53 q10 -5 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 V66 H30 Z" fill="var(--pnb-glassline)" opacity=".28"/>' +
+          /* Fireflies in the glass (2026-09-10). The bottle used to be
+             a ship and two waves, which is a still life — nothing on it
+             moved until you clicked. These drift before anyone touches
+             it, and they are the same idea as /atlas/'s jars: the vault
+             is a jar of lights. Clipped to the body with everything
+             else, so none of them float outside the glass. */
+          bottleFlies() +
           '<g class="pnb-ship">' +
             '<path class="pnb-hull" d="M66 44 h30 l-5 8 h-20 Z"/>' +
             '<line x1="81" y1="18" x2="81" y2="44" stroke="var(--pnb-cork)" stroke-width="2"/>' +
@@ -87,23 +111,87 @@
       '</svg>';
   }
 
-  function portholeSVG() {
-    var edges = EDGES.map(function (pair, i) {
+  /* ---- the porthole ----
+     Pierce, 2026-09-10: "add the firefly page to the home page as a
+     bottle, make it more visualy impressive."
+
+     This used to be a flat dotted sketch that sat there breathing. It
+     is now the same story /atlas/ tells: a jar on the ground opens,
+     one firefly rises to each point of the constellation, and each
+     point lights as its firefly arrives. Nothing about what the
+     drawing MEANS has changed — it is still a generated sketch, still
+     not a graph of anyone's notes, and the copy under it still says
+     so. Only the telling changed.
+
+     Motion is SMIL <animateMotion> rather than CSS offset-path, for
+     one reason: the porthole is width:100% and its viewBox scales with
+     it. A path in SVG user units follows that scaling for free, where
+     a path in CSS pixels would need re-measuring on every resize —
+     which is exactly the bookkeeping atlas-flight.js has to do because
+     it crosses real page boxes. Here there is no reason to pay it.
+
+     PERIOD is one shared cycle. Every delay below is a fraction of it,
+     so the fireflies, the points they light and the lines between them
+     cannot drift out of step the way three independent loops would. */
+  var PERIOD = 7;                 /* seconds — one full telling */
+  var TRAVEL = 1.5;               /* seconds a firefly is in the air */
+  var JAR = { x: 150, y: 132 };   /* the mouth, in viewBox units */
+
+  function portholeSVG(reduce) {
+    /* Stagger: the constellation assembles hub-first, because the hub
+       is the one point every line runs to — lighting it last would
+       leave the drawing looking broken for most of the cycle. */
+    var order = NODES.map(function (n, i) { return i; }).sort(function (a, b) {
+      return (NODES[b].r || 0) - (NODES[a].r || 0);
+    });
+    var slot = {};
+    order.forEach(function (idx, rank) { slot[idx] = rank * 0.3; });
+
+    var edges = EDGES.map(function (pair) {
       var a = NODES[pair[0]], b = NODES[pair[1]];
+      /* a line may only appear once BOTH of its ends are alight */
+      var after = Math.max(slot[pair[0]], slot[pair[1]]) + TRAVEL;
       return '<line class="pnb-edge" x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y +
-        '" style="animation-delay:-' + (i * 0.6).toFixed(1) + 's"/>';
+        '" style="--lit:' + after.toFixed(2) + 's"/>';
     }).join('');
+
     var nodes = NODES.map(function (n, i) {
-      return (n.hub ? '<circle class="pnb-halo" cx="' + n.x + '" cy="' + n.y + '" r="' + (n.r + 6) + '"/>' : '') +
-        '<circle class="pnb-node' + (n.hub ? ' hub' : '') + '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r +
-        '" style="animation-delay:-' + (i * 0.5).toFixed(1) + 's"/>';
+      var after = slot[i] + TRAVEL;
+      return (n.hub ? '<circle class="pnb-halo" cx="' + n.x + '" cy="' + n.y + '" r="' + (n.r + 6) +
+          '" style="--lit:' + after.toFixed(2) + 's"/>' : '') +
+        '<circle class="pnb-node' + (n.hub ? ' hub' : '') + '" cx="' + n.x + '" cy="' + n.y +
+        '" r="' + n.r + '" style="--lit:' + after.toFixed(2) + 's"/>';
     }).join('');
+
+    /* One firefly per point. It leaves the jar going up and only then
+       fans toward its own corner — the control point sits high and a
+       third of the way across, the same shape atlas-flight.js uses, so
+       the swarm blooms out of the mouth instead of spraying sideways. */
+    var flies = reduce ? '' : NODES.map(function (n, i) {
+      var cx = JAR.x + (n.x - JAR.x) * 0.32;
+      var cy = JAR.y + (n.y - JAR.y) * 0.55 - 22;
+      var path = 'M' + JAR.x + ' ' + JAR.y + ' Q' + cx.toFixed(1) + ' ' + cy.toFixed(1) +
+        ' ' + n.x + ' ' + n.y;
+      var hold = (TRAVEL / PERIOD).toFixed(4);
+      return '<g class="pnb-ff">' +
+          '<circle class="pnb-ffdot" r="2.5" style="--d:' + slot[i].toFixed(2) + 's"/>' +
+          '<animateMotion dur="' + PERIOD + 's" begin="' + slot[i].toFixed(2) + 's"' +
+            ' repeatCount="indefinite" calcMode="linear"' +
+            ' keyPoints="0;1;1" keyTimes="0;' + hold + ';1"' +
+            ' path="' + path + '"/>' +
+        '</g>';
+    }).join('');
+
     return '' +
-      '<svg viewBox="0 0 300 150" role="img" aria-label="A sketch of linked notes — decorative, not vault data">' +
-        edges + nodes +
-        '<g class="pnb-boat" transform="translate(0,0)">' +
-          '<path class="pnb-hull" d="M0 140 h18 l-3 5 h-12 Z"/>' +
-          '<path class="pnb-sail" d="M9.5 126 l7 12 h-7 Z"/>' +
+      '<svg viewBox="0 0 300 150" role="img" aria-label="A sketch of linked notes, drawn by fireflies leaving a jar — decorative, not vault data">' +
+        '<ellipse class="pnb-ground" cx="150" cy="146" rx="120" ry="7"/>' +
+        edges + nodes + flies +
+        /* the jar they come from — the same object as /atlas/'s shelf,
+           drawn small enough to read as a source rather than a subject */
+        '<g class="pnb-jar">' +
+          '<ellipse class="pnb-jarglow" cx="150" cy="140" rx="17" ry="13"/>' +
+          '<path class="pnb-jarglass" d="M142 130 h16 v1 c0 1 4 1.5 4 5 v8 c0 3-2 4-5 4 h-14 c-3 0-5-1-5-4 v-8 c0-3.5 4-4 4-5 Z"/>' +
+          '<rect class="pnb-jarlid" x="141" y="127" width="18" height="3.4" rx="1.4"/>' +
         '</g>' +
       '</svg>';
   }
@@ -146,7 +234,7 @@
           '<button type="button" class="pnb-close" data-close aria-label="Close">×</button>' +
           '<p class="pnb-eyebrow">Ship in a bottle</p>' +
           '<h2 id="' + id + '-title">' + (opts.title || 'The vault, from the outside') + '</h2>' +
-          '<div class="pnb-porthole">' + portholeSVG() + '</div>' +
+          '<div class="pnb-porthole">' + portholeSVG(prefersReduced()) + '</div>' +
           '<p class="pnb-state ' + state.cls + '"><span class="pnb-lamp" aria-hidden="true"></span>' + state.text + '</p>' +
           '<p class="pnb-note">' + (opts.note ||
             'That drawing is a <b>sketch of a linked vault</b>, not your notes — nothing on this page can read them. ' +

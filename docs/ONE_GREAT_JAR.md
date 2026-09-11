@@ -375,6 +375,9 @@ just this rebuild.
    4 — a single-folder vault clusters into one blob and labels everything the same), and **whether the
    dates look real** (finding 3 — if they are all within seconds of each other, mtime was lost and the
    Ship's log stays blocked wherever we point this).
-3. **The old page.** Keep it on a fallback route until this is checked on real hardware, or replace outright?
-   — *step 2 assumed "keep": the new code is in new files and `/atlas/` still runs untouched.*
-4. **Nav.** Does the label stay "Atlas", or become something jar-shaped?
+3. ~~**The old page.**~~ **Answered 2026-09-10: the night sky stays, and this rebuild is parked.** Pierce asked for the fireflies to fly from the jars to the stars — an enhancement to the live R20 page — and was shown the fork explicitly: build it there, or push this rebuild forward instead. He chose the night sky. ROADMAP **R23** is that work.
+
+   This is a park, not a deletion. Steps 1–3 are real, tested code (`vault-groups.js` with 17 tests, `atlas-jar.js`, `jar.css`) and the scene is still judgeable at `vault/concepts/jar/`. **Nothing here is wasted if it is picked back up** — and §8b's central finding is what made R23 work at all: a jar drawn in its own box cannot hold a swarm whose job is to cross the page. `atlas-flight.js` is that lesson applied to the page that shipped.
+
+   Before restarting this, re-read §8a finding 2: at the `docs/` snapshot it is one cluster plus three orphans, and it wants the real vault (BACKSTAGE_PLAN P4) before it can be judged fairly.
+4. ~~**Nav.**~~ **Moot while Q3 is parked** — the page is still the night sky, so the label is still "Atlas". Reopen with this rebuild.

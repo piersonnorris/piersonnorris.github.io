@@ -44,6 +44,8 @@ Obsidian and the portfolio touched in two places. Only one was a real coupling:
 | Where | What it was | Now |
 |---|---|---|
 | `assets/js/bottle.js` porthole | Two buttons: *Open the vault* → `/notes/`, and ***Stock desk* → `/tools/tracker/#stocknotes`** | ✅ Stock link removed. Buttons are now `/vault/` (primary) and `/notes/`. The bottle is the Obsidian door and nothing else's. |
+
+**Update 2026-09-10 (ROADMAP R23).** The porthole is no longer a flat dotted sketch that sat there breathing. A jar stands on the ground, nine fireflies rise to the nine points of the constellation, and each point lights as its firefly lands — the same story `/atlas/` tells when you open a jar. The bottle on the page also gained seven fireflies drifting in its glass, so it moves before anyone clicks it. **What the drawing means is unchanged**: still generated, still not a graph of anyone's notes, and the copy under it still says so. §0's brief — *"the only job is to look extraordinary"* — is what this was measured against.
 | Tracker's **Obsidian tab** | The *stock notes* vault — per-ticker notes — lives inside the tracker | Left alone, deliberately. Those notes are about holdings; they belong next to the holdings. It is a different vault, not this one. |
 
 The rule going forward: **the showcase never links to the tracker, and the tracker never links to the

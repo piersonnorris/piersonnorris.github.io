@@ -382,7 +382,7 @@
         id: 'goal-pn-easter-egg', title: 'PN Tasks · Ship-in-a-bottle Obsidian Easter egg', status: 'in-progress',
         outcome: 'Entrance built 2026-09-07: PNBottle (assets/js/bottle.js + bottle.css) mounted twice -- under the Currently card on Home and washed up in the sand on /island/ -- one component wearing each page\'s palette. Cork pops, ship sails out, and a porthole dialog opens on the vault\'s front door: a generated constellation sketch, a lamp reading whether a vault exists on this device (key presence only, never content), and links into /notes/ and the stock desk. The viewer half is deliberately NOT built: a public page cannot show encrypted notes, so faking one would misrepresent the site.',
         nextAction: 'Done 2026-09-10. Pierce picked Research studio; /notes/ now wears it (skin-only, assets/css/notes-studio.css). The remaining half is porting the same skin to the tracker Obsidian tab -- one link tag and one body class, on the sealed build.',
-        milestones: ['Bottle/cork/ship click interaction', 'Home-page entrance', 'Island entrance', 'R10 direction picked', 'Polished /notes/ viewer', 'Tracker Obsidian tab gets the same skin'],
+        milestones: ['Bottle/cork/ship click interaction', 'Home-page entrance', 'Island entrance', 'R10 direction picked', 'Polished /notes/ viewer', 'Tracker Obsidian tab gets the same skin', 'Fireflies fly jar to star (R23)'],
         dependencies: ['R10 · Obsidian visual style'], relatedLink: '#projects', created: now, updated: now
       },
       {

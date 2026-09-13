@@ -2,7 +2,7 @@
 
 > Personal site of Pierson Norris (goes by Pierce): Finance & Accounting student at Elon University (class of 2027), founder of True North Services LLC (Chicago North Shore exterior services), former AI intern at Screencastify, incoming president of Elon's AI & ET Club. This file is the machine-readable summary; the site's HTML is fully semantic and crawlable.
 
-This site is under construction (scaffold live 2026-08-23; full launch to follow). Content below is kept in sync with the site at each milestone.
+This site is actively maintained (scaffold live 2026-08-23). Content below is kept in sync with the site at each milestone.
 
 ## Who he is
 
@@ -16,6 +16,7 @@ This site is under construction (scaffold live 2026-08-23; full launch to follow
 Live now:
 - /: profile and elevator pitch
 - /experience/: timeline 2023–now (newest first, starting at 2026) + skills
+- /modules/: guide to the site's seven live sections, their audiences and access states, plus the public-safe delivery timeline workbook
 - /atlas/: knowledge atlas — 25 linked notes on what he has learned and where (True North, Screencastify, self-directed investing, building these tools), readable as notes, a link graph, or a timeline. Curated public data (assets/js/atlas-data.js) traced to docs/CONTENT.md; it is not the private vault and carries no client names, portfolio values or former-employer figures.
 - /vault/: "Backstage" — the working documents behind the site, published from a real Obsidian vault and readable with no login: folder tree, rendered Markdown, backlinks, and a link graph whose every edge is a link somebody wrote. The current snapshot is the site's own docs/ folder. Read-only, and a snapshot rather than live sync. The private vault stays behind /notes/.
 - /island/: public project roadmap and open-source-style to-do board, presented as a deserted island

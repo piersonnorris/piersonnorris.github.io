@@ -21,6 +21,8 @@
 !/docs/**
 !/experience/
 !/experience/**
+!/modules/
+!/modules/**
 !/atlas/
 !/atlas/index.html
 !/vault/

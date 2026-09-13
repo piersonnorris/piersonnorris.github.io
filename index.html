@@ -41,7 +41,7 @@
 
   <style>
     /* ---- page-specific: the console ---- */
-    .hero{position:relative;padding:66px 0 26px}
+    .hero{position:relative;padding:66px 0 26px;overflow-x:clip}
     .hero::before{
       content:"";position:absolute;inset:-70px -25% auto -25%;height:400px;pointer-events:none;
       background:radial-gradient(ellipse at 20% 0%,rgba(95,174,90,.11),transparent 62%);
@@ -154,18 +154,22 @@
     .console.enter-fade > *:nth-child(5){animation-delay:.26s}
     .console.enter-fade > *:nth-child(6){animation-delay:.32s}
 
-    .soonstrip{
-      display:flex;flex-wrap:wrap;gap:10px 26px;align-items:baseline;
-      border-top:1px solid var(--line);padding-top:22px;margin-top:40px;
-      font-family:var(--mono);font-size:12.5px;color:var(--dim);
+    .module-callout{
+      display:grid;grid-template-columns:minmax(0,1fr) auto;gap:26px;align-items:center;
+      background:linear-gradient(135deg,var(--panel),rgba(95,174,90,.07));
+      border:1px solid var(--line2);border-radius:var(--r-lg);padding:24px 26px;margin-top:40px;
     }
-    .soonstrip .lbl{letter-spacing:.14em;text-transform:uppercase;font-size:11px}
+    .module-callout h2{font-size:21px;margin:5px 0 5px}
+    .module-callout p:last-child{color:var(--mut);font-size:13.5px;margin:0;max-width:62ch}
+    .module-actions{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end}
 
     @media (max-width:760px){
       .hero-grid{grid-template-columns:1fr;gap:22px}
       .hero h1{max-width:none}
       .hero-aside{max-width:540px}
       .section-head{margin-top:34px}
+      .module-callout{grid-template-columns:1fr;padding:21px}
+      .module-actions{justify-content:flex-start}
     }
   </style>
 </head>
@@ -183,6 +187,7 @@
         <div class="navlinks" id="navlinks">
           <a href="/" aria-current="page">Home</a>
           <a href="/experience/">Experience</a>
+          <a href="/modules/">Modules</a>
           <a href="/atlas/">Atlas</a>
           <a href="/vault/">Backstage</a>
           <a href="/notes/">Notes <span class="lockicon">·pin</span></a>
@@ -313,10 +318,17 @@
       </a>
     </div>
 
-    <div class="soonstrip">
-      <span class="lbl">Landing soon</span>
-      <span>About</span><span>Projects</span><span>Contact</span><span>Tools hub</span>
-    </div>
+    <section class="module-callout" aria-labelledby="modules-heading">
+      <div>
+        <p class="eyebrow">Site guide</p>
+        <h2 id="modules-heading">Seven modules, each with one clear job.</h2>
+        <p>See what each part of the site is for, what is public, and how the next improvements are sequenced.</p>
+      </div>
+      <div class="module-actions">
+        <a class="btn primary" href="/modules/">Explore modules <span aria-hidden="true">→</span></a>
+        <a class="btn ghost" href="/assets/planning/PN-Site-Module-Timeline.xlsx" download>Download timeline</a>
+      </div>
+    </section>
 
     <footer class="sitefoot">
       <address>

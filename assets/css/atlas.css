@@ -198,7 +198,13 @@ body.atlas-page{
    would overlap. Alternating sides, plus the pill above, keeps them
    readable where they still cross. */
 .star:nth-child(2n) .star-name{top:auto;bottom:calc(50% + var(--sz,10px) / 2 + 9px)}
-.sky.named .star:not(.dim) .star-name{opacity:.94}
+/* An open jar's stars are named by their fireflies: each keeps its name
+   back until its own firefly lands on it (.landed, set by kindle() in
+   atlas-ui.js), so the flight delivers the labels instead of trailing in
+   behind stars that already had them. A search names its matches at once —
+   nothing is flying there. */
+.sky.named:not(.jarred) .star:not(.dim) .star-name,
+.sky.named.jarred .star.landed:not(.dim) .star-name{opacity:.94}
 .star:hover .star-name,.star:focus-visible .star-name,.star.on .star-name{opacity:1}
 .star:hover,.star:focus-visible{z-index:4}
 .star.on{z-index:3}
@@ -225,6 +231,12 @@ body.atlas-page{
 }
 .star.kin .star-glow{transform:scale(1.2);box-shadow:0 0 calc(var(--sz,10px) * 2.4) var(--sc,#fff)}
 .star.dim{opacity:.09;filter:saturate(.55);pointer-events:none}
+/* An open jar does not put the rest of the sky out (2026-09-14). At 9% the
+   other domains' stars vanished the moment a jar opened, and the page
+   stopped showing the whole constellation at exactly the point someone
+   started using it. A search still dims hard: that is someone asking for
+   something specific. */
+.sky.jarred .star.dim{opacity:.3}
 
 /* ---- pointing at a star ----------------------------------------------
    Hovering does everything selecting does except open the panel: the star
@@ -612,6 +624,16 @@ body.atlas-page{
 @media (min-width:1080px){
   body.atlas-page.logopen .shore{padding-right:min(420px,94vw)}
 }
+/* A short window cut the sky off on first load. A 1366x768 laptop is about
+   1366x625 once the browser has taken its share, and there the lowest three
+   stars sat below the fold — 22 of 25 on screen (measured 2026-09-14). The
+   same words on fewer lines buy the ~60px it needed: the title fits one line
+   once the column is wide enough for it (it needs 587px), and the lede takes
+   three lines instead of four. Tall windows keep the two-line title. */
+@media (min-width:900px) and (max-height:700px){
+  .atlas-hero{max-width:740px;padding-top:18px}
+  .atlas-hero .lede{max-width:700px}
+}
 @media (max-width:1079px){
   .logcard{
     right:0;left:0;top:auto;bottom:0;width:auto;max-height:80vh;
@@ -677,27 +699,23 @@ body.atlas-page{
   pointer-events:none;overflow:hidden;
 }
 
-/* Two elements per firefly, on purpose. The outer one rides the
-   Bezier and may not be transformed (offset-path owns its
-   transform); the inner one is free to wobble, which is what keeps
-   a dot travelling a smooth curve from reading as a bullet. */
+/* Two elements per firefly, on purpose. The script owns the outer one —
+   its transform and opacity are written on every frame by
+   atlas-flight.js, which is what lets a flight land on a star that is
+   still moving — and the inner one is free to wobble, which keeps a dot
+   on a smooth curve from reading as a bullet. Put the wobble on the
+   outer element and the script's transform would overwrite it. */
 .ff{
   position:absolute;left:0;top:0;width:7px;height:7px;
-  offset-rotate:0deg;
-  animation:ff-path var(--ff-dur,1200ms) cubic-bezier(.36,.06,.35,1) var(--ff-delay,0ms) both;
+  opacity:0;will-change:transform,opacity;
 }
 .ff b{
   display:block;width:100%;height:100%;border-radius:50%;
   background:radial-gradient(circle at 50% 50%,#fff 0 30%,var(--ff-color,#ffe9a8) 60%,rgba(255,255,255,0) 78%);
   box-shadow:0 0 7px var(--ff-color,#ffe9a8),0 0 16px var(--ff-color,#ffe9a8);
-  animation:ff-bob 620ms ease-in-out infinite alternate,
-            ff-fade var(--ff-dur,1200ms) ease-in var(--ff-delay,0ms) both;
+  animation:ff-bob 620ms ease-in-out infinite alternate;
 }
-@keyframes ff-path{from{offset-distance:0%}to{offset-distance:100%}}
 @keyframes ff-bob{from{transform:translate(-1.5px,1.5px) scale(.9)}to{transform:translate(1.5px,-1.5px) scale(1.12)}}
-/* lit on the way out, brightest mid-flight, spent on arrival — the
-   star takes over the light at exactly the moment it flares */
-@keyframes ff-fade{0%{opacity:0}14%{opacity:1}82%{opacity:1}100%{opacity:0}}
 
 /* ---- the arrival ----
    The sky stays lit whether or not a jar is open (Pierce, 2026-09-10),

@@ -60,7 +60,7 @@
   var lastAspect = 0;
   var lastFocus = null;
 
-  var sky, starWrap, lineSvg, logcard, logpaper, searchEl, peek;
+  var sky, starWrap, lineSvg, logcard, logpaper, searchEl, peek, shoreEl;
   var flight = null;   /* PNFlight — jar-to-star fireflies, atlas-flight.js */
 
   /* The open jar's own layout, or null for "everyone is home". Stars are
@@ -642,6 +642,10 @@
 
     var count = Object.keys(shown).length;
     sky.classList.toggle('scoping', state.scope);
+    /* A jar is open and its stars have the sky to themselves: the rest
+       stay faintly lit rather than going out, and each open star keeps
+       its name until its firefly delivers it (atlas.css, .landed). */
+    sky.classList.toggle('jarred', !state.scope && state.domain !== 'all');
     sky.classList.toggle('peeking', !!state.hoverId || !!state.tracePair);
     /* 25 names at once is not a legend, it is a wall of text — so an open
        jar names its stars only while it is the only thing on screen. */
@@ -794,11 +798,14 @@
     if (!note) return;
     state.noteId = noteId;
     /* a star hidden by the current filter has just been asked for by name —
-       drop the filter rather than pointing at something invisible */
+       drop the filter rather than pointing at something invisible. Through
+       setDomain(), so the open jar actually seals: assigning state.domain
+       here lit the whole sky under a jar that still looked open, with its
+       stars left scattered where the spread had put them. */
     if (!matches(note)) {
-      state.domain = 'all';
       state.query = '';
       searchEl.value = '';
+      setDomain('all');
     }
     renderLog(note);
     openLog();
@@ -820,6 +827,142 @@
 
   function cssEsc(s) { return String(s).replace(/["\\]/g, '\\$&'); }
 
+  /* ---- the flight ----
+     Opening a jar sends one firefly per note in that domain up to its own
+     star; sealing it sends them back down. Switching straight from one jar
+     to another does both, and the clear() inside release() means the
+     outgoing swarm never overlaps the incoming one — two jars' worth of
+     fireflies crossing mid-air reads as noise rather than as two jars. */
+
+  /* Where a star is going to be, in the flight layer's pixels — asked as a
+     FUNCTION, not handed over as a number, and that difference is the
+     2026-09-14 fix. .star transitions left/top over .62s, so at launch every
+     star still reads as its old place in the cluster, and a flight aimed
+     there lands on empty sky: 117-726px short on Operations, measured. This
+     point used to be computed once at launch and nothing read it. PNFlight
+     now asks again on every frame, so a firefly also follows its star
+     through the field log sliding in, the telescope sending everyone home,
+     or a resize. */
+  function starPoint(id) {
+    var p = at(id);
+    if (!p || !shoreEl) return null;
+    var s = sky.getBoundingClientRect();
+    var host = shoreEl.getBoundingClientRect();
+    return {
+      x: s.left - host.left + (p.x / 100) * s.width,
+      y: s.top - host.top + (p.y / 100) * s.height
+    };
+  }
+
+  function starsOf(domainId) {
+    if (!domainId || domainId === 'all') return [];
+    return data.notes.filter(function (n) { return n.domain === domainId; })
+      .map(function (n) {
+        return {
+          id: n.id,
+          el: starWrap.querySelector('[data-note="' + cssEsc(n.id) + '"]'),
+          pt: function () { return starPoint(n.id); }
+        };
+      })
+      .filter(function (t) { return !!t.el; });
+  }
+
+  function jarFor(domainId) {
+    return document.querySelector('.jar[data-domain="' + cssEsc(domainId) + '"]');
+  }
+
+  function colorOf(domainId) {
+    return (domainOf[domainId] || {}).color || '#ffe9a8';
+  }
+
+  function flyDomain(was, now) {
+    if (was === now) return;
+    if (!flight) {
+      /* no flight layer, so nothing will deliver the names — hand them over */
+      starsOf(now).forEach(function (t) { t.el.classList.add('landed'); });
+      return;
+    }
+    if (was && was !== 'all') {
+      var oldJar = jarFor(was);
+      if (oldJar) flight.recall(oldJar, starsOf(was), colorOf(was));
+    }
+    if (now && now !== 'all') {
+      var jar = jarFor(now);
+      if (jar) flight.release(jar, starsOf(now), colorOf(now), kindle);
+    }
+  }
+
+  /* A firefly has landed: its star flares, and gets its name. While a jar
+     is open a star stays unnamed until its own firefly arrives (atlas.css,
+     .sky.jarred .star.landed), so the flight delivers something instead of
+     trailing in behind stars that were already labelled. The flare is
+     restarted by hand, exactly like .star.pinged: re-adding a class an
+     element already carries does not replay its animation. */
+  function kindle(target) {
+    var el = target && target.el;
+    if (!el) return;
+    el.classList.add('landed');
+    el.classList.remove('kindled');
+    void el.offsetWidth;
+    el.classList.add('kindled');
+    setTimeout(function () { el.classList.remove('kindled'); }, 800);
+  }
+
+  function syncJars() {
+    Array.prototype.forEach.call(document.querySelectorAll('.jar'), function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.domain === state.domain));
+    });
+  }
+
+  /* ---- framing the flight ----
+     The sky and the jars are two bands of one page, and on a 1366x768
+     laptop — a 1366x625 window once the browser has taken its share — they
+     do not fit on one screen: scroll down far enough to press a jar and the
+     top of the sky, where an open jar spreads its stars, has gone off the
+     top. So opening a jar scrolls just far enough to show the whole sky and
+     the jar's lid together. Where even that cannot fit (the second row of
+     jars on a phone) the sky wins, and the fireflies rise into it from
+     below. scrollBy() with no behaviour defers to site.css, which scrolls
+     smoothly by default and instantly under prefers-reduced-motion. */
+  function frameFlight(jarEl) {
+    if (!jarEl) return;
+    var vh = global.innerHeight || document.documentElement.clientHeight;
+    var glass = (jarEl.querySelector('svg') || jarEl).getBoundingClientRect();
+    var top = sky.getBoundingClientRect().top - 8;
+    var bottom = glass.top + glass.height * 0.62 + 8;
+    var by = 0;
+    if (bottom - top > vh || top < 0) by = top;
+    else if (bottom > vh) by = bottom - vh;
+    if (Math.abs(by) >= 4) global.scrollBy(0, by);
+  }
+
+  /* ---- opening and sealing a jar ----
+     Every way the open jar can change comes through here: pressing a jar,
+     Clear, Escape, and a star link that has to drop the filter to show its
+     star. Before 2026-09-14 only the first two did the whole job, so Escape
+     sealed the jar in the deck but left its stars scattered across the sky
+     with no fireflies coming home, and following a link out of an open jar
+     lit the whole sky under a jar that still looked open. */
+  function setDomain(next) {
+    var was = state.domain;
+    state.domain = next;
+    if (was !== next) {
+      /* a new flight delivers every name again */
+      Array.prototype.forEach.call(starWrap.children, function (el) {
+        el.classList.remove('landed');
+      });
+    }
+    syncJars();
+    /* spread first: each flight reads its target from the layout the stars
+       are heading for */
+    applySpread();
+    paintSky();
+    renderDeck();
+    if (was === next) return;
+    flyDomain(was, next);
+    if (next !== 'all') frameFlight(jarFor(next));
+  }
+
   /* ---- wiring ---- */
   function init() {
     sky = $('#sky');
@@ -829,11 +972,12 @@
     logpaper = $('#logbody');
     searchEl = $('#search');
     peek = $('#peek');
+    shoreEl = $('.shore');
     if (!sky) return;
 
     /* one layer over the whole scene, because the trip crosses two
        boxes — see atlas-flight.js for why it cannot live in the jar */
-    flight = global.PNFlight ? global.PNFlight.mount(document.querySelector('.shore')) : null;
+    flight = global.PNFlight ? global.PNFlight.mount(shoreEl) : null;
 
     STATS = buildGraph();
     buildDust();
@@ -894,95 +1038,14 @@
         select(t.dataset.note, !!t.dataset.star);
         return;
       }
-      var wasDomain = state.domain;
       if (t.dataset.domain) {
-        state.domain = state.domain === t.dataset.domain ? 'all' : t.dataset.domain;
+        setDomain(state.domain === t.dataset.domain ? 'all' : t.dataset.domain);
       } else {
-        state.domain = 'all';
         state.query = '';
         searchEl.value = '';
+        setDomain('all');
       }
-      syncJars();
-      /* spread first: the fireflies are aimed at where the stars are going
-         to be, not where they are leaving from */
-      applySpread();
-      paintSky();
-      renderDeck();
-      flyDomain(wasDomain, state.domain);
     });
-
-    /* ---- the flight ----
-       Opening a jar sends one firefly per note in that domain up to
-       its own star; sealing it sends them back down. Switching
-       straight from one jar to another does both, and the clear()
-       inside release() means the outgoing swarm never overlaps the
-       incoming one — two jars' worth of fireflies crossing mid-air
-       reads as noise rather than as two jars. */
-    /* The star is MOVING while the firefly flies to it — .star transitions
-       left/top over .62s and the flight takes 1.05-1.67s. Reading a live
-       getBoundingClientRect() at launch would aim every firefly at a
-       halfway house nobody ends up at, so the target is computed from the
-       layout it is heading for instead. */
-    function starPoint(id) {
-      var p = at(id);
-      if (!p) return null;
-      var s = sky.getBoundingClientRect();
-      var host = document.querySelector('.shore').getBoundingClientRect();
-      return {
-        x: s.left - host.left + (p.x / 100) * s.width,
-        y: s.top - host.top + (p.y / 100) * s.height
-      };
-    }
-
-    function starsOf(domainId) {
-      if (!domainId || domainId === 'all') return [];
-      return data.notes.filter(function (n) { return n.domain === domainId; })
-        .map(function (n) {
-          return {
-            id: n.id,
-            el: starWrap.querySelector('[data-note="' + cssEsc(n.id) + '"]'),
-            pt: starPoint(n.id)
-          };
-        })
-        .filter(function (t) { return !!t.el; });
-    }
-
-    function jarFor(domainId) {
-      return document.querySelector('.jar[data-domain="' + cssEsc(domainId) + '"]');
-    }
-
-    function colorOf(domainId) {
-      return (domainOf[domainId] || {}).color || '#ffe9a8';
-    }
-
-    function flyDomain(was, now) {
-      if (!flight || was === now) return;
-      if (was && was !== 'all') {
-        var oldJar = jarFor(was);
-        if (oldJar) flight.recall(oldJar, starsOf(was), colorOf(was));
-      }
-      if (now && now !== 'all') {
-        var jar = jarFor(now);
-        if (jar) flight.release(jar, starsOf(now), colorOf(now), kindle);
-      }
-    }
-
-    /* Restarted by hand, exactly like .star.pinged: re-adding a class
-       an element already carries does not replay its animation. */
-    function kindle(target) {
-      var el = target && target.el;
-      if (!el) return;
-      el.classList.remove('kindled');
-      void el.offsetWidth;
-      el.classList.add('kindled');
-      setTimeout(function () { el.classList.remove('kindled'); }, 800);
-    }
-
-    function syncJars() {
-      Array.prototype.forEach.call(document.querySelectorAll('.jar'), function (b) {
-        b.setAttribute('aria-pressed', String(b.dataset.domain === state.domain));
-      });
-    }
 
     /* the telescope */
     var scope = $('#scope');
@@ -1026,8 +1089,8 @@
       if (e.key !== 'Escape') return;
       if (!logcard.hidden) { closeLog(true); return; }
       if (state.domain !== 'all' || state.query) {
-        state.domain = 'all'; state.query = ''; searchEl.value = '';
-        syncJars(); paintSky(); renderDeck();
+        state.query = ''; searchEl.value = '';
+        setDomain('all');
       }
     });
 
@@ -1039,11 +1102,14 @@
       var from = e.target.closest('.star');
       if (!dir || !from) return;
       e.preventDefault();
-      var here = pos[from.dataset.note];
+      /* at(), not pos: in an open jar the stars stand where the spread put
+         them, and walking by their home places sent focus off in a
+         direction that had nothing to do with the key */
+      var here = at(from.dataset.note);
       var best = null, bestScore = Infinity;
       Array.prototype.forEach.call(starWrap.children, function (el) {
         if (el === from || el.classList.contains('dim')) return;
-        var p = pos[el.dataset.note];
+        var p = at(el.dataset.note);
         var dx = (p.x - here.x) * 2, dy = p.y - here.y;
         var along = dx * dir[0] + dy * dir[1];
         if (along <= 0.5) return;

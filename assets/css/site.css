@@ -28,7 +28,7 @@
   --warn:#E8A33D;
   --info:#4CC9F0;
 
-  /* platform brand colors — ASSET_TRACKER_SPEC.md §4 */
+  /* platform brand colors (tracker spec §4, now in the stock-trackers repo) */
   --p-sofi:#00A2C7;
   --p-webull:#3d6ea8;   /* lightened from #001B39 so it reads on a dark ground */
   --p-robinhood:#00C805;

@@ -2,7 +2,7 @@
 
 `/notes/` mounts the notes app (`PNNotes` from `assets/js/notes-ui.js`) with scope `general`: everyday Markdown notes with tags, `[[wikilinks]]`, and backlinks. Encrypted with the visitor's own PIN into **their** browser's localStorage — nothing is uploaded, nothing lands in this repo, and the page ships no note content.
 
-The stock-desk vault (per-ticker notes, outlooks, purchase journals, board, calendar data) is a **separate scope** that lives inside `/tools/tracker/` — same engine, different storage namespace, so the two never mix.
+The stock-desk vault (per-ticker notes, outlooks, purchase journals, board, calendar data) was a **separate scope** inside the portfolio tracker — same engine, different storage namespace, so the two never mixed. It moved with the tracker to the private `stock-trackers` repo on 2026-09-15.
 
 ## Graph view
 
@@ -14,7 +14,7 @@ It is pointed at connectivity rather than decoration, because that is the part a
 - **Unresolved** (dashed purple) are links pointing at notes that don't exist yet. Clicking one writes that note, so the link resolves immediately.
 - The stat strip carries links-per-note, which is the one number that says whether the vault is a web or a pile.
 
-`PNGraphify.build()` is a pure function and is unit-tested in `tools/tracker/notes-graph.test.js`; the SVG half is not.
+`PNGraphify.build()` is a pure function and is unit-tested in `tools/tests/notes-graph.test.js`; the SVG half is not.
 
 ## Round-tripping with the real Obsidian app
 
@@ -34,6 +34,6 @@ The site can't read a folder on disk, and never will: it is static, with no serv
 
 `visual-options/` held three directions for this page (ROADMAP R10). Pierce picked **Research studio** on 2026-09-10 and it now ships: `assets/css/notes-studio.css`, linked by `index.html` alone.
 
-It is deliberately a **skin**. `notes-ui.js` and `notes.css` are untouched, and the whole file is scoped under `body.notes-page`, because `notes.css` is shared with `/vault/` and the tracker's stock desk — neither of which changes look. Most of the reskin is ten CSS custom properties overridden on the mount point; the "Linked" pane on the right is grid placement over the backlinks block that was already in the editor form, gated with `:has()` so a note without backlinks does not leave a hole.
+It is deliberately a **skin**. `notes-ui.js` and `notes.css` are untouched, and the whole file is scoped under `body.notes-page`, because `notes.css` is shared with `/vault/`, which does not change look. Most of the reskin is ten CSS custom properties overridden on the mount point; the "Linked" pane on the right is grid placement over the backlinks block that was already in the editor form, gated with `:has()` so a note without backlinks does not leave a hole.
 
 The accent is slate blue here and Fern green everywhere else on purpose. `/vault/` already wears Slate command center, and the ship-in-a-bottle porthole offers both pages as doors — two doors onto the same picture would be the worse answer.

@@ -191,7 +191,6 @@
           <a href="/atlas/">Atlas</a>
           <a href="/vault/">Backstage</a>
           <a href="/notes/">Notes <span class="lockicon">·pin</span></a>
-          <a href="/tools/tracker/">Tracker</a>
           <a href="/island/">🏝 Island</a>
         </div>
       </nav>
@@ -208,7 +207,6 @@
           <p class="sub">Running True North Services LLC while finishing Finance &amp; Accounting at Elon. This is the profile, portfolio, and working home for the systems I build.</p>
           <div class="ctas">
             <a class="btn primary" href="/experience/">View experience <span aria-hidden="true">→</span></a>
-            <a class="btn ghost" href="/tools/tracker/">Open tracker</a>
           </div>
         </div>
         <aside class="hero-aside" aria-label="Currently">
@@ -244,21 +242,7 @@
     </div>
     <div class="console enter-fade">
 
-      <a class="tile featured" href="/tools/tracker/">
-        <p class="k">Portfolio</p>
-        <h3>Asset tracker</h3>
-        <p class="d">Holdings across five platforms, with allocation and mix charts. Open to read, with a toggle that stars out every figure that says how much is held.</p>
-        <div class="platdots">
-          <span class="p"><span class="pdot p-sofi"></span>SoFi</span>
-          <span class="p"><span class="pdot p-webull"></span>Webull</span>
-          <span class="p"><span class="pdot p-robinhood"></span>Robinhood</span>
-          <span class="p"><span class="pdot p-gemini"></span>Gemini</span>
-          <span class="p"><span class="pdot p-gomining"></span>GoMining</span>
-        </div>
-        <span class="go">Open dashboard <span aria-hidden="true">→</span></span>
-      </a>
-
-      <a class="tile featured" href="/notes/">
+      <a class="tile featured wide" href="/notes/">
         <p class="k">Notes <span class="lock" id="vaultstate">PIN</span></p>
         <h3>Obsidian — working notes</h3>
         <p class="d">Markdown notes with tags, <span class="mono">[[wikilinks]]</span> and backlinks. Encrypted in this browser only; exports as .md files that drop straight into an Obsidian vault.</p>
@@ -266,21 +250,13 @@
         <span class="go">Open notes <span aria-hidden="true">→</span></span>
       </a>
 
-      <a class="tile third" href="/tools/tracker/#stocknotes">
-        <p class="k">Notes <span class="lock">PIN</span></p>
-        <h3>Obsidian — stock desk</h3>
-        <p class="d">A second, separate vault living inside the tracker: one note per ticker, each with a structured outlook — stance, conviction, horizon, target, thesis, risks.</p>
-        <div class="row"><span class="big" id="stocknotecount">—</span><span class="unit">ticker notes</span></div>
-        <span class="go">Open stock desk <span aria-hidden="true">→</span></span>
-      </a>
-
       <!-- U8: this feed is career highlights, hand-curated on purpose (it
            needs editorial judgment about what's headline-worthy, not a
            chronological log). Its real source of truth is the Experience
            page / docs/CONTENT.md §3 — when either changes, update this
-           list to match. (assets/js/updates.js is a different feed: the
-           SITE's own build changelog, shown in the tracker's Updates tab —
-           wrong content for a career-facing homepage, so it stays separate.) -->
+           list to match. (The site's build changelog, assets/js/updates.js,
+           was a different feed and left with the portfolio tracker for its
+           own private repo on 2026-09-15.) -->
       <div class="tile wide" style="cursor:default">
         <p class="k">Recent</p>
         <h3>What's moved lately</h3>
@@ -321,7 +297,7 @@
     <section class="module-callout" aria-labelledby="modules-heading">
       <div>
         <p class="eyebrow">Site guide</p>
-        <h2 id="modules-heading">Seven modules, each with one clear job.</h2>
+        <h2 id="modules-heading">Six modules, each with one clear job.</h2>
         <p>See what each part of the site is for, what is public, and how the next improvements are sequenced.</p>
       </div>
       <div class="module-actions">
@@ -367,12 +343,10 @@
       }
 
       var gen = vaultPresent('general');
-      var stk = vaultPresent('stocks');
 
       var countEl = document.getElementById('notecount');
       var labelEl = document.getElementById('notecountlabel');
       var stateEl = document.getElementById('vaultstate');
-      var stockEl = document.getElementById('stocknotecount');
 
       if (gen === null) {
         countEl.textContent = '—';
@@ -387,9 +361,6 @@
         labelEl.textContent = 'start a vault';
         stateEl.textContent = 'NEW';
       }
-
-      stockEl.textContent = stk ? '●' : '+';
-      stockEl.style.fontSize = '20px';
     })();
   </script>
 </body>

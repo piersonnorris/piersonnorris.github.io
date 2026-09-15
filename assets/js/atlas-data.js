@@ -277,10 +277,11 @@
       evidence: ['5 platforms, 1 toggle'],
       body: 'The notes vault ships as an encrypted payload and decrypts in the visitor’s own browser behind a PIN — there is ' +
         'no server to trust and nothing readable in the repo. The portfolio tracker started there too, then in September 2026 ' +
-        'went the other way: the figures now sit in the page in the clear, with a censor toggle that stars out every number ' +
-        'saying how much is held while leaving market prices legible. That is a different trade, not a stronger one — a toggle ' +
-        'is a courtesy to whoever is reading over your shoulder, and View Source is still View Source. Worth knowing which of ' +
-        'the two you are actually relying on: see [[Track your own money]] and [[Approval-gated by design]].'
+        'went the other way: for a week its figures sat in the page in the clear, with a censor toggle that starred out every ' +
+        'number saying how much was held while leaving market prices legible. That was a different trade, not a stronger one — a ' +
+        'toggle is a courtesy to whoever is reading over your shoulder, and View Source is still View Source. Then the tracker left ' +
+        'the site for a private repository, where access control does the job the PIN used to. Worth knowing which one you are ' +
+        'actually relying on: see [[Track your own money]] and [[Approval-gated by design]].'
     },
     {
       id: 'forms-to-sheets',

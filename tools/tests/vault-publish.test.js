@@ -9,7 +9,7 @@
    pushed is public permanently, git history included. Every assertion
    here is "would this note have leaked?"
 
-     node tools/tracker/vault-publish.test.js
+     node tools/tests/vault-publish.test.js
    ============================================================ */
 
 const assert = require('node:assert');

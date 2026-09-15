@@ -26,10 +26,10 @@ async function main() {
      step past wherever the seed currently has it — derived, not a magic
      status string, so this keeps passing as seed content changes (it
      mirrors docs/ROADMAP.md and shifts over time). */
-  const beforeStatus = seeded.find((goal) => goal.id === 'goal-calendar-sync').status;
+  const beforeStatus = seeded.find((goal) => goal.id === 'goal-atlas').status;
   const expectedIndex = Math.min(columnIds.length - 1, columnIds.indexOf(beforeStatus) + 1);
-  const moved = board.move(seeded, 'goal-calendar-sync', 1);
-  assert.equal(moved.find((goal) => goal.id === 'goal-calendar-sync').status, columnIds[expectedIndex]);
+  const moved = board.move(seeded, 'goal-atlas', 1);
+  assert.equal(moved.find((goal) => goal.id === 'goal-atlas').status, columnIds[expectedIndex]);
   const stats = board.metrics(moved, '2026-09-05');
   assert.equal(stats.total, seeded.length);
   assert.equal(stats.complete, seeded.filter((goal) => goal.status === 'complete').length);

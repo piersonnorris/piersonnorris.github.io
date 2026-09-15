@@ -7,7 +7,7 @@
    The escaping tests are the point. Everything else is convenience;
    those decide whether a note can write markup into a public page.
 
-     node tools/tracker/markdown.test.js
+     node tools/tests/markdown.test.js
    ============================================================ */
 
 const assert = require('node:assert');

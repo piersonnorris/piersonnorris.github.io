@@ -1,6 +1,6 @@
 # BLUEPRINT — piersonnorris.com
 
-Master build spec. Prepared by Claude (Cowork), 2026-08-23, from decisions made directly with Pierson. ChatGPT: read this fully before writing code. `docs/CONTENT.md` holds all copy; `docs/ASSET_TRACKER_SPEC.md` holds the dashboard feature.
+Master build spec. Prepared by Claude (Cowork), 2026-08-23, from decisions made directly with Pierson. ChatGPT: read this fully before writing code. `docs/CONTENT.md` holds all copy. (The dashboard feature and its spec, `ASSET_TRACKER_SPEC.md`, moved to the private `stock-trackers` repo on 2026-09-15 — see §8.)
 
 Anything tagged `[OPEN]` is an unmade decision — ask Pierson, don't guess.
 
@@ -13,7 +13,7 @@ A personal site that answers "who is Pierson Norris?" for two audiences at once:
 1. **Humans** — recruiters, companies, collaborators. Clean, dark, fast, credible.
 2. **Machines** — AI crawlers and agents (GPTBot, ClaudeBot, PerplexityBot, Google) that increasingly answer "who is X?" on people's behalf. The site is deliberately structured so machines parse it accurately: semantic HTML, JSON-LD, llms.txt, explicit crawler permissions.
 
-Secondary mission: a **Tools hub** for things Pierson builds for himself, starting with a gated live portfolio dashboard. The site should read as proof-of-work, not just a resume.
+Secondary mission: a **Tools hub** for things Pierson builds for himself. (It was designed around a gated live portfolio dashboard, which now lives in its own private repo instead — see §8.) The site should read as proof-of-work, not just a resume.
 
 ## 2. Locked decisions
 
@@ -24,7 +24,7 @@ Secondary mission: a **Tools hub** for things Pierson builds for himself, starti
 | Domain | `piersonnorris.github.io` now; `piersonnorris.com` attached later (build all URLs relative; put absolute URLs only in the crawl kit files, and update them at domain switch — see §7). |
 | Brand | Dark + sleek. Dark ground; the eye goes to what's bright. Full system in §4. |
 | Blog | Not in v1. No placeholder page. Structure must make adding one later trivial. |
-| Asset tracker | Password-gated only. Real numbers never in the repo or the public build. See `ASSET_TRACKER_SPEC.md`. |
+| Asset tracker | Not on this site. Moved to the private `stock-trackers` repo on 2026-09-15; real numbers never in this repo or the public build. |
 | Analytics | Privacy-friendly, no cookie banner (GoatCounter or Plausible). `[OPEN]` which one — build without it; it's one script tag added later. |
 
 ## 3. Audiences drive structure
@@ -81,7 +81,6 @@ Confident, terse, concrete. Numbers over adjectives ("50+ clients, five-figure f
 /experience/            index.html          Experience (the 2023–2027 timeline)
 /projects/              index.html          Projects
 /tools/                 index.html          Tools hub
-/tools/tracker/         index.html          Asset tracker (encrypted artifact — see spec)
 /contact/               index.html          Contact
 /assets/                css/site.css, js/site.js, img/…, resume/pierson-norris-resume.pdf
 robots.txt  llms.txt  sitemap.xml  404.html  .nojekyll
@@ -101,7 +100,7 @@ Folder-per-page (`/about/` not `about.html`) so URLs stay clean and extension-fr
 
 **Projects** — Card grid (1-col mobile / 2-col desktop): True North digital infrastructure, the Asset Tracking system, Screencastify internship tooling (the story is the project), this website itself. Each card: title, mono period, 2-sentence description, outcome numbers where they exist, link (live site, or the Tools page, or Experience anchor).
 
-**Tools** — The hub. Intro sentence ("Things I build for myself; some are public, some are locked"), then a card per tool. v1 has one: **Portfolio Tracker** — description of what it does + a screenshot with SAMPLE data + a "locked" chip + link to /tools/tracker/. Layout must make a second tool card a copy-paste job.
+**Tools** — The hub. Intro sentence ("Things I build for myself; some are public, some are locked"), then a card per tool. `[OPEN]` which cards: v1 was designed around a **Portfolio Tracker** card, and that tool left the site on 2026-09-15 (§8). Layout must make each tool card a copy-paste job.
 
 **Contact** — Email (mailto), LinkedIn, GitHub profile `[OPEN: other socials TBD]`. No contact form in v1 (forms need a backend or third party; a mailto link is honest and zero-maintenance). Mono-styled links, one per line, `<address>` element.
 
@@ -137,13 +136,13 @@ Validate with Google's Rich Results Test before calling M3 done.
 
 **Per-page `<head>`** — unique `<title>` ("Page — Pierson Norris") and meta description; OG + Twitter card tags (og:title, og:description, og:type=profile on Home, og:image once a share image exists `[OPEN]`); `<link rel="canonical">`; `<html lang="en">`.
 
-**sitemap.xml** — all six public pages, referenced from robots.txt. The gated tracker page is NOT in the sitemap and carries `<meta name="robots" content="noindex">` in its (unencrypted wrapper) head.
+**sitemap.xml** — all six public pages, referenced from robots.txt. A page that should not be indexed (today, `/notes/`) stays out of the sitemap and carries `<meta name="robots" content="noindex">`.
 
 **llms.txt** — keep in sync with site content at every milestone; it is the machine-readable executive summary.
 
-## 8. Asset tracker (summary — full spec in ASSET_TRACKER_SPEC.md)
+## 8. Asset tracker — moved out (2026-09-15)
 
-Pipeline: scheduled GitHub Action → fetches the Google Sheet via service account (key in Actions Secrets) → normalizes to JSON → renders the dashboard template → encrypts page+data with StatiCrypt using `TRACKER_PASSWORD` (also a Secret) → commits ONLY the encrypted `/tools/tracker/index.html`. The public repo and public site never contain readable holdings. The Tools hub shows a sample-data screenshot instead. Build this LAST (M4) — the site must not wait on it.
+The portfolio dashboard is no longer part of this site. It lived at `/tools/tracker/` (PIN-sealed at first, open from 2026-09-08) and on 2026-09-15 moved to its own **private** repo, `piersonnorris/stock-trackers`, together with its spec, build script, tests and scheduled refresh workflow. A private repo is what lets it run with no password. Nothing on this site links to it, and holdings appear nowhere here. The old files remain in this repo's git history.
 
 ## 9. Milestones
 
@@ -155,7 +154,7 @@ Pipeline: scheduled GitHub Action → fetches the Google Sheet via service accou
 
 **M3 — Crawl kit.** JSON-LD both pages, full head/OG treatment, sitemap.xml, llms.txt + robots.txt finalized. ✔ Accept: Rich Results Test passes; sitemap fetches; every page has unique title + description.
 
-**M4 — Tracker.** Per ASSET_TRACKER_SPEC.md: Action runs green on schedule + manual dispatch; page decrypts with the password; sample-data screenshot on Tools hub. ✔ Accept: zero secrets in repo history; a wrong password shows the StatiCrypt prompt again, not content; `noindex` present.
+**M4 — Tracker.** Out of this site's scope since 2026-09-15; the tracker and its acceptance criteria live in the private `stock-trackers` repo (§8).
 
 **M5 — Polish + launch.** Favicon (dark-ground "PN" mark), 404 styled, GoatCounter/Plausible when chosen, run the full QA list below, then Pierson shares the URL.
 
@@ -167,7 +166,7 @@ Pipeline: scheduled GitHub Action → fetches the Google Sheet via service accou
 - Lighthouse: Performance ≥90, Accessibility ≥95, SEO ≥95 on Home + Experience.
 - JSON-LD validates; robots.txt + sitemap.xml + llms.txt mutually consistent.
 - Grep the repo for `secrets`, `BEGIN PRIVATE KEY`, the password — zero hits.
-- The site reads correctly with JS disabled (tracker excepted).
+- The site reads correctly with JS disabled.
 
 ## 11. Standing rules for ChatGPT
 

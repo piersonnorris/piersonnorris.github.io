@@ -212,86 +212,6 @@ function main() {
     fs.rmSync(dir, { recursive: true, force: true });
   }
 
-  // ============================================ build.js payload seam
-
-  /* loadObsidianVault decides what a bundle has to look like before it
-     rides inside the encrypted payload. It must never throw the build
-     over bad input — the tracker's own numbers do not depend on it. */
-  {
-    const { loadObsidianVault } = require('./build.js');
-    const withEnv = (value, fn) => {
-      const had = Object.prototype.hasOwnProperty.call(process.env, 'OBSIDIAN_VAULT_JSON');
-      const prev = process.env.OBSIDIAN_VAULT_JSON;
-      if (value == null) delete process.env.OBSIDIAN_VAULT_JSON;
-      else process.env.OBSIDIAN_VAULT_JSON = value;
-      try { return fn(); }
-      finally {
-        if (had) process.env.OBSIDIAN_VAULT_JSON = prev;
-        else delete process.env.OBSIDIAN_VAULT_JSON;
-      }
-    };
-
-    const good = JSON.stringify({
-      format: 'pn-vault-bundle', version: 1, generatedAt: '2026-09-07T00:00:00.000Z',
-      source: 'DemoVault', count: 2,
-      notes: [
-        { path: 'a.md', title: 'Alpha', body: 'links [[Beta]]', tags: ['macro'], ticker: 'nvda', created: 'c', updated: 'u' },
-        { path: 'b.md', title: '   ', body: 'no title', tags: [] }
-      ]
-    });
-    const baked = withEnv(good, loadObsidianVault);
-    assert.equal(baked.count, 1, 'a note with no title is not a note');
-    assert.equal(baked.notes[0].ticker, 'NVDA', 'tickers are normalized on the way in');
-    assert.equal(baked.source, 'DemoVault');
-
-    assert.equal(withEnv('{ not json', loadObsidianVault), null, 'malformed JSON degrades to null');
-    assert.equal(withEnv('{"format":"something-else","notes":[]}', loadObsidianVault), null,
-      'only a pn-vault-bundle is accepted');
-    assert.equal(withEnv(JSON.stringify({ format: 'pn-vault-bundle', notes: [] }), loadObsidianVault), null,
-      'an empty bundle bakes nothing rather than an empty shell');
-  }
-
-  /* The open-build guard (2026-09-10). A --public payload is plaintext
-     in a tracked file, so neither of these private seams may reach it.
-     This is regression cover for something that had already happened:
-     a --public build published 130 real Google Calendar events --
-     course times, deadlines, instructor names, room numbers -- onto
-     GitHub Pages. The vault seam was one dropped file from doing the
-     same with note bodies. Both now take the flag and refuse. */
-  {
-    const { loadObsidianVault, loadGoogleEvents } = require('./build.js');
-    const withEnv = (name, value, fn) => {
-      const had = Object.prototype.hasOwnProperty.call(process.env, name);
-      const prev = process.env[name];
-      process.env[name] = value;
-      try { return fn(); }
-      finally {
-        if (had) process.env[name] = prev;
-        else delete process.env[name];
-      }
-    };
-
-    const bundle = JSON.stringify({
-      format: 'pn-vault-bundle', version: 1, source: 'DemoVault', count: 1,
-      notes: [{ path: 'a.md', title: 'Alpha', body: 'private text', tags: [] }]
-    });
-    const events = JSON.stringify([
-      { id: 'e1', date: '2026-09-08', title: 'Cost Accounting', notes: 'Someone Real, ROOM 355' }
-    ]);
-
-    /* sealed build: both seams load, because the PIN is the only reader */
-    assert.equal(withEnv('OBSIDIAN_VAULT_JSON', bundle, () => loadObsidianVault(false)).count, 1,
-      'a sealed build still bakes the vault bundle');
-    assert.equal(withEnv('GOOGLE_CALENDAR_EVENTS_JSON', events, () => loadGoogleEvents(false)).length, 1,
-      'a sealed build still bakes the calendar');
-
-    /* open build: neither does, whatever is sitting on disk or in env */
-    assert.equal(withEnv('OBSIDIAN_VAULT_JSON', bundle, () => loadObsidianVault(true)), null,
-      'an open build bakes no note bodies');
-    assert.deepEqual(withEnv('GOOGLE_CALENDAR_EVENTS_JSON', events, () => loadGoogleEvents(true)), [],
-      'an open build bakes no calendar events');
-  }
-
   /* A note documenting the link syntax was inventing edges to notes
      nobody meant to reference — and inflating the unresolved count with
      the vault's own documentation about itself. */
@@ -308,7 +228,7 @@ function main() {
       'an unterminated fence runs to the end of the note, as it renders');
   }
 
-  console.log('notes-graph + obsidian-sync + build seam: all assertions passed');
+  console.log('notes-graph + obsidian-sync: all assertions passed');
 }
 
 main();

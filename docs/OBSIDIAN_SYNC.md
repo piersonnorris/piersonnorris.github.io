@@ -6,13 +6,13 @@ Status: **shipped 2026-09-07** (ROADMAP R15). Two halves that meet in the middle
 
 ## 1. The graph — `assets/js/notes-graph.js`
 
-`PNGraphify` mounts inside the notes UI on both `/notes/` (general vault) and the tracker's Obsidian tab (stock vault), behind a **Graph** button in the toolbar.
+`PNGraphify` mounts inside the notes UI on `/notes/` (general vault), behind a **Graph** button in the toolbar. The tracker's Obsidian tab (stock vault) had one too; it moved with the tracker to the private `stock-trackers` repo on 2026-09-15.
 
 Deliberately split in two:
 
 | Half | What it is | Tested |
 |---|---|---|
-| `build(notes, {tags, missing})` | Pure. Notes → `{nodes, links, stats}`. No DOM, no layout, no randomness. | Yes — `tools/tracker/notes-graph.test.js` |
+| `build(notes, {tags, missing})` | Pure. Notes → `{nodes, links, stats}`. No DOM, no layout, no randomness. | Yes — `tools/tests/notes-graph.test.js` |
 | `mount(el, opts)` | Force-directed SVG: pan, zoom, node dragging, neighbourhood highlight, click-to-open. | No — left to the browser |
 
 ### The judgement calls `build()` makes
@@ -30,7 +30,7 @@ These are the decisions the picture then draws confidently, so they are the part
 - **Layout runs synchronously before the first paint.** Nodes are positioned by a `transform` on their `<g>`, and `requestAnimationFrame` does not fire at all in a background tab — so a graph that waited for the first animation frame rendered the entire vault stacked at `0,0`. The sim settles ~90 steps up front, paints, auto-fits the camera to the node bounds, and only then animates the remainder.
 - **Focus rings.** `.pg-node:focus-visible` restates its own ring for the same specificity reason `.pnchart-graph .vg-node` had to (ROADMAP U2): a two-class selector outranks the generic `[tabindex]:focus-visible` rule regardless of source order.
 
-`PNGraphify` is separate from `PNCharts.graph`, which stays what it was — the tracker Projects tab's projects-and-AI-thoughts map.
+`PNGraphify` is separate from `PNCharts.graph`, the tracker Projects tab's projects-and-AI-thoughts map, which left this repo with the tracker.
 
 ---
 
@@ -59,7 +59,7 @@ Output is one `pn-vault-bundle` JSON: `{format, version, scope, generatedAt, sou
 
 **Route A — Import button (`/notes/`, no build).** Pick the one `.json` file instead of hand-selecting hundreds of `.md` files. `PNVault.importBundle()` **upserts** by `sourcePath`, so re-running the sync after editing in Obsidian updates notes in place; the old `.md` path only ever *added*, which made repeat imports useless. `source_path` is written into exported frontmatter too, so the identity survives a full round trip. Nothing is ever deleted: a note removed from the vault folder stays in the browser until you delete it.
 
-**Route B — baked into the encrypted build (tracker).** Drop the same bundle at `private/tracker/obsidian-vault.json` and `tools/tracker/build.js` (`loadObsidianVault`) seals it into the payload as `obsidianVault`, exactly like `googleEvents`. The tracker's Obsidian tab then shows a banner offering a one-click merge. Merging is a button and never automatic — it overwrites notes that came from the same vault paths, and silently rewriting a vault on unlock would be a surprising thing for a page to do. Malformed or missing input degrades to `null`; the build never fails over vault data.
+**Route B — baked into the encrypted build (tracker) — now in the `stock-trackers` repo.** Drop the same bundle at that repo's `private/tracker/obsidian-vault.json` and its `build.js` (`loadObsidianVault`) seals it into a `--sealed` payload as `obsidianVault`, exactly like `googleEvents`; an open build refuses both. The tracker's Obsidian tab then shows a banner offering a one-click merge. Merging is a button and never automatic — it overwrites notes that came from the same vault paths, and silently rewriting a vault on unlock would be a surprising thing for a page to do. Malformed or missing input degrades to `null`; the build never fails over vault data.
 
 ---
 
@@ -104,7 +104,7 @@ personal vault is not published; that step is P4 in the plan and waits on Pierce
 
 ## Known boundary
 
-Same as `docs/PORTFOLIO_CALENDAR_PLAN.md` says about Google Calendar, and for the same reason: **this is a snapshot, not live sync.**
+Same as the portfolio calendar plan (now in the `stock-trackers` repo) says about Google Calendar, and for the same reason: **this is a snapshot, not live sync.**
 
 The site is static, served from GitHub Pages. It has no server, no OAuth, and no way to read a folder on disk — not from the browser, not from CI. `obsidian-sync.js` runs on the machine that has the vault, outside the site's own code. Refreshing means running it again and re-importing (or rebuilding). GitHub Actions cannot do this pull: the vault lives on Pierce's disk, not behind a portable credential.
 

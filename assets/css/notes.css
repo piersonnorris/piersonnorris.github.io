@@ -1,6 +1,6 @@
 /* ============================================================
-   Notes ("Obsidian") UI — used by /notes/ and the tracker's
-   stock-notes panel. Depends on site.css for tokens.
+   Notes ("Obsidian") UI — used by /notes/ and /vault/. Depends on
+   site.css for tokens.
    ============================================================ */
 
 .nv{display:block}

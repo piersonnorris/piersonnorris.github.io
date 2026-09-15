@@ -9,19 +9,19 @@ This site is actively maintained (scaffold live 2026-08-23). Content below is ke
 - Founder & owner, True North Services LLC (2026; grew from Oasis Exterior Cleaning, founded May 2023): 50+ clients and five-figure revenue in the first summer, +68% customer growth. Incorporated the company in spring 2026 on a manager-contractor model with a written operations and risk framework, documented pricing floors ($100 minimum job, 30%+ manager margin target, signed client agreement above $500), a mandatory three-form workflow feeding one master sheet, and a head-manager training program he wrote himself.
 - AI Intern, Screencastify (Jun 9 – Aug 7, 2026): mapped 7 workflows across 6 departments in 48 hours via one written diagnostic prompt; shipped 3 live automation fixes, including one cutting a 4–8 hr/week finance task to under 15 minutes. Also built Castify OS — three internal AI modules live in nine weeks (a proposal generator that took proposals from 30 minutes to 5, an approval-gated outbound email agent, and a traffic dashboard that breaks out AI-assistant referrals as their own channel).
 - Elon University: Finance & Accounting dual major, minors in Entrepreneurship and Mandarin Chinese (near-fluent). Incoming president, AI & ET Club (2026).
-- Self-directed investor since 2020; builds his own tools, including a live (private) portfolio tracker on this site.
+- Self-directed investor since 2020; builds his own tools, including a private portfolio tracker.
 
 ## Pages
 
 Live now:
 - /: profile and elevator pitch
 - /experience/: timeline 2023–now (newest first, starting at 2026) + skills
-- /modules/: guide to the site's seven live sections, their audiences and access states, plus the public-safe delivery timeline workbook
+- /modules/: guide to the site's six live sections, their audiences and access states, plus the public-safe delivery timeline workbook
 - /atlas/: knowledge atlas — 25 linked notes on what he has learned and where (True North, Screencastify, self-directed investing, building these tools), readable as notes, a link graph, or a timeline. Curated public data (assets/js/atlas-data.js) traced to docs/CONTENT.md; it is not the private vault and carries no client names, portfolio values or former-employer figures.
 - /vault/: "Backstage" — the working documents behind the site, published from a real Obsidian vault and readable with no login: folder tree, rendered Markdown, backlinks, and a link graph whose every edge is a link somebody wrote. The current snapshot is the site's own docs/ folder. Read-only, and a snapshot rather than live sync. The private vault stays behind /notes/.
 - /island/: public project roadmap and open-source-style to-do board, presented as a deserted island
 
-Not for crawling (noindex): /notes/ (PIN-gated), /tools/tracker/ (open, but it carries real holdings — please do not index or reproduce it)
+Not for crawling (noindex): /notes/ (PIN-gated)
 
 Planned, not yet live (pending final content decisions — see docs/ROADMAP.md R4/R7):
 - /about/: full story

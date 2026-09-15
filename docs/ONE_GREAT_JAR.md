@@ -152,7 +152,7 @@ working while §9's question 3 is open:
 | `assets/js/vault-groups.js` | new — `PNVaultGroups.groups(notes)`, pure, seeded, 17 tests |
 | `assets/js/atlas-jar.js` | new — `PNJar.mount(el, {data, cap, onOpen})`, the sealed jar |
 | `assets/css/jar.css` | new — will become the rewritten `atlas.css` at swap time |
-| `tools/tracker/vault-groups.test.js` | new — the D2 spec's four fixtures plus the labelling rules |
+| `tools/tests/vault-groups.test.js` | new — the D2 spec's four fixtures plus the labelling rules |
 | `vault/concepts/jar/` | new scratch route, gitignored like the Observatory's comps |
 | `atlas/index.html`, `atlas.css`, `atlas-ui.js` | **untouched** — the before-picture still runs |
 
@@ -243,7 +243,7 @@ silently inventing a better name.
   stops, positions still place correctly rather than snapping to the origin, flicker becomes a static
   opacity, motes stop, the label still draws.
 - **All eight test files pass**, including the new 17.
-- **`.gitignore` swallowed a test file again.** `tools/tracker/vault-groups.test.js` matched the
+- **`.gitignore` swallowed a test file again.** `tools/tests/vault-groups.test.js` matched the
   default-deny and needed its own allowlist line — the same trap as BACKSTAGE_PLAN §1, which is now the
   third time. Test files are enumerated one by one in `.gitignore`; anyone adding one must add the line.
 

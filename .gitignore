@@ -33,21 +33,10 @@
 !/island/
 !/island/index.html
 !/tools/
-!/tools/tracker/
-!/tools/tracker/README.md
-!/tools/tracker/index.html
-!/tools/tracker/index.template.html
-!/tools/tracker/build.js
-!/tools/tracker/calendar.test.js
-!/tools/tracker/taskboard.test.js
-!/tools/tracker/charts.test.js
-!/tools/tracker/notes-graph.test.js
-!/tools/tracker/markdown.test.js
-!/tools/tracker/vault-publish.test.js
-!/tools/tracker/atlas-links.test.js
-!/tools/tracker/vault-groups.test.js
+# The portfolio tracker moved to its own private repo (stock-trackers) on
+# 2026-09-15, so nothing under tools/tracker/ is allowlisted any more.
+# Tests match by pattern so a new test file cannot be swallowed again.
+!/tools/tests/
+!/tools/tests/*.test.js
 !/tools/obsidian-sync.js
-!/.github/
-!/.github/workflows/
-!/.github/workflows/refresh-tracker.yml
 /docs/STOCK_UPDATE_PROMPT.md

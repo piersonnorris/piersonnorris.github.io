@@ -28,7 +28,7 @@ Rules: use this copy verbatim (light grammatical smoothing allowed, meaning-chan
 >
 > The other thread is AI. In summer 2026 I was the AI intern at Screencastify, where I learned my favorite working method: don't start with the tool, start with someone's actual Tuesday. One written prompt got seven workflows mapped across six departments in 48 hours, and every single one had the same failure — a person acting as the API between systems that don't talk. We shipped three fixes; one cut a 4–8 hour weekly finance task to under 15 minutes.
 >
-> Now I run True North, trade and track my own portfolio (since 2020), and serve as incoming president of Elon's AI & ET Club. I build my own tools — the locked one on this site tracks my holdings across five platforms, live from a spreadsheet.
+> Now I run True North, trade and track my own portfolio (since 2020), and serve as incoming president of Elon's AI & ET Club. I build my own tools — one of them tracks my holdings across five platforms, live from a spreadsheet.
 >
 > `[OPEN — closing line: the 2027 headline. What Pierson is aiming at after graduation.]`
 
@@ -46,7 +46,7 @@ Rendered newest-first at `/experience/`. The timeline **starts at 2026** (the to
 - **Wrote the crew training program** — May 2026. Head-manager service training: power washing, paver-sand reapplication, and window washing, each a six-step field procedure with its own do's and don'ts. *Takeaway: the training is the quality control — you can't inspect your way to a standard you never wrote down.*
 - **Put the company on a documented operating system** — Apr – Jun 2026. One path per lead: lead → **Form 1** quote scheduling & assignment → appointment → **Form 2** quote result & pricing (scope, before photos, price, labor/materials estimate, payment terms, close probability) → approval → job → **Form 3** end-of-job report (actual hours, materials, after photos, property condition, damage, upsells, equipment) → invoice → paid. All three feed one master sheet: leads, quotes, closed jobs, scheduling, payments, applicants, referral partners, manager performance, equipment, weekly scorecard. *Takeaway: no form, no distribution. The paperwork is the control.*
 - **Incorporated True North Services LLC** — Apr – May 2026. LLC filing, operations & risk framework, written priority roadmap, and a manager-contractor model (managers are independent contractors who own crews, scheduling, and execution risk). Team of **four-plus**, operations lead running weekly ops calls. Economics: of gross, **20%** company / **5%** backend / **5%** lead fee / **70%** manager. Floors: **$100** minimum job, **30%+** manager margin target, pricing-floor check before quoting. Liability: jobs over **$500** require a signed client agreement; managers sign a scope-and-indemnification agreement; before/after photos on property-sensitive jobs; card fees passed through flat. Service-boundary matrix: direct — power washing, window washing, weeding, mulching, bush trimming, staining, pavers, gravel paths, seasonal cleanups; referral-only — roofing, plumbing, electrical, large tree work, licensed trades; anything else is approval-only. Cash: bank transfer first, cash second, card third; revenue lands in the LLC account, distributions biweekly once documentation, disputes, and refunds settle. *Takeaway: from hustle to institution — docs, training, and structure that run without you in the room.*
-- **Asset tracking system** — 2026, ongoing. Five-platform portfolio tracker in Google Sheets, monthly-tab automation, live dashboard on this site (open since 2026-09-08, with a censor toggle rather than a gate).
+- **Asset tracking system** — 2026, ongoing. Five-platform portfolio tracker in Google Sheets, monthly-tab automation, feeding a private dashboard (on this site until 2026-09-15, when it moved to its own private repo; the site no longer links to it).
 
 **2025**
 - **Manager & equity partner, Student Maintenance LLC** — spring 2025. Brought on as manager with an ownership stake: on-site quoting, closing leads, marketing content, sales-team leadership. `[OPEN: include on the public site at all? If yes, confirm dates + how to describe the stake.]`
@@ -89,17 +89,17 @@ Kept **off** the public site deliberately: the first live client's name, Screenc
 ## 5. Projects (Projects page cards)
 
 1. **True North Services — digital infrastructure** (2026, live) — company site, lead capture, photo library, ops docs. Link: True North site URL `[OPEN: confirm final URL]`.
-2. **Portfolio Asset Tracker** (2026, live + open) — Google Sheet → GitHub Action → dashboard; five platforms, monthly history. Figures ship in the page with a censor toggle. Links to /tools/.
+2. **Portfolio Asset Tracker** (2026, private) — Google Sheet → GitHub Action → dashboard; five platforms, monthly history. Lives in its own private repo since 2026-09-15, so the card has no link. `[OPEN: Pierson — keep this card on the Projects page at all?]`
 3. **Screencastify AI internship tooling** (2026) — the 7-workflows/48-hours diagnosis method + three shipped fixes. Links to Experience entry.
 4. **piersonnorris.com** (2026) — this site: plain HTML, dark system, AI-crawlable by design, spec'd with Claude, built with ChatGPT. Repo link once public.
 
 ## 6. Tools page
 
 Intro: "Things I build for myself. Some are public, some are locked."
-Card — **Portfolio Tracker**: "Live view of my holdings across five platforms — SoFi, Webull, Robinhood, Gemini, GoMining — pulled from the spreadsheet I actually maintain. Open to read; the figures start starred out." → /tools/tracker/.
+Card — **Portfolio Tracker**: removed 2026-09-15. The tracker moved to its own private repo and no longer has a page on this site. `[OPEN: Pierson — does the Tools hub still ship without it, and with which cards?]`
 
 ## 7. Numbers that may appear on the site (all from Pierson's own docs)
 
 50+ clients · five-figure first-summer revenue (~$12k profit) · +68% customer growth · 7 workflows / 6 departments / 48 hours / 1 meeting added · 3 shipped fixes · 4–8 hrs/week → under 15 minutes · ~30 min/week saved on the Monday email · 76 posts audited · 3 Castify OS modules live · 30 min → 5 min per proposal · 9 weeks idea-to-platform · 5 platforms tracked · team of 4+ · 20/5/5/70 revenue split · $100 minimum job · 30%+ manager margin target · $500 signed-agreement threshold · $10 minimum referral incentive.
 
-**Never on the site:** the spreadsheet ID, any credential. Also off the site: portfolio dollar values, share counts and individual holdings **everywhere except `/tools/tracker/`** — Pierson decided on 2026-09-08 to publish those there in the clear, no PIN, with an on-screen censor toggle. That is one page and one deliberate exception, made with the tradeoff spelled out (public repo, git history, View Source); it is not a general licence to put holdings in page copy, meta tags, `llms.txt`, the atlas, or anywhere else. Also off the site: Screencastify client names, their internal channel performance figures, and their internal vendor tool names (see §3b); True North client names, addresses, and revenue figures.
+**Never on the site:** the spreadsheet ID, any credential. Also off the site: portfolio dollar values, share counts and individual holdings — **everywhere, no exceptions**. The one exception there ever was, the open `/tools/tracker/` page Pierson chose on 2026-09-08, ended on 2026-09-15 when the tracker moved to its own private repo (`stock-trackers`). The figures it published remain in this public repo's git history. Also off the site: Screencastify client names, their internal channel performance figures, and their internal vendor tool names (see §3b); True North client names, addresses, and revenue figures.

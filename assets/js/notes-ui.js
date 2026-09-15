@@ -3,8 +3,10 @@
 
    Two modes, one engine (see vault.js):
      mode 'general'  → /notes/           plain notes, tags, backlinks
-     mode 'stocks'   → /tools/tracker/   adds a ticker field and a
-                                         structured Outlook panel
+     mode 'stocks'   → the portfolio tracker, which moved to the
+                       private stock-trackers repo (2026-09-15) and
+                       keeps its own copy; no page here mounts it.
+                       Adds a ticker field and a structured Outlook panel
 
    PNNotes.mount({
      el:        container element

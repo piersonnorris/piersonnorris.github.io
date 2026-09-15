@@ -64,7 +64,7 @@ Everything below is built and working. The new surface should add exactly one co
 | C2 | **Notes UI** — reader, tag filter, editor, backlinks panel | in-browser | `assets/js/notes-ui.js`, `/notes/` | PIN | No |
 | C3 | **Graph engine** — `PNGraphify.build()` (pure, unit-tested) + `mount()` (force-directed SVG) | in-browser | `assets/js/notes-graph.js` | none itself | Yes, via C6 |
 | C4 | **Vault sync** — walks a real vault folder, calls C1's own parser, emits one `pn-vault-bundle` JSON | disk → file | `tools/obsidian-sync.js` | runs on Pierce's machine | No — output is gitignored |
-| C5 | **Baked route** — `loadObsidianVault()` seals a bundle into the encrypted tracker payload | file → build | `tools/tracker/build.js` | tracker PIN | No (ciphertext only) |
+| C5 | **Baked route** — `loadObsidianVault()` seals a bundle into the encrypted tracker payload. *Moved to the private `stock-trackers` repo, 2026-09-15.* | file → build | `build.js` in `stock-trackers` | tracker PIN | No (ciphertext only) |
 | C6 | **Atlas** — 25 curated public notes, three-pane workspace, real link graph, timeline | static file | `assets/js/atlas-data.js`, `/atlas/` | **none** | Intended to — blocked by §1 |
 | C7 | **Bottle porthole** — Easter-egg door reporting whether a vault exists *on this device* | in-browser | `assets/js/bottle.js` | key-presence check only | Yes (the door, not the notes) |
 
@@ -93,7 +93,7 @@ flowchart LR
   V["Obsidian vault<br/>(Pierce's disk)"] -->|"C4 obsidian-sync.js"| B["private/notes/<br/>obsidian-vault.json<br/>gitignored"]
   V -->|"NEW: --public + review gate"| P["assets/data/<br/>vault-public.json<br/>committed"]
   B -->|"Import button"| N["/notes/<br/>PIN, browser-local, editable"]
-  B -->|"C5 build.js"| T["/tools/tracker/<br/>PIN, encrypted payload"]
+  B -->|"C5 build.js"| T["stock-trackers repo<br/>private, sealed payload"]
   P --> W["/vault/ — Backstage<br/>public, read-only, no gate"]
   A["/atlas/ — curated public"] -.->|"same shell"| W
   C3["C3 PNGraphify"] -.-> W
@@ -209,7 +209,7 @@ Five phases. Each one ends somewhere it is safe to stop.
 |---|---|---|
 | **P0 — Unblock** | `.gitignore` allowlist for `/atlas/` (and `/vault/`); commit the atlas files; verify it loads | ✅ done — `git check-ignore` was hiding `atlas/index.html`; the page now loads with 25 notes, 30 links, 0 orphans |
 | **P1 — Look before publishing** | `--report`: every note that *would* publish, with path and size, no text | ✅ built. Run against `docs/`, it caught 7 dollar amounts — all cleared-for-publication figures, so `money` was waived deliberately and the bundle records the waiver |
-| **P2 — The publish pipe** | `--public`: `publish:false` / `#private` / `nopublish/` exclusions, refusing scrubber, `--prefix`, `--waive`, writes `assets/data/vault-public.js` | ✅ built, 26 tests in `tools/tracker/vault-publish.test.js` |
+| **P2 — The publish pipe** | `--public`: `publish:false` / `#private` / `nopublish/` exclusions, refusing scrubber, `--prefix`, `--waive`, writes `assets/data/vault-public.js` | ✅ built, 26 tests in `tools/tests/vault-publish.test.js` |
 | **P3 — The reader** | `/vault/`, `vault-ui.js`, `vault.css`, `markdown.js`, folder tree, reader, graph, inspector, ⌘K, deep links | ✅ built and exercised in a browser; 24 renderer tests |
 | **P4 — Publish the personal vault** | Point `--vault` at the real vault, read the report, commit the snapshot | ⏸ **waiting on Pierce** — §7 |
 | **P5 — Keep it true** | `--public` in the local rebuild loop (rule 7); the bottle porthole (C7) repointed at `/vault/` | ⏸ after P4 |

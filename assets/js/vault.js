@@ -14,7 +14,10 @@
 
    Two independent vaults ("scopes") share this engine:
      'general'  → /notes/          everyday notes
-     'stocks'   → /tools/tracker/  per-ticker notes + outlooks
+     'stocks'   → per-ticker notes + outlooks for the portfolio tracker,
+                  which moved to the private stock-trackers repo
+                  (2026-09-15). On this site only the bottle porthole's
+                  lamp still checks whether one exists.
 
    The derived key is held in memory only. Closing the tab locks it.
    ============================================================ */

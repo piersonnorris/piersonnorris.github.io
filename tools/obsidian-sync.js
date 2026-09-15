@@ -6,8 +6,9 @@
 
    The site is static and has no server, so a vault folder on disk can
    never be "connected" to it live. What this does instead is the same
-   move the Google Calendar pull makes (docs/PORTFOLIO_CALENDAR_PLAN.md,
-   "Known boundary"): read the real source once, outside the site, and
+   move the Google Calendar pull makes ("Known boundary" in the calendar
+   plan, now in the stock-trackers repo): read the real source once,
+   outside the site, and
    write a snapshot the site can consume.
 
      node tools/obsidian-sync.js --vault "C:\\path\\to\\Vault"
@@ -18,10 +19,11 @@
    of .md files, and re-importing updates notes in place by vault path
    rather than piling up duplicates.
 
-   Optionally, dropping the same bundle at
-   private/tracker/obsidian-vault.json makes tools/tracker/build.js bake
-   it into the encrypted tracker payload (see loadObsidianVault there),
-   so the tracker can offer the same notes without a file at all.
+   Optionally, the same bundle can be dropped at
+   private/tracker/obsidian-vault.json in the private stock-trackers repo,
+   whose build.js bakes it into a sealed tracker payload (see
+   loadObsidianVault there), so the tracker can offer the same notes
+   without a file at all.
 
    Parsing is deliberately not reimplemented here: it calls the site's
    own PNVault.fromMarkdown, so a note read by this script and a note
@@ -285,7 +287,8 @@ function linkPaths(notes) {
 
 /* The public bundle. A different `format` from pn-vault-bundle on purpose:
    this one is committed and world-readable, and nothing should be able to
-   confuse it with the private one the tracker bakes in. */
+   confuse it with the private one that /notes/ imports and the
+   stock-trackers build bakes in. */
 function toPublicBundle(bundle, opts) {
   opts = opts || {};
   /* --prefix nests every published path under a folder. Publishing a

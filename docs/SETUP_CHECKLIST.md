@@ -8,10 +8,10 @@ Mirrors the Build HQ page. Check items off here (or there) and tell Claude/ChatG
 - [ ] Install GitHub Desktop (desktop.github.com) + VS Code (code.visualstudio.com)
 - [ ] Pick the public contact email (norrispierce506@gmail.com or a cleaner alias)
 - [ ] LinkedIn: claim a custom URL (currently `/pierson-norris-634954246`) + add Screencastify and True North entries
-- [ ] Choose the tracker password → password manager only; later into GitHub Secrets; never into any chat
+- [ ] ~~Choose the tracker password~~ — no longer needed: the tracker moved to its own private repo on 2026-09-15 and runs without one
 - [ ] React to the timeline (accent A/B/C, confirm chips, 2024/2025 gaps, the 2027 headline)
 
-## Phase 2 — Google Cloud (tracker prep, ~25 min; click-by-click in the private Drive spec)
+## Phase 2 — Google Cloud (tracker prep, ~25 min; click-by-click in the private Drive spec) — belongs to the `stock-trackers` repo now
 
 - [ ] Create a Google Cloud project (e.g. `pierce-asset-tracking`) + enable the Google Sheets API
 - [ ] Create a service account + download its JSON key (treat like a password)
@@ -20,7 +20,7 @@ Mirrors the Build HQ page. Check items off here (or there) and tell Claude/ChatG
 ## Phase 3 — when the build starts (with ChatGPT)
 
 - [ ] Create the repo `piersonnorris.github.io` (public) + enable Pages (Settings → Pages → main / root)
-- [ ] Add Actions secrets: `GOOGLE_SERVICE_ACCOUNT_JSON`, `TRACKER_PASSWORD`, `SHEET_ID`
+- [ ] Add Actions secrets `GOOGLE_SERVICE_ACCOUNT_JSON` and `SHEET_ID` — on the private `stock-trackers` repo, not this one (`TRACKER_PASSWORD` is no longer needed)
 - [ ] ChatGPT Project: upload the `docs/` files, paste `HANDOFF_PROMPT.md`
 
 ## Later — post-launch

@@ -7,12 +7,10 @@
    SKIN-ONLY, AND THAT IS THE POINT. Not one line of
    notes-ui.js or notes.css changes. Everything here is scoped
    under `body.notes-page`, and this file is linked by
-   notes/index.html alone — so the two other surfaces that
-   share notes.css keep exactly the look they have:
+   notes/index.html alone — so the other surface that
+   shares notes.css keeps exactly the look it has (the tracker's stock
+   desk was a second one until it moved to its own repo, 2026-09-15):
 
-     /tools/tracker/  the stock desk (same PNNotes component,
-                      mode:'stocks'). Its turn is a second pass;
-                      porting is one <link> and one body class.
      /vault/          Backstage links notes.css for PNGraphify's
                       .pg-* rules. R17 built it on Slate. Nothing
                       in here can reach it.
@@ -56,7 +54,7 @@ body.notes-page #vault{
 }
 
 /* The hero is the studio's own label, so it takes the studio's accent
-   too — eyebrow, the tracker link, the inline code chips. The nav and
+   too — eyebrow, the inline code chips. The nav and
    the footer above and below it stay brand Fern on purpose: the green
    is the thread running through every page, and the blue is this room. */
 body.notes-page .head{--acc:#7d9daf;--acc-hi:#9bbbc9}
@@ -198,8 +196,7 @@ body.notes-page .nv-blink:focus-visible{
    252px + minmax(0,1fr).
 
    Scoped here rather than fixed in notes.css on purpose: that file is
-   shared with /vault/ and the tracker, and the tracker is its own pass.
-   CARRY THIS OVER when the stock desk gets the studio treatment — the
-   same bug is live there. */
+   shared with /vault/. The tracker's stock desk had the same bug; it
+   moved to the stock-trackers repo, whose roadmap carries the fix. */
 body.notes-page .nv-side,
 body.notes-page .nv-main{min-width:0}

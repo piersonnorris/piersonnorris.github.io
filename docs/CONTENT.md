@@ -11,7 +11,7 @@ Rules: use this copy verbatim (light grammatical smoothing allowed, meaning-chan
 - **Public name:** Pierson Norris (goes by Pierce in person — "Pierson Norris" is the searchable, professional identity and appears in H1s, titles, JSON-LD).
 - **One-line identity (Home, under H1):** Founder, operator, and builder — business on the ground, AI in the workflow.
 - **Elevator pitch (Home + JSON-LD description, verbatim):**
-  > Pierson Norris is a Finance & Accounting student at Elon University (class of 2027) who builds businesses and the systems that run them. He founded True North Services LLC, a Chicago North Shore exterior-services company he started at 18 and grew into a documented, trained operation; spent a summer as an AI intern at Screencastify mapping seven workflows across six departments and shipping three live automation fixes; and is the incoming president of Elon's AI & ET Club. This site is his profile, his portfolio, and his toolbox.
+  > Pierson Norris is a Finance major at Elon University (class of 2027) who builds businesses and the systems that run them. He founded True North Services LLC, a Chicago North Shore exterior-services company he started at 18 and grew into a documented, trained operation; spent a summer as an AI intern at Screencastify mapping seven workflows across six departments and shipping three live automation fixes; and is the incoming president of Elon's AI & ET Club. This site is his profile, his portfolio, and his toolbox.
 
   `[OPEN]` Pierson: confirm the club title line and the "started at 18" framing.
 - **Contact email:** norrispierce506@gmail.com `[OPEN: may swap for a cleaner public alias]`
@@ -24,7 +24,7 @@ Rules: use this copy verbatim (light grammatical smoothing allowed, meaning-chan
 
 > I grew up on Chicago's North Shore doing the jobs that teach you how work actually happens — a Taco Bell register, moving furniture for a design firm, a one-month internship shadowing a CEO. The summer before college I started a power-washing and window-washing business with a crew of high-school and college kids. First summer: 50+ clients and five figures in revenue, sold with flyers, Nextdoor posts, and knocking on doors.
 >
-> At Elon I study Finance & Accounting with minors in Entrepreneurship and Mandarin Chinese. The business kept growing alongside the degree, and in 2026 it became True North Services LLC — a real company now, with an operations framework, a crew-training program I wrote myself, and a team that runs weekly ops calls without me in the room.
+> At Elon I study Finance with minors in Entrepreneurship and Mandarin Chinese. The business kept growing alongside the degree, and in 2026 it became True North Services LLC — a real company now, with an operations framework, a crew-training program I wrote myself, and a team that runs weekly ops calls without me in the room.
 >
 > The other thread is AI. In summer 2026 I was the AI intern at Screencastify, where I learned my favorite working method: don't start with the tool, start with someone's actual Tuesday. One written prompt got seven workflows mapped across six departments in 48 hours, and every single one had the same failure — a person acting as the API between systems that don't talk. We shipped three fixes; one cut a 4–8 hour weekly finance task to under 15 minutes.
 >
@@ -49,15 +49,16 @@ Rendered newest-first at `/experience/`. The timeline **starts at 2026** (the to
 - **Asset tracking system** — 2026, ongoing. Five-platform portfolio tracker in Google Sheets, monthly-tab automation, feeding a private dashboard (on this site until 2026-09-15, when it moved to its own private repo; the site no longer links to it).
 
 **2025**
+- **Team lead, Elon AI Hub** — Feb 2025 → now. On the team since the hub started. (Confirmed by Pierson 2026-09-21.)
 - **Manager & equity partner, Student Maintenance LLC** — spring 2025. Brought on as manager with an ownership stake: on-site quoting, closing leads, marketing content, sales-team leadership. `[OPEN: include on the public site at all? If yes, confirm dates + how to describe the stake.]`
 - `[OPEN: junior-year highlights]`
 
 **2024**
-- **Business + portfolio, year two** — ran the cleaning business back-to-back summers while carrying the dual major; self-managed portfolio active since 2020.
+- **Business + portfolio, year two** — ran the cleaning business back-to-back summers while carrying the major; self-managed portfolio active since 2020.
 - `[OPEN: what defined 2024 — clubs, coursework, the summer story?]`
 
 **2023**
-- **Started at Elon University** — Aug 2023. Finance & Accounting dual major; minors in Entrepreneurship and Mandarin Chinese (near-fluent). `[OPEN: confirm still accurate]`
+- **Started at Elon University** — Aug 2023. Finance major; minors in Entrepreneurship and Mandarin Chinese (near-fluent). `[OPEN: confirm still accurate]`
 - **Founded Oasis Exterior Cleaning** — May 2023. Power washing + window washing, Chicago North Shore. 50+ clients, five-figure revenue (~$12k profit) in the first summer, +68% customer growth from hand-built local marketing (flyers, Nextdoor, Instagram, Facebook), managing a crew of high-school and college students. *Takeaway: sold a service door to door and ran a crew before most people pick a major.* `[OPEN: is Oasis→True North one continuous story (rebrand) or two chapters?]`
 
 **Prologue — before Elon (muted block)** `[OPEN: keep or cut]`
@@ -81,7 +82,7 @@ Kept **off** the public site deliberately: the first live client's name, Screenc
 
 - **Operations & leadership** — crew hiring and training programs, documented ops frameworks, weekly ops cadence, manager-contractor structuring, client management (50+ clients).
 - **Sales & local marketing** — door-to-door and referral sales, in-person quoting, Nextdoor/Meta local campaigns, lead-capture funnels, content standards.
-- **Finance & markets** — Finance & Accounting dual major; unit economics, pricing floors and margin structures; active self-directed investor since 2020 (equities, options, crypto — five platforms).
+- **Finance & markets** — Finance major; unit economics, pricing floors and margin structures; active self-directed investor since 2020 (equities, options, crypto — five platforms).
 - **AI & automation** — workflow mapping and diagnosis, prompt-built internal tools, agent modules with human approval gates, Google Sheets/Apps Script automation, Sheets API, N8N exploration.
 - **Web** — hand-built HTML/CSS sites (True North on Netlify; this site), form-to-sheet plumbing, static deploys.
 - **Languages** — English; Mandarin Chinese (near-fluent).

@@ -312,9 +312,9 @@
       domain: 'study', source: 'elon', learned: '2023-08',
       tags: ['education', 'finance'],
       evidence: ['class of 2027'],
-      body: 'Elon University since August 2023: a Finance and Accounting dual major with minors in Entrepreneurship and Mandarin ' +
+      body: 'Elon University since August 2023: a Finance major with minors in Entrepreneurship and Mandarin ' +
         'Chinese, carried while the exterior-services business ran back-to-back summers and then incorporated. ' +
-        'The accounting half is why [[Floors before growth]] and [[Cash has an order of preference]] read like accounting rules ' +
+        'Finance is why [[Floors before growth]] and [[Cash has an order of preference]] read like finance rules ' +
         'rather than opinions.'
     },
     {

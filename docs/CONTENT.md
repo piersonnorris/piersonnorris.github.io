@@ -8,10 +8,11 @@ Rules: use this copy verbatim (light grammatical smoothing allowed, meaning-chan
 
 ## 1. Identity
 
+- **Title at True North:** CEO (confirmed by Pierson 2026-09-21).
 - **Public name:** Pierson Norris (goes by Pierce in person — "Pierson Norris" is the searchable, professional identity and appears in H1s, titles, JSON-LD).
 - **One-line identity (Home, under H1):** Founder, operator, and builder — business on the ground, AI in the workflow.
 - **Elevator pitch (Home + JSON-LD description, verbatim):**
-  > Pierson Norris is a Finance major at Elon University (class of 2027) who builds businesses and the systems that run them. He founded True North Services LLC, a Chicago North Shore exterior-services company he started at 18 and grew into a documented, trained operation; spent a summer as an AI intern at Screencastify mapping seven workflows across six departments and shipping three live automation fixes; and is the incoming president of Elon's AI & ET Club. This site is his profile, his portfolio, and his toolbox.
+  > Pierson Norris is a Finance major at Elon University (class of 2027) who builds businesses and the systems that run them. He founded True North Services LLC, a Chicago North Shore exterior-services company he started at 18 and grew into a documented, trained operation; spent a summer as an AI intern at Screencastify mapping seven workflows across six departments and shipping three live automation fixes; and is the president of Elon's AI & ET Club. This site is his profile, his portfolio, and his toolbox.
 
   `[OPEN]` Pierson: confirm the club title line and the "started at 18" framing.
 - **Contact email:** norrispierce506@gmail.com `[OPEN: may swap for a cleaner public alias]`
@@ -28,7 +29,7 @@ Rules: use this copy verbatim (light grammatical smoothing allowed, meaning-chan
 >
 > The other thread is AI. In summer 2026 I was the AI intern at Screencastify, where I learned my favorite working method: don't start with the tool, start with someone's actual Tuesday. One written prompt got seven workflows mapped across six departments in 48 hours, and every single one had the same failure — a person acting as the API between systems that don't talk. We shipped three fixes; one cut a 4–8 hour weekly finance task to under 15 minutes.
 >
-> Now I run True North, trade and track my own portfolio (since 2020), and serve as incoming president of Elon's AI & ET Club. I build my own tools — one of them tracks my holdings across five platforms, live from a spreadsheet.
+> Now I run True North, trade and track my own portfolio (since 2020), and serve as president of Elon's AI & ET Club. I build my own tools — one of them tracks my holdings across five platforms, live from a spreadsheet.
 >
 > `[OPEN — closing line: the 2027 headline. What Pierson is aiming at after graduation.]`
 
@@ -38,7 +39,7 @@ Rendered newest-first at `/experience/`. The timeline **starts at 2026** (the to
 
 **2026** *(nine entries, newest first)*
 
-- **Incoming President, Elon AI & Emerging Tech Club** — 2026, ongoing. `[OPEN: exact title, term start/end, one line of agenda]`
+- **President, Elon AI & Emerging Tech Club** — 2026 → present (confirmed by Pierson 2026-09-21). `[OPEN: exact title, term start/end, one line of agenda]`
 - **AI Intern, Screencastify** — Jun 9 – Aug 7, 2026 (nine weeks). One three-round workflow-mapping prompt dropped in a shared folder; department leaders mapped their own work (trigger, middle, hand-offs, friction, root cause) and returned **7 workflows across 6 departments in 48 hours**, with **one meeting added**. All seven shared one failure: *a person acting as the API between systems that don't talk.* Three fixes shipped — Finance weekly AR collections (**4–8 hrs/week → under 15 minutes**), Product-marketing Monday update email (**~30 min/week plus the rework loop, gone**), Engineering sprint-review recording (a hard-cutoff policy and one saved filter — **no tool build at all**). Combined build time: one afternoon. Separately, a **76-post** distribution audit reframed marketing as **under-concentrated, not under-worked**, and proposed the *Content Waterfall* — one ungated anchor asset repurposed into eight placements, with a single named distribution owner. *Takeaway: the method is the résumé line — find the problem in someone's actual Tuesday, get sign-off, build it with them, ship it.*
 - **Built Castify OS — three internal AI modules, live** — Jun 15 – Jul 31, 2026. Idea (Jun 15) → first agent skill (Jun 18) → build spec (Jun 29) → shipped (Jul 7) → first live client (Jul 9) → third module in beta (Jul 31). **Proposal Generator** (sales, live): deal context in, client-ready branded PDF + editable .docx out, **30 min → 5 min per proposal**. **Outbound Email Agent** (marketing, live): reads pending contacts from a sheet, researches, drafts into Gmail — *approval-gated by design, it never auto-sends*. **Traffic & AI Referral Analytics** (marketing, beta): two brands and two sites in one view, with AI-assistant referrals broken out as their own channel class. *Takeaway: AI doesn't replace the workflow. It removes the part of the workflow nobody wanted to do.*
 - **Ran True North's first company all-hands** — Jul 17, 2026, co-presented with the operations lead. Nine parts: the quote process end to end (respond as True North and capture name + address → price face to face with your reasoning → log it in the quote form → send a formal quote → book it and brief the crew), a live site walkthrough, a LinkedIn team-spotlight program, a written marketing do's-and-don'ts (before *and* after on every post, same angle, natural light, teammates credited, never a client's address), and a referral incentive of a **$10 minimum** per client — paid only once the client is landed *and* the job is completed.

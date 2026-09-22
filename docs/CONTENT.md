@@ -39,7 +39,7 @@ Rendered newest-first at `/experience/`. The timeline **starts at 2026** (the to
 
 **2026** *(nine entries, newest first)*
 
-- **President, Elon AI & Emerging Tech Club** — 2026 → present (confirmed by Pierson 2026-09-21). `[OPEN: exact title, term start/end, one line of agenda]`
+- **President, Elon AI & Emerging Tech Club** — Aug 2025 → present; a member since 2024 (confirmed by Pierson 2026-09-21). `[OPEN: one line of agenda]`
 - **AI Intern, Screencastify** — Jun 9 – Aug 7, 2026 (nine weeks). One three-round workflow-mapping prompt dropped in a shared folder; department leaders mapped their own work (trigger, middle, hand-offs, friction, root cause) and returned **7 workflows across 6 departments in 48 hours**, with **one meeting added**. All seven shared one failure: *a person acting as the API between systems that don't talk.* Three fixes shipped — Finance weekly AR collections (**4–8 hrs/week → under 15 minutes**), Product-marketing Monday update email (**~30 min/week plus the rework loop, gone**), Engineering sprint-review recording (a hard-cutoff policy and one saved filter — **no tool build at all**). Combined build time: one afternoon. Separately, a **76-post** distribution audit reframed marketing as **under-concentrated, not under-worked**, and proposed the *Content Waterfall* — one ungated anchor asset repurposed into eight placements, with a single named distribution owner. *Takeaway: the method is the résumé line — find the problem in someone's actual Tuesday, get sign-off, build it with them, ship it.*
 - **Built Castify OS — three internal AI modules, live** — Jun 15 – Jul 31, 2026. Idea (Jun 15) → first agent skill (Jun 18) → build spec (Jun 29) → shipped (Jul 7) → first live client (Jul 9) → third module in beta (Jul 31). **Proposal Generator** (sales, live): deal context in, client-ready branded PDF + editable .docx out, **30 min → 5 min per proposal**. **Outbound Email Agent** (marketing, live): reads pending contacts from a sheet, researches, drafts into Gmail — *approval-gated by design, it never auto-sends*. **Traffic & AI Referral Analytics** (marketing, beta): two brands and two sites in one view, with AI-assistant referrals broken out as their own channel class. *Takeaway: AI doesn't replace the workflow. It removes the part of the workflow nobody wanted to do.*
 - **Ran True North's first company all-hands** — Jul 17, 2026, co-presented with the operations lead. Nine parts: the quote process end to end (respond as True North and capture name + address → price face to face with your reasoning → log it in the quote form → send a formal quote → book it and brief the crew), a live site walkthrough, a LinkedIn team-spotlight program, a written marketing do's-and-don'ts (before *and* after on every post, same angle, natural light, teammates credited, never a client's address), and a referral incentive of a **$10 minimum** per client — paid only once the client is landed *and* the job is completed.
@@ -51,7 +51,7 @@ Rendered newest-first at `/experience/`. The timeline **starts at 2026** (the to
 
 **2025**
 - **Team lead, Elon AI Hub** — Feb 2025 → now. On the team since the hub started. (Confirmed by Pierson 2026-09-21.)
-- **Manager & equity partner, Student Maintenance LLC** — spring 2025. Brought on as manager with an ownership stake: on-site quoting, closing leads, marketing content, sales-team leadership. `[OPEN: include on the public site at all? If yes, confirm dates + how to describe the stake.]`
+- **Chief Marketing Officer (part-owner), Student Maintenance LLC** — Dec 2024 – Jul 2025. Ran marketing and the student crew: on-site quoting, closing leads, marketing content, sales-team leadership. Pierson 2026-09-21: title was **part-owner and Chief Marketing Officer, Dec 2024 – Jul 2025**. The equity paperwork was never signed, so don't describe a formal stake publicly. `[OPEN: include on the public site at all? If yes, use "CMO" wording.]`
 - `[OPEN: junior-year highlights]`
 
 **2024**
@@ -59,7 +59,7 @@ Rendered newest-first at `/experience/`. The timeline **starts at 2026** (the to
 - `[OPEN: what defined 2024 — clubs, coursework, the summer story?]`
 
 **2023**
-- **Started at Elon University** — Aug 2023. Finance major; minors in Entrepreneurship and Mandarin Chinese (near-fluent). `[OPEN: confirm still accurate]`
+- **Started at Elon University** — Aug 2023. Finance major (confirmed by Pierson 2026-09-21); minors in Entrepreneurship and Mandarin Chinese (conversational). `[OPEN: confirm the minors are still current]`
 - **Founded Oasis Exterior Cleaning** — May 2023. Power washing + window washing, Chicago North Shore. 50+ clients, five-figure revenue (~$12k profit) in the first summer, +68% customer growth from hand-built local marketing (flyers, Nextdoor, Instagram, Facebook), managing a crew of high-school and college students. *Takeaway: sold a service door to door and ran a crew before most people pick a major.* `[OPEN: is Oasis→True North one continuous story (rebrand) or two chapters?]`
 
 **Prologue — before Elon (muted block)** `[OPEN: keep or cut]`
@@ -73,7 +73,7 @@ Pierson's own documents use three names for the same entity. Resolve before the 
 - **True North Maintenance LLC** — the Operations & Risk Framework and the Priority To-Do List (both Apr 2026).
 - **North Shore Services LLC** — the heading inside `True_North_Services_Structure 2.docx`.
 
-`[OPEN: Pierson — which is the name on the filing?]`
+**Resolved 2026-09-21:** Pierson confirmed **True North Services LLC** (it matches the Illinois filing of Apr 23, 2026). The other two names are drafts; don't use them.
 
 ### 3b. Screencastify — publication boundary
 
@@ -86,7 +86,7 @@ Kept **off** the public site deliberately: the first live client's name, Screenc
 - **Finance & markets** — Finance major; unit economics, pricing floors and margin structures; active self-directed investor since 2020 (equities, options, crypto — five platforms).
 - **AI & automation** — workflow mapping and diagnosis, prompt-built internal tools, agent modules with human approval gates, Google Sheets/Apps Script automation, Sheets API, N8N exploration.
 - **Web** — hand-built HTML/CSS sites (True North on Netlify; this site), form-to-sheet plumbing, static deploys.
-- **Languages** — English; Mandarin Chinese (near-fluent).
+- **Languages** — English; Mandarin Chinese (conversational).
 
 ## 5. Projects (Projects page cards)
 

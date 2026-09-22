@@ -44,15 +44,6 @@
 
     <!-- ============ the sky: one star per note ============ -->
     <div class="scene">
-      <section class="atlas-hero">
-        <p class="eyebrow">Knowledge atlas</p>
-        <h1>What I’ve learned, and where.</h1>
-        <p class="lede">The island after dark. Every star is a lesson from documented work — <b>True North
-          Services LLC</b>, the <b>Screencastify</b> internship, investing since 2020, building these tools.
-          Open a jar to send its fireflies up to their stars — open as many as you like, and press one
-          again to close it. Press a star to read it, and look through the telescope to see how the
-          lessons link up.</p>
-      </section>
 
       <div class="sky" id="sky">
         <div class="dust" id="dust" aria-hidden="true"></div>
@@ -134,20 +125,25 @@
         <div class="jars" id="jars" role="group" aria-label="The jars — one per domain. Open as many as you like; press one again to close it."></div>
       </div>
 
-      <p class="jarhint" id="jarhint"><span>Open as many jars as you like — press one again to close it.</span>
+      <p class="jarhint" id="jarhint" hidden><span></span>
         <button type="button" data-closejars hidden>Close all jars</button></p>
+
+      <!-- the intro sits under the jars, so the sky and the shelf get the
+           whole first screen (Pierce, 2026-09-22) -->
+      <section class="atlas-hero">
+        <p class="eyebrow">Knowledge atlas</p>
+        <h1>What I’ve learned, and where.</h1>
+        <p class="lede">The island after dark. Every star is a lesson from documented work: <b>True North
+          Services LLC</b>, the <b>Screencastify</b> internship, investing since 2020, and building these
+          tools. Open a jar to send its fireflies up to their stars. Open as many as you like, and press
+          one again to close it. Press a star to read it, and look through the telescope to see how the
+          lessons link up.</p>
+      </section>
 
       <p class="sandstat" id="status" aria-live="polite"></p>
 
       <!-- ============ the deck ============ -->
       <div class="deck">
-        <div class="plankbar">
-          <span class="mag" aria-hidden="true">⌕</span>
-          <input type="search" id="search" placeholder="Search the sky — notes, tags, text…" aria-label="Search the atlas">
-          <kbd aria-hidden="true">⌘K</kbd>
-          <button type="button" class="clearall" id="clearall" data-clear hidden>Clear</button>
-        </div>
-
         <details class="crate" open>
           <summary>Field notes — every star, by jar</summary>
           <div class="cratebody"><div id="fieldnotes"></div></div>

@@ -64,7 +64,7 @@
   var lastAspect = 0;
   var lastFocus = null;
 
-  var sky, starWrap, lineSvg, logcard, logpaper, searchEl, peek, shoreEl;
+  var sky, starWrap, lineSvg, logcard, logpaper, peek, shoreEl;
   var flight = null;   /* PNFlight — jar-to-star fireflies, atlas-flight.js */
 
   /* The open jar's own layout, or null for "everyone is home". Stars are
@@ -809,13 +809,15 @@
     renderFieldNotes();
     renderTimeline();
     renderStatus();
-    $('#clearall').hidden = !(anyOpen() || state.query);
+    /* the intro under the jars explains them; this line only reports
+       what is open while something is */
     var hint = $('#jarhint');
     if (hint) {
       var n = state.open.length;
+      hint.hidden = !n;
       hint.querySelector('span').textContent = n
-        ? n + (n === 1 ? ' jar open' : ' jars open') + ' — open more, or press one again to close it.'
-        : 'Open as many jars as you like — press one again to close it.';
+        ? n + (n === 1 ? ' jar open.' : ' jars open.') + ' Open more, or press one again to close it.'
+        : '';
       hint.querySelector('button').hidden = n < 2;
     }
   }
@@ -830,7 +832,7 @@
        alongside whichever are already open, through toggleJar(), so the
        jar, the spread and the flight all agree. */
     if (!matches(note)) {
-      if (state.query && !queryMatches(note)) { state.query = ''; searchEl.value = ''; }
+      if (state.query && !queryMatches(note)) state.query = '';
       if (anyOpen() && !isOpen(note.domain)) toggleJar(note.domain, true);
     }
     renderLog(note);
@@ -996,7 +998,6 @@
     lineSvg = $('#lines');
     logcard = $('#logcard');
     logpaper = $('#logbody');
-    searchEl = $('#search');
     peek = $('#peek');
     shoreEl = $('.shore');
     if (!sky) return;
@@ -1070,7 +1071,6 @@
         closeAllJars();
       } else {
         state.query = '';
-        searchEl.value = '';
         closeAllJars();
         paintSky();
         renderDeck();
@@ -1091,35 +1091,17 @@
       renderDeck();
     });
 
-    /* search */
-    searchEl.addEventListener('input', function () {
-      state.query = searchEl.value;
-      paintSky();
-      renderDeck();
-    });
-    searchEl.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') {
-        searchEl.value = ''; state.query = ''; paintSky(); renderDeck();
-      }
-      if (e.key === 'Enter') {
-        var first = visible()[0];
-        if (first) select(first.id);
-      }
-    });
+    /* No search box (Pierce, 2026-09-22): the notes are searched in
+       Obsidian. state.query stays '' and every filter below still reads
+       it, so a search can come back without touching them. */
 
     $('#logclose').addEventListener('click', function () { closeLog(true); });
 
     document.addEventListener('keydown', function (e) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        searchEl.focus();
-        searchEl.select();
-        return;
-      }
       if (e.key !== 'Escape') return;
       if (!logcard.hidden) { closeLog(true); return; }
       if (anyOpen() || state.query) {
-        state.query = ''; searchEl.value = '';
+        state.query = '';
         closeAllJars();
         paintSky();
         renderDeck();

@@ -66,22 +66,27 @@ body.atlas-page{
   background:linear-gradient(180deg,
     var(--n-top) 0%, var(--n-high) 26%, var(--n-mid) 58%, var(--n-low) 84%, var(--n-horizon) 100%);
 }
-.atlas-hero{position:relative;z-index:3;text-align:center;padding:30px 20px 4px;max-width:62ch;margin:0 auto}
+/* The intro sits on the sand under the jars (Pierce, 2026-09-22), so the
+   sky and the shelf own the first screen. Ink for sand, not for night. */
+.atlas-hero{position:relative;z-index:2;text-align:center;padding:26px 20px 0;max-width:66ch;margin:0 auto}
 .atlas-hero .eyebrow{
   font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--sky-dim);margin:0 0 8px;
+  color:rgba(243,232,202,.6);margin:0 0 8px;
 }
 .atlas-hero h1{
-  font-family:var(--hand);font-weight:700;font-size:clamp(30px,6vw,46px);line-height:1.1;
-  color:#fff;margin:0 0 10px;text-shadow:0 0 26px rgba(150,185,255,.35);
+  font-family:var(--hand);font-weight:700;font-size:clamp(28px,5vw,40px);line-height:1.1;
+  color:var(--n-paper);margin:0 0 10px;text-shadow:0 2px 14px rgba(0,0,0,.35);
 }
-.atlas-hero .lede{color:var(--sky-mut);font-size:15px;margin:0 auto;max-width:58ch}
-.atlas-hero .lede b{color:var(--sky-ink);font-weight:600}
+.atlas-hero .lede{color:rgba(243,232,202,.82);font-size:15px;line-height:1.65;margin:0 auto;max-width:62ch}
+.atlas-hero .lede b{color:#fff6de;font-weight:600}
 
+/* The sky takes whatever the header (~66px), the sea (60px) and the
+   jar shelf (~250px) leave of the window, so opening the page shows the
+   whole sky and every jar at once (Pierce, 2026-09-22). */
 .sky{
   position:relative;
-  height:clamp(430px,54vh,600px);
-  margin:6px 0 0;
+  height:clamp(300px,calc(100svh - 376px),640px);
+  margin:0;
 }
 .sky *{-webkit-tap-highlight-color:transparent}
 
@@ -544,28 +549,10 @@ body.atlas-page{
 .logempty{font-family:var(--mono);font-size:10.5px;color:var(--n-ink-soft);margin:0;opacity:.75}
 
 /* ============================================================
-   the deck below the beach: search, the crates, provenance
+   the deck below the beach: the crates, provenance
    ============================================================ */
 .deck{position:relative;z-index:2;max-width:1040px;margin:0 auto;padding:30px 24px 0}
 
-.plankbar{
-  position:relative;display:flex;align-items:center;gap:8px;
-  background:linear-gradient(180deg,var(--n-wood-lt),var(--n-wood));
-  border:4px solid var(--n-wood-dk);border-radius:9px;
-  padding:8px 10px;box-shadow:0 5px 0 rgba(0,0,0,.25),0 10px 20px rgba(0,0,0,.3);
-}
-.plankbar .mag{color:rgba(243,232,202,.6);font-size:15px;padding-left:4px}
-.plankbar input{
-  flex:1;min-width:0;background:rgba(0,0,0,.24);border:1px solid rgba(243,232,202,.22);
-  border-radius:6px;padding:8px 11px;color:var(--n-paper);
-  font-family:var(--mono);font-size:12.5px;
-}
-.plankbar input::placeholder{color:rgba(243,232,202,.45)}
-.plankbar input:focus{outline:2px solid var(--n-moon);outline-offset:1px;border-color:var(--n-moon)}
-.plankbar kbd{
-  font-family:var(--mono);font-size:9.5px;color:rgba(243,232,202,.55);
-  border:1px solid rgba(243,232,202,.25);border-radius:4px;padding:3px 6px;
-}
 .clearall{
   font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;
   color:var(--n-ink);background:var(--n-paper);border:0;border-radius:999px;
@@ -643,16 +630,6 @@ body.atlas-page{
 @media (min-width:1080px){
   body.atlas-page.logopen .shore{padding-right:min(420px,94vw)}
 }
-/* A short window cut the sky off on first load. A 1366x768 laptop is about
-   1366x625 once the browser has taken its share, and there the lowest three
-   stars sat below the fold — 22 of 25 on screen (measured 2026-09-14). The
-   same words on fewer lines buy the ~60px it needed: the title fits one line
-   once the column is wide enough for it (it needs 587px), and the lede takes
-   three lines instead of four. Tall windows keep the two-line title. */
-@media (min-width:900px) and (max-height:700px){
-  .atlas-hero{max-width:740px;padding-top:18px}
-  .atlas-hero .lede{max-width:700px}
-}
 @media (max-width:1079px){
   .logcard{
     right:0;left:0;top:auto;bottom:0;width:auto;max-height:80vh;
@@ -664,7 +641,11 @@ body.atlas-page{
 @media (max-width:860px){
   .beach{grid-template-columns:minmax(0,1fr);gap:14px;justify-items:center;padding-top:10px}
   .jars{justify-content:center}
-  .sky{height:clamp(400px,60vh,520px)}
+  /* jars first, telescope under them, so both rows of jars make the
+     first screen on a phone (Pierce, 2026-09-22) */
+  .jars{order:1}
+  .scope{order:2}
+  .sky{height:clamp(280px,calc(100svh - 470px),520px)}
   .palm{width:118px}
   .sandstat{font-size:9.5px;gap:3px 12px}
   .sandstat .showing{margin-left:0}

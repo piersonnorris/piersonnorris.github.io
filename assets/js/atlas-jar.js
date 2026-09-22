@@ -164,6 +164,7 @@
         title: node.label,
         path: note.path || '',
         folder: note.folder || '',
+        note: note,
         links: node.links,
         cluster: c,
         orphan: orphan,
@@ -200,8 +201,17 @@
       it.short = V.shortTitle(it.title);
     });
 
+    /* The real [[wikilinks]] between the fireflies actually drawn —
+       the filaments that "show links" and a selection light up. */
+    var byId = {};
+    shown.forEach(function (it) { byId[it.id] = it; });
+    var edges = model.links.filter(function (l) {
+      return l.kind === 'wikilink' && byId[l.source] && byId[l.target];
+    }).map(function (l) { return { a: byId[l.source], b: byId[l.target] }; });
+
     return {
       items: shown,
+      edges: edges,
       total: total,
       capped: total > cap,
       labelled: Math.min(shown.length, LABEL_MAX),
@@ -323,7 +333,7 @@
          Clamping the dot inside the scene still runs the label off the
          edge — and it is the orphans, pushed to the margins by the line
          above, that carry some of the longest titles. */
-      item.half = item.named ? Math.min(w * 0.22, item.short.length * fs * 0.32) : item.r;
+      item.half = item.named ? Math.min(w * 0.46, item.short.length * fs * 0.32) : item.r;
     });
 
     /* Named fireflies need room for their name, not just their glow.
@@ -504,6 +514,7 @@
            the instant the lid lifts. Nothing moves at that moment —
            every firefly is still inside — so the switch is invisible. */
         '<g class="jar-swarmclip" clip-path="url(#jar-inside)">' +
+          '<g class="jar-links" aria-hidden="true"></g>' +
           '<g class="jar-swarm"></g>' +
         '</g>' +
 
@@ -597,6 +608,7 @@
     var swarmClip = svg.querySelector('.jar-swarmclip');
     var motes = svg.querySelector('.jar-motes');
     var lid = svg.querySelector('.jar-lidgrp');
+    var linkLayer = svg.querySelector('.jar-links');
 
     var still = global.matchMedia &&
       global.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -612,7 +624,7 @@
       /* Rule 1: the script writes transform on .ff, the CSS animation
          lives on .ff-a. Put both on one element and the node snaps to
          the origin the instant its animation delay elapses. */
-      var g = el('g', { class: 'ff', transform: 'translate(' + it.hx + ',' + it.hy + ')' }, swarm);
+      var g = el('g', { class: 'ff', 'data-i': n, transform: 'translate(' + it.hx + ',' + it.hy + ')' }, swarm);
       var a = el('g', { class: 'ff-a' + (it.orphan ? ' is-orphan' : '') }, g);
       a.style.animationDuration = it.flicker.toFixed(2) + 's';
       a.style.animationDelay = (-(n * 0.37) % it.flicker).toFixed(2) + 's';
@@ -626,11 +638,16 @@
         class: 'ff-core', r: it.r.toFixed(2), fill: it.hue,
         opacity: it.bright.toFixed(2)
       }, a);
+      /* the selection ring, and a hit area bigger than the dot — a
+         three-pixel firefly is not something a thumb can press */
+      el('circle', { class: 'ff-ring', r: (it.r + 6).toFixed(1), stroke: it.hue }, g);
+      it.hit = el('circle', { class: 'ff-hit', r: Math.max(12, it.r * 2.4).toFixed(1) }, g);
+      it.amp = 1; it.ampT = 1;
 
       /* The name, for OPEN. Written now and revealed by CSS, so the
          morph never touches the DOM. Every candidate gets its text;
          place() decides how many of them the scene can hold. */
-      if (it.rank < LABEL_MAX) {
+      {
         var label = el('text', {
           class: 'ff-name', x: 0, y: (it.r + 15).toFixed(1),
           'text-anchor': 'middle', fill: it.hue
@@ -641,6 +658,20 @@
       it.node = g;
       it.cx = it.hx; it.cy = it.hy;
     });
+
+    m.edges.forEach(function (e) {
+      e.line = el('line', { class: 'ff-link' }, linkLayer);
+    });
+
+    function drawEdges() {
+      for (var i = 0; i < m.edges.length; i++) {
+        var e = m.edges[i];
+        e.line.setAttribute('x1', e.a.cx.toFixed(1));
+        e.line.setAttribute('y1', e.a.cy.toFixed(1));
+        e.line.setAttribute('x2', e.b.cx.toFixed(1));
+        e.line.setAttribute('y2', e.b.cy.toFixed(1));
+      }
+    }
 
     /* dust in the room, outside the glass — not notes, and never counted */
     var R = rng(0x9F31);
@@ -668,7 +699,16 @@
       var H = Math.max(320, Math.round(box.height));
       var narrow = W < 900;
 
-      var k = Math.min(H * 0.97 / VIEW.h, W * (narrow ? 0.74 : 0.46) / VIEW.w);
+      /* On a phone the jar stands in its own band (.jar-stage), not in
+         the middle of the whole scene — the panels below it make the
+         scene much taller than the band, and centring on the scene
+         drops the jar on top of them. */
+      var band = narrow ? document.querySelector('.jar-stage') : null;
+      var bandR = band ? band.getBoundingClientRect() : null;
+      var bandH = bandR && bandR.height ? bandR.height : H;
+      var bandTop = bandR && bandR.height ? bandR.top - box.top : 0;
+
+      var k = Math.min(bandH * 0.97 / VIEW.h, W * (narrow ? 0.74 : 0.46) / VIEW.w);
       var cx;
       if (narrow) {
         cx = W / 2;
@@ -682,7 +722,7 @@
         cx = left + (W - left) / 2;
       }
       var tx = cx - (VIEW.w / 2) * k;
-      var ty = (H - VIEW.h * k) / 2;
+      var ty = bandTop + (bandH - VIEW.h * k) / 2;
 
       svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
       world.setAttribute('transform', 'translate(' + tx.toFixed(2) + ',' + ty.toFixed(2) +
@@ -708,9 +748,11 @@
         if (!e) return;
         var r = e.getBoundingClientRect();
         if (!r.width || !r.height) return;
+        /* padded, so a firefly cannot park in the gap between two
+           stacked panels with its name tucked under one of them */
         var now = {
-          l: r.left - box.left, t: r.top - box.top,
-          r: r.right - box.left, b: r.bottom - box.top
+          l: r.left - box.left - 12, t: r.top - box.top - 14,
+          r: r.right - box.left + 12, b: r.bottom - box.top + 14
         };
         var was = avoidPx[sel];
         avoidPx[sel] = was ? {
@@ -735,6 +777,8 @@
         var show = it.rank < maxNames;
         if (show !== it.named) it.named = show;
         if (it.label) it.label.style.display = show ? '' : 'none';
+        /* hit area in screen pixels, whatever the jar's scale */
+        it.hit.setAttribute('r', Math.max(it.r * 2.4, 13 / k).toFixed(1));
       });
       P.named = Math.min(maxNames, m.items.length);
 
@@ -808,13 +852,16 @@
         for (i = 0; i < m.items.length; i++) {
           it = m.items[i];
           var b = baseOf(it);
+          /* a selected firefly settles and holds still */
+          it.amp += (it.ampT - it.amp) * 0.06;
           var q = fit(it,
-            b.x + Math.sin(t * it.sx + it.px) * it.ax,
-            b.y + Math.cos(t * it.sy + it.py) * it.ay);
+            b.x + Math.sin(t * it.sx + it.px) * it.ax * it.amp,
+            b.y + Math.cos(t * it.sy + it.py) * it.ay * it.amp);
           it.cx = q.x; it.cy = q.y;
           write(it);
         }
       }
+      drawEdges();
       raf = requestAnimationFrame(frame);
     }
 
@@ -844,6 +891,7 @@
           var b = baseOf(it);
           it.cx = b.x; it.cy = b.y; write(it);
         });
+        drawEdges();
         if (!open) reclip(true);
       } else {
         m.items.forEach(function (it, i) {
@@ -864,6 +912,7 @@
 
     if (still) {
       m.items.forEach(write);
+      drawEdges();
     } else {
       raf = requestAnimationFrame(frame);
     }
@@ -880,6 +929,68 @@
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); toggle(); }
     });
 
+    // ------------------------------------------------ selection and focus
+
+    /* One focus at a time: a selected firefly (it and its neighbours
+       stay lit), or a whole group. Everything else dims to embers. */
+    var selected = null, group = null, hovered = null;
+
+    function paint() {
+      var lit = null;
+      if (selected) {
+        lit = {}; lit[selected.id] = 1;
+        (m.near[selected.id] || []).forEach(function (id) { lit[id] = 1; });
+      } else if (group != null) {
+        lit = {};
+        m.items.forEach(function (it) { if (it.cluster === group) lit[it.id] = 1; });
+      }
+      svg.classList.toggle('has-focus', !!lit);
+      m.items.forEach(function (it) {
+        it.node.classList.toggle('is-lit', !!(lit && lit[it.id]));
+        it.node.classList.toggle('is-sel', it === selected);
+        it.ampT = it === selected ? 0.12 : 1;
+      });
+      m.edges.forEach(function (e) {
+        var on = selected ? (e.a === selected || e.b === selected)
+          : group != null ? (e.a.cluster === group && e.b.cluster === group) : false;
+        e.line.classList.toggle('is-lit', on);
+      });
+    }
+
+    function select(it) {
+      selected = it || null;
+      if (selected) group = null;
+      paint();
+      if (typeof opts.onSelect === 'function') opts.onSelect(selected);
+    }
+
+    function hover(it) {
+      if (hovered === it) return;
+      if (hovered) hovered.node.classList.remove('is-hover');
+      hovered = it || null;
+      if (hovered) hovered.node.classList.add('is-hover');
+      if (typeof opts.onHover === 'function') opts.onHover(hovered);
+    }
+
+    function itemOf(target) {
+      var g = target && target.closest ? target.closest('.ff') : null;
+      return g ? m.items[+g.getAttribute('data-i')] : null;
+    }
+
+    svg.addEventListener('click', function (e) {
+      if (e.target.closest('.jar-lidgrp')) return;
+      if (state === 'sealed') {
+        /* the whole jar is a way in, not only the lid */
+        if (e.target.closest('.jar-world')) toggle();
+        return;
+      }
+      select(itemOf(e.target));
+    });
+    svg.addEventListener('pointerover', function (e) {
+      if (state === 'open') hover(itemOf(e.target));
+    });
+    svg.addEventListener('pointerleave', function () { hover(null); });
+
     // ------------------------------------------------------------- resizing
 
     var ro = null, rt = 0;
@@ -891,6 +1002,7 @@
           /* re-home without a walk: the scene changed shape, the swarm
              did not decide to move */
           m.items.forEach(function (it) { it.cx = it.ox; it.cy = it.oy; write(it); });
+          drawEdges();
         }
       }, 90);
     }
@@ -908,8 +1020,17 @@
       items: m.items,
       near: m.near,
       state: function () { return state; },
+      edges: m.edges,
       open: function () { go('open'); },
       seal: function () { go('sealed'); },
+      /* by index into items, or null to clear */
+      select: function (i) { select(i == null ? null : m.items[i]); },
+      selected: function () { return selected; },
+      focusGroup: function (c) { group = c; if (c != null) selected = null; paint(); },
+      preview: function (i) { hover(i == null ? null : m.items[i]); },
+      showLinks: function (on) { svg.classList.toggle('show-links', !!on); },
+      /* for a host page that changes the panels' size after mounting */
+      relayout: onResize,
       destroy: function () {
         if (raf) cancelAnimationFrame(raf);
         if (ro) ro.disconnect();

@@ -1,5 +1,5 @@
 /* ============================================================
-   /atlas/ — one great jar.
+   /jar/ — the firefly jar.
 
    The vault as fireflies in a mason jar, standing on a plank at
    night. Keeps the night palette the sky version used; drops the
@@ -76,7 +76,9 @@ body.jar-page{
    both rows. The readout has to be a grid child in its own right or
    the phone composition cannot reorder it below the jar. */
 .jar-copy{grid-column:1;grid-row:1;align-self:end}
-.jar-meta{grid-column:1;grid-row:2;align-self:start;padding-top:22px}
+/* positioned, so the panels sit above the absolute canvas instead of
+   under it — the vignette and the jar would otherwise paint over them */
+.jar-meta{grid-column:1;grid-row:2;align-self:start;padding-top:22px;position:relative;z-index:2}
 .jar-stage{grid-column:2;grid-row:1 / 3}
 
 /* ---------------- the copy ---------------- */
@@ -317,4 +319,166 @@ body.jar-page{
   .ff-a,.jar-spec,.jar-wash,.jar-plank .pool,.mote,.jar-hint i{animation:none!important}
   .jar-lidgrp{transition:none}
   .ff-a{opacity:.85}
+}
+
+/* ============================================================
+   /jar/ — the controls, the index and the card.
+
+   Everything beside the jar lives in the left column, in one
+   fixed-height slot, so opening a note never changes the page's
+   geometry and the swarm never has to re-home around a panel.
+   ============================================================ */
+.jar-copy .eyebrow{color:var(--glow)}
+
+.jar-controls{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.jbtn{
+  display:inline-flex;align-items:center;gap:9px;
+  font:inherit;font-family:var(--mono);font-size:12px;letter-spacing:.05em;
+  color:var(--sky-ink);background:rgba(178,205,255,.06);
+  border:1px solid rgba(178,205,255,.22);border-radius:999px;
+  padding:9px 16px;cursor:pointer;
+  transition:background .2s ease,border-color .2s ease,color .2s ease,box-shadow .2s ease;
+}
+.jbtn:hover{border-color:rgba(255,196,107,.6);color:#fff}
+.jbtn:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+.jbtn[aria-pressed="true"]{background:rgba(255,196,107,.14);border-color:rgba(255,196,107,.55);color:#ffe2ad}
+.jbtn.primary{
+  background:linear-gradient(180deg,#ffd18a,#f0a94a);color:#1a1206;border-color:transparent;
+  font-weight:500;box-shadow:0 0 24px rgba(255,196,107,.28);
+}
+.jbtn.primary:hover{box-shadow:0 0 32px rgba(255,196,107,.5);color:#1a1206}
+.jbtn.primary[aria-pressed="true"]{
+  background:rgba(255,196,107,.14);color:#ffe2ad;border-color:rgba(255,196,107,.55);box-shadow:none;
+}
+.jbtn i{
+  width:7px;height:7px;border-radius:50%;background:currentColor;
+  animation:hintpulse 2.4s ease-in-out infinite;
+}
+.jbtn[aria-pressed="true"] i{animation:none;opacity:.6}
+
+.jar-slot-h{
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--sky-dim);margin:0 0 8px;
+}
+
+/* ---- group chips (only drawn when the vault has more than one) ---- */
+.jar-groups{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.jar-groups .jar-slot-h{flex-basis:100%;margin-bottom:2px}
+.jchip{
+  display:inline-flex;align-items:center;gap:7px;
+  font:inherit;font-family:var(--mono);font-size:11px;color:var(--sky-mut);
+  background:none;border:1px solid rgba(178,205,255,.18);border-radius:999px;
+  padding:4px 10px;cursor:pointer;
+}
+.jchip i{width:7px;height:7px;border-radius:50%}
+.jchip small{color:var(--sky-dim)}
+.jchip:hover{color:#fff;border-color:rgba(178,205,255,.4)}
+.jchip[aria-pressed="true"]{color:#fff;border-color:rgba(255,196,107,.6);background:rgba(255,196,107,.1)}
+
+/* ---- the slot: index or card, same box ---- */
+.jar-slot{
+  height:clamp(150px,calc(100vh - 690px),300px);
+  position:relative;
+}
+.jar-index-wrap,.jar-card{height:100%;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;
+  scrollbar-color:rgba(178,205,255,.2) transparent}
+.jar-index-wrap[hidden],.jar-card[hidden]{display:none}
+
+.jar-index{list-style:none;margin:0;padding:0}
+.jar-index button{
+  display:grid;grid-template-columns:10px minmax(0,1fr) auto;align-items:center;gap:10px;
+  width:100%;text-align:left;
+  font:inherit;font-size:13.5px;color:var(--sky-ink);
+  background:none;border:0;border-radius:8px;padding:7px 8px;cursor:pointer;
+}
+.jar-index i{width:7px;height:7px;border-radius:50%}
+.jar-index span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.jar-index small{font-family:var(--mono);font-size:10.5px;color:var(--sky-dim)}
+.jar-index button:hover,.jar-index li.is-hover button,.jar-index button:focus-visible{
+  background:rgba(255,196,107,.09);color:#fff;outline:none;
+}
+
+.jar-card{position:relative;padding-right:4px}
+.jar-card:focus{outline:none}
+.jcard-x{
+  position:absolute;top:0;right:2px;
+  width:28px;height:28px;border-radius:50%;
+  font:inherit;font-size:18px;line-height:1;color:var(--sky-mut);
+  background:rgba(178,205,255,.06);border:1px solid rgba(178,205,255,.18);cursor:pointer;
+}
+.jcard-x:hover,.jcard-x:focus-visible{color:#fff;border-color:var(--glow);outline:none}
+.jcard-eyebrow{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--sky-dim);margin:2px 40px 8px 0;
+}
+.jcard-eyebrow i{width:8px;height:8px;border-radius:50%;flex:none}
+.jar-card h2{
+  font-family:var(--hand);font-weight:700;font-size:22px;line-height:1.15;color:#fff;
+  margin:0 36px 6px 0;
+}
+.jcard-stats{font-family:var(--mono);font-size:11.5px;color:var(--sky-mut);margin:0 0 10px}
+.jtag{color:#ffd79a}
+.jcard-text{font-size:14px;line-height:1.6;color:#c3cfe4;margin:0 0 14px}
+.jcard-text.dim{color:var(--sky-dim);font-style:italic}
+.jcard-near{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.jcard-near button{
+  display:inline-flex;align-items:center;gap:7px;max-width:100%;
+  font:inherit;font-size:12.5px;color:var(--sky-ink);
+  background:rgba(178,205,255,.05);border:1px solid rgba(178,205,255,.16);border-radius:999px;
+  padding:4px 11px;cursor:pointer;
+}
+.jcard-near button:hover,.jcard-near button:focus-visible{border-color:rgba(255,196,107,.6);color:#fff;outline:none}
+.jcard-near i{width:6px;height:6px;border-radius:50%;flex:none}
+.jcard-read{
+  display:inline-block;font-family:var(--mono);font-size:12px;color:var(--glow);
+  text-decoration:none;border-bottom:1px solid rgba(255,196,107,.35);
+}
+.jcard-read:hover{color:#ffe2ad;border-bottom-color:var(--glow)}
+
+.jar-noscript{max-width:60ch;margin:24px auto;padding:0 20px;color:var(--sky-mut)}
+
+/* ---- the swarm, as something you can press ---- */
+.jar-svg:not(.is-open) .jar-world{cursor:pointer}
+.jar-svg.is-open .jar-glassgrp,
+.jar-svg.is-open .jar-inner{pointer-events:none}
+.ff{transition:opacity .35s ease}
+.ff-hit{fill:transparent}
+.jar-svg.is-open .ff-hit{cursor:pointer}
+.jar-svg:not(.is-open) .ff-hit{pointer-events:none}
+.ff-ring{
+  fill:none;stroke-width:1.4;vector-effect:non-scaling-stroke;opacity:0;
+  transform-box:fill-box;transform-origin:center;
+  transition:opacity .25s ease;
+}
+.jar-svg.is-open .ff.is-hover .ff-ring{opacity:.45}
+.jar-svg.is-open .ff.is-sel .ff-ring{opacity:.95;animation:ring 2.2s ease-in-out infinite}
+@keyframes ring{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+
+/* a focus dims everything it does not include to embers */
+.jar-svg.has-focus .ff:not(.is-lit){opacity:.14}
+.jar-svg.is-open.has-focus .ff.is-lit .ff-name,
+.jar-svg.is-open .ff.is-hover .ff-name{display:inline!important;opacity:1;transition-delay:0s}
+
+/* ---- the links: real [[wikilinks]], drawn only when asked ---- */
+.ff-link{
+  stroke:#ffd79a;stroke-width:1;vector-effect:non-scaling-stroke;
+  opacity:0;transition:opacity .4s ease;
+}
+.jar-svg.is-open.show-links .ff-link{opacity:.28}
+.jar-svg.is-open.has-focus.show-links .ff-link{opacity:.06}
+.jar-svg.is-open .ff-link.is-lit,
+.jar-svg.is-open.show-links .ff-link.is-lit{
+  opacity:.85;stroke-width:1.4;stroke-dasharray:3 6;
+  animation:flow 1.1s linear infinite;
+}
+@keyframes flow{to{stroke-dashoffset:-9}}
+
+@media (max-width:900px){
+  .jar-slot{height:auto;max-height:52vh}
+  .jar-index-wrap,.jar-card{height:auto;max-height:52vh}
+  .jar-meta{padding-bottom:18px}
+}
+@media (prefers-reduced-motion:reduce){
+  .jbtn i,.ff-ring,.ff-link{animation:none!important}
 }

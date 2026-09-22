@@ -25,6 +25,8 @@
 !/modules/**
 !/atlas/
 !/atlas/index.html
+!/jar/
+!/jar/index.html
 !/vault/
 !/vault/index.html
 !/notes/

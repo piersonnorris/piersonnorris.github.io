@@ -63,6 +63,22 @@
     .photo{position:sticky;top:24px;margin:0}
     .photo img{display:block;width:100%;height:auto;border-radius:var(--r-lg);border:1px solid var(--line2)}
 
+    .atlas-jar{display:flex;align-items:center;gap:14px;margin-top:14px;padding:12px 14px;
+      border:1px solid var(--line2);border-radius:var(--r-lg);background:#0a1024;color:var(--ink);text-decoration:none;
+      transition:border-color .2s ease,box-shadow .2s ease}
+    .atlas-jar svg{width:42px;height:56px;flex:none;transition:transform .3s ease}
+    .atlas-jar .ff-dots circle{fill:#ffc46b;filter:drop-shadow(0 0 3px #ffb347);animation:jarglow 2.6s ease-in-out infinite}
+    .atlas-jar .ff-dots circle:nth-child(2){animation-delay:-.7s}
+    .atlas-jar .ff-dots circle:nth-child(3){animation-delay:-1.3s}
+    .atlas-jar .ff-dots circle:nth-child(4){animation-delay:-1.9s}
+    .atlas-jar .ff-dots circle:nth-child(5){animation-delay:-.4s}
+    @keyframes jarglow{0%,100%{opacity:.35}50%{opacity:1}}
+    .atlas-jar b{display:block;font-weight:600}
+    .atlas-jar small{display:block;color:var(--mut);font-size:13px}
+    .atlas-jar:hover,.atlas-jar:focus-visible{border-color:#ffc46b;box-shadow:0 0 22px rgba(255,196,107,.18)}
+    .atlas-jar:hover svg{transform:translateY(-2px) rotate(-3deg)}
+    @media (prefers-reduced-motion:reduce){.atlas-jar .ff-dots circle{animation:none;opacity:.8}}
+
     .block{margin:44px 0 0}
     .block h2{font-size:20px;margin:0 0 14px}
 
@@ -153,6 +169,19 @@
       <!-- Swap for a real photo later: drop it in assets/img/home/ and change src + alt. -->
       <figure class="photo">
         <img src="/assets/img/home/hero.svg" width="400" height="600" alt="Illustration of a north star over the Chicago skyline and Lake Michigan">
+        <!-- a little jar of fireflies, the way into the Atlas -->
+        <a class="atlas-jar" href="/atlas/">
+          <svg viewBox="0 0 60 80" aria-hidden="true">
+            <rect x="15" y="4" width="30" height="9" rx="2" fill="#a87f48"/>
+            <path d="M18 13h24v4c5 3 8 8 8 14v38c0 4-3 7-7 7H17c-4 0-7-3-7-7V31c0-6 3-11 8-14z" fill="#0a1024" stroke="rgba(226,244,253,.6)" stroke-width="1.5"/>
+            <g class="ff-dots">
+              <circle cx="24" cy="44" r="2.2"/><circle cx="36" cy="38" r="1.8"/>
+              <circle cx="31" cy="56" r="2.4"/><circle cx="21" cy="62" r="1.5"/>
+              <circle cx="40" cy="60" r="1.9"/>
+            </g>
+          </svg>
+          <span><b>Atlas</b><small>What I’ve learned, as a night sky</small></span>
+        </a>
       </figure>
     </div>
 

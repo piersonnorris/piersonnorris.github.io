@@ -438,6 +438,20 @@ body.atlas-page{
   color:rgba(243,232,202,.45);display:flex;flex-wrap:wrap;gap:4px 18px;
 }
 .sandstat b{color:rgba(243,232,202,.85);font-weight:500}
+
+/* how the jars work, and a way to shut them all at once */
+.jarhint{
+  position:relative;z-index:2;max-width:1120px;margin:14px auto 0;padding:0 24px;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;
+  font-family:var(--hand);font-size:15px;color:rgba(243,232,202,.82);text-align:center;
+}
+.jarhint button{
+  font:inherit;font-family:var(--mono);font-size:11px;letter-spacing:.06em;
+  color:var(--n-paper);background:rgba(6,11,28,.45);
+  border:1px solid rgba(243,232,202,.35);border-radius:999px;padding:4px 12px;cursor:pointer;
+}
+.jarhint button:hover,.jarhint button:focus-visible{border-color:var(--n-moon);color:#fff;outline:none}
+.jarhint button[hidden]{display:none}
 .sandstat .showing{margin-left:auto;color:var(--n-moon)}
 
 /* ============================================================

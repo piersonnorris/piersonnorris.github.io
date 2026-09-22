@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Atlas — Pierson Norris</title>
-  <meta name="description" content="A knowledge atlas read as a night sky: what Pierson Norris has learned running True North Services LLC, interning at Screencastify, investing since 2020, and building his own tools. One star per note, one jar per domain, a telescope that draws the links between them.">
+  <meta name="description" content="A knowledge atlas read as a night sky: what Pierson Norris has learned running True North Services LLC, interning at Screencastify, investing since 2020, and building his own tools. One star per note, one jar per domain — open as many as you like — and a telescope that draws the links between them.">
   <link rel="canonical" href="https://piersonnorris.github.io/atlas/">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#060b1c">
@@ -49,8 +49,9 @@
         <h1>What I’ve learned, and where.</h1>
         <p class="lede">The island after dark. Every star is a lesson from documented work — <b>True North
           Services LLC</b>, the <b>Screencastify</b> internship, investing since 2020, building these tools.
-          Open a jar to light one domain, press a star to read it, and look through the telescope to see
-          how the lessons link up.</p>
+          Open a jar to send its fireflies up to their stars — open as many as you like, and press one
+          again to close it. Press a star to read it, and look through the telescope to see how the
+          lessons link up.</p>
       </section>
 
       <div class="sky" id="sky">
@@ -130,8 +131,11 @@
           <span class="scopelabel" id="scopelabel">Look through the telescope</span>
         </button>
 
-        <div class="jars" id="jars" role="group" aria-label="The jars — one per domain. Open one to light only its stars."></div>
+        <div class="jars" id="jars" role="group" aria-label="The jars — one per domain. Open as many as you like; press one again to close it."></div>
       </div>
+
+      <p class="jarhint" id="jarhint"><span>Open as many jars as you like — press one again to close it.</span>
+        <button type="button" data-closejars hidden>Close all jars</button></p>
 
       <p class="sandstat" id="status" aria-live="polite"></p>
 

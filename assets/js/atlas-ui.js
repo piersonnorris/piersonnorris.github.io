@@ -50,9 +50,13 @@
     hoverId: null,     /* the star being pointed at, if any */
     tracePair: null,   /* "a|b" while a link line itself is hovered */
     query: '',
-    domain: 'all',
+    open: [],          /* the open jars, in the order they were opened —
+                          as many as you like (Pierce, 2026-09-21) */
     scope: false
   };
+
+  function anyOpen() { return state.open.length > 0; }
+  function isOpen(domainId) { return state.open.indexOf(domainId) > -1; }
 
   var pos = {};        /* note id -> {x,y} in percent of the sky box */
   var pairs = [];      /* unique undirected [a,b] link pairs */
@@ -254,8 +258,10 @@
 
      Only ever 2-6 stars are in here (the biggest domain has 6), so the
      relaxation has room to converge and this stays cheap. */
-  function layoutSpread(domainId) {
-    var ids = data.notes.filter(function (n) { return n.domain === domainId; })
+  function layoutSpread(domainIds) {
+    /* every open jar's stars share one layout, so two open jars spread
+       across the sky together rather than landing on top of each other */
+    var ids = data.notes.filter(function (n) { return domainIds.indexOf(n.domain) > -1; })
       .map(function (n) { return n.id; });
     if (!ids.length) return null;
 
@@ -370,8 +376,7 @@
      picture than the one it replaced — the telescope's job is the true
      shape, so everyone goes home for it. */
   function applySpread() {
-    var want = (!state.scope && state.domain !== 'all') ? state.domain : null;
-    spread = want ? layoutSpread(want) : null;
+    spread = (!state.scope && anyOpen()) ? layoutSpread(state.open) : null;
     place();
   }
 
@@ -411,7 +416,7 @@
        to 9%. Out telescope, out filter. A typed query still narrows, because
        that is someone asking for something specific rather than browsing. */
     if (state.scope) return queryMatches(note);
-    if (state.domain !== 'all' && note.domain !== state.domain) return false;
+    if (anyOpen() && !isOpen(note.domain)) return false;
     return queryMatches(note);
   }
 
@@ -516,7 +521,7 @@
       var count = data.notes.filter(function (n) { return n.domain === d.id; }).length;
       return '<button type="button" class="jar" data-domain="' + esc(d.id) + '"' +
         ' style="--jc:' + esc(d.color) + '" aria-pressed="false"' +
-        ' aria-label="' + esc(d.label) + ' — ' + count + ' notes. Light only this jar\u2019s stars.">' +
+        ' aria-label="' + esc(d.label) + ' — ' + count + ' notes. Open to light its stars; press again to close.">' +
         jarSVG(count) +
         '<span class="jartag">' + esc(d.label) + '<i>' + count + '</i></span>' +
       '</button>';
@@ -658,12 +663,12 @@
     /* A jar is open and its stars have the sky to themselves: the rest
        stay faintly lit rather than going out, and each open star keeps
        its name until its firefly delivers it (atlas.css, .landed). */
-    sky.classList.toggle('jarred', !state.scope && state.domain !== 'all');
+    sky.classList.toggle('jarred', !state.scope && anyOpen());
     sky.classList.toggle('peeking', !!state.hoverId || !!state.tracePair);
     /* 25 names at once is not a legend, it is a wall of text — so an open
        jar names its stars only while it is the only thing on screen. */
     sky.classList.toggle('named',
-      (!state.scope && state.domain !== 'all') || (!!state.query && count <= 8));
+      (!state.scope && anyOpen()) || (!!state.query && count <= 8));
   }
 
   /* ---- pointing at a star, without opening it ---- */
@@ -785,8 +790,10 @@
   var STATS = null;
   function renderStatus() {
     var count = visible().length;
-    var filtered = state.domain !== 'all' || !!state.query;
-    var where = state.domain === 'all' ? '' : ' &middot; ' + esc((domainOf[state.domain] || {}).label || '');
+    var filtered = anyOpen() || !!state.query;
+    var where = anyOpen() ? ' &middot; ' + state.open.map(function (id) {
+      return esc((domainOf[id] || {}).label || id);
+    }).join(', ') : '';
     $('#status').innerHTML =
       '<span><b>' + STATS.notes + '</b> stars</span>' +
       '<span><b>' + STATS.links + '</b> lines</span>' +
@@ -802,7 +809,15 @@
     renderFieldNotes();
     renderTimeline();
     renderStatus();
-    $('#clearall').hidden = !(state.domain !== 'all' || state.query);
+    $('#clearall').hidden = !(anyOpen() || state.query);
+    var hint = $('#jarhint');
+    if (hint) {
+      var n = state.open.length;
+      hint.querySelector('span').textContent = n
+        ? n + (n === 1 ? ' jar open' : ' jars open') + ' — open more, or press one again to close it.'
+        : 'Open as many jars as you like — press one again to close it.';
+      hint.querySelector('button').hidden = n < 2;
+    }
   }
 
   /* ---- selection ---- */
@@ -811,14 +826,12 @@
     if (!note) return;
     state.noteId = noteId;
     /* a star hidden by the current filter has just been asked for by name —
-       drop the filter rather than pointing at something invisible. Through
-       setDomain(), so the open jar actually seals: assigning state.domain
-       here lit the whole sky under a jar that still looked open, with its
-       stars left scattered where the spread had put them. */
+       show it rather than point at something invisible. Its jar opens
+       alongside whichever are already open, through toggleJar(), so the
+       jar, the spread and the flight all agree. */
     if (!matches(note)) {
-      state.query = '';
-      searchEl.value = '';
-      setDomain('all');
+      if (state.query && !queryMatches(note)) { state.query = ''; searchEl.value = ''; }
+      if (anyOpen() && !isOpen(note.domain)) toggleJar(note.domain, true);
     }
     renderLog(note);
     openLog();
@@ -888,21 +901,18 @@
     return (domainOf[domainId] || {}).color || '#ffe9a8';
   }
 
-  function flyDomain(was, now) {
-    if (was === now) return;
+  /* One jar at a time: each jar's flight is its own group in PNFlight,
+     so opening a second jar never calls the first jar's fireflies home. */
+  function flyJar(domainId, opening) {
     if (!flight) {
       /* no flight layer, so nothing will deliver the names — hand them over */
-      starsOf(now).forEach(function (t) { t.el.classList.add('landed'); });
+      if (opening) starsOf(domainId).forEach(function (t) { t.el.classList.add('landed'); });
       return;
     }
-    if (was && was !== 'all') {
-      var oldJar = jarFor(was);
-      if (oldJar) flight.recall(oldJar, starsOf(was), colorOf(was));
-    }
-    if (now && now !== 'all') {
-      var jar = jarFor(now);
-      if (jar) flight.release(jar, starsOf(now), colorOf(now), kindle);
-    }
+    var jar = jarFor(domainId);
+    if (!jar) return;
+    if (opening) flight.release(jar, starsOf(domainId), colorOf(domainId), kindle);
+    else flight.recall(jar, starsOf(domainId), colorOf(domainId));
   }
 
   /* A firefly has landed: its star flares, and gets its name. While a jar
@@ -923,7 +933,7 @@
 
   function syncJars() {
     Array.prototype.forEach.call(document.querySelectorAll('.jar'), function (b) {
-      b.setAttribute('aria-pressed', String(b.dataset.domain === state.domain));
+      b.setAttribute('aria-pressed', String(isOpen(b.dataset.domain)));
     });
   }
 
@@ -956,24 +966,27 @@
      sealed the jar in the deck but left its stars scattered across the sky
      with no fireflies coming home, and following a link out of an open jar
      lit the whole sky under a jar that still looked open. */
-  function setDomain(next) {
-    var was = state.domain;
-    state.domain = next;
-    if (was !== next) {
-      /* a new flight delivers every name again */
-      Array.prototype.forEach.call(starWrap.children, function (el) {
-        el.classList.remove('landed');
-      });
-    }
+  /* Open or close one jar, leaving the others as they are. `force`
+     true opens, false closes, undefined toggles. */
+  function toggleJar(domainId, force) {
+    var open = force == null ? !isOpen(domainId) : !!force;
+    if (open === isOpen(domainId)) return;
+    if (open) state.open.push(domainId);
+    else state.open.splice(state.open.indexOf(domainId), 1);
+    /* this jar's flight delivers its names again; the others keep theirs */
+    starsOf(domainId).forEach(function (t) { t.el.classList.remove('landed'); });
     syncJars();
     /* spread first: each flight reads its target from the layout the stars
        are heading for */
     applySpread();
     paintSky();
     renderDeck();
-    if (was === next) return;
-    flyDomain(was, next);
-    if (next !== 'all') frameFlight(jarFor(next));
+    flyJar(domainId, open);
+    if (open) frameFlight(jarFor(domainId));
+  }
+
+  function closeAllJars() {
+    state.open.slice().forEach(function (id) { toggleJar(id, false); });
   }
 
   /* ---- wiring ---- */
@@ -1044,7 +1057,7 @@
     /* one delegated listener for every note button on the page — stars,
        rope links, wikilinks, the field notes, the ship's log */
     document.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-note],[data-domain],[data-clear]');
+      var t = e.target.closest('[data-note],[data-domain],[data-clear],[data-closejars]');
       if (!t) return;
       if (t.dataset.note) {
         if (t.dataset.star) lastFocus = t;
@@ -1052,11 +1065,15 @@
         return;
       }
       if (t.dataset.domain) {
-        setDomain(state.domain === t.dataset.domain ? 'all' : t.dataset.domain);
+        toggleJar(t.dataset.domain);
+      } else if (t.hasAttribute('data-closejars')) {
+        closeAllJars();
       } else {
         state.query = '';
         searchEl.value = '';
-        setDomain('all');
+        closeAllJars();
+        paintSky();
+        renderDeck();
       }
     });
 
@@ -1101,9 +1118,11 @@
       }
       if (e.key !== 'Escape') return;
       if (!logcard.hidden) { closeLog(true); return; }
-      if (state.domain !== 'all' || state.query) {
+      if (anyOpen() || state.query) {
         state.query = ''; searchEl.value = '';
-        setDomain('all');
+        closeAllJars();
+        paintSky();
+        renderDeck();
       }
     });
 

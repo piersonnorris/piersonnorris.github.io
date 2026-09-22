@@ -50,9 +50,10 @@
    The sky stays lit whether or not a jar is open (Pierce's call,
    2026-09-10 — the flight is the reward, not the price of
    admission, and again 2026-09-14 — "they should be stars unless the
-   jars are pressed"). So an arriving firefly does not turn a dark star
-   on; it makes a lit one flare. Nothing here changes what the sky
-   *means*, only what you watch it do.
+   jars are pressed"). An open jar's own stars wait dim until their
+   firefly lands and lights them (2026-09-21, atlas.css). Several jars
+   can be open at once, so each jar's flights are their own group: one
+   jar opening or closing never calls another jar's fireflies home.
    ============================================================ */
 (function (global) {
   'use strict';
@@ -239,7 +240,12 @@
       if (flights.length) raf = global.requestAnimationFrame(frame);
     }
 
-    function fly(from, to, seed, color, delay, onArrive) {
+    /* only the flights belonging to one jar */
+    function clearGroup(group) {
+      flights.slice().forEach(function (f) { if (f.group === group) drop(f); });
+    }
+
+    function fly(from, to, seed, color, delay, onArrive, group) {
       var el = document.createElement('i');
       el.className = 'ff';
       el.innerHTML = '<b></b>';
@@ -248,7 +254,7 @@
       layer.appendChild(el);
 
       var f = { el: el, from: from, to: to, seed: seed, t0: now() + delay,
-        onArrive: onArrive, done: false, timer: 0, u: -1, p: null };
+        onArrive: onArrive, done: false, timer: 0, u: -1, p: null, group: group };
       /* rAF does not run in a backgrounded tab, and a firefly parked
          forever in the sky is worse than one that arrives late */
       f.timer = setTimeout(function () { land(f); }, delay + DURATION + 400);
@@ -262,7 +268,9 @@
        atlas-ui.js answers fresh on every frame; `el` is the fallback
        for a caller that has no layout of its own. */
     function release(jarEl, targets, color, onArrive) {
-      clear();
+      /* several jars can be open at once, so only this jar's own
+         fireflies are called off — never another jar's swarm */
+      clearGroup(jarEl);
       if (!jarEl || !targets || !targets.length) return;
       if (reduced()) { targets.forEach(function (t) { if (onArrive) onArrive(t); }); return; }
 
@@ -278,7 +286,7 @@
         var start = { x: from.x + off, y: from.y };
         fly(start, to, t.id || ('t' + i), color, i * STAGGER, function () {
           if (onArrive) onArrive(t);
-        });
+        }, jarEl);
       });
     }
 
@@ -289,14 +297,14 @@
        now, not where it is heading: the star is already on its way
        home, and the firefly is what it leaves behind. */
     function recall(jarEl, targets, color) {
-      clear();
+      clearGroup(jarEl);
       if (!jarEl || !targets || !targets.length) return;
       if (reduced()) return;
 
       var home = function () { return mouth(jarEl); };
       targets.forEach(function (t, i) {
         if (!t.el) return;
-        fly(centre(t.el), home, (t.id || ('t' + i)) + 'r', color, i * STAGGER, null);
+        fly(centre(t.el), home, (t.id || ('t' + i)) + 'r', color, i * STAGGER, null, jarEl);
       });
     }
 

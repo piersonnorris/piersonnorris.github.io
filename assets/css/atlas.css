@@ -237,6 +237,11 @@ body.atlas-page{
    started using it. A search still dims hard: that is someone asking for
    something specific. */
 .sky.jarred .star.dim{opacity:.3}
+/* An open jar's own stars wait dark, like the rest of the sky, until
+   their firefly lands (.landed) — Pierce, 2026-09-21: the lights were
+   coming on before the fireflies got there. The landing lights them. */
+.sky.jarred .star:not(.dim):not(.landed){opacity:.3}
+.sky.jarred .star:not(.dim):not(.landed) .star-glow{animation-play-state:paused}
 
 /* ---- pointing at a star ----------------------------------------------
    Hovering does everything selecting does except open the panel: the star

@@ -58,7 +58,7 @@
   'use strict';
 
   var DURATION = 1500;   /* one trip, ms — Pierce, 2026-09-14 */
-  var STAGGER = 80;      /* launch spacing, so they leave the mouth as a stream, not a volley */
+  var STAGGER = 150;     /* launch spacing: one at a time, not a clump (Pierce, 2026-09-21) */
   var SIZE = 7;          /* .ff is 7px square; every point here is its centre */
 
   /* One deterministic number per firefly, so a given note's flight
@@ -204,6 +204,11 @@
       return { x: r.left - s.left + r.width / 2, y: r.top - s.top + r.height * 0.2 };
     }
 
+    function mouthWidth(jarEl) {
+      var svg = jarEl.querySelector('svg') || jarEl;
+      return svg.getBoundingClientRect().width * 0.5;
+    }
+
     function aim(target) {
       return typeof target === 'function' ? target() : target;
     }
@@ -262,10 +267,16 @@
       if (reduced()) { targets.forEach(function (t) { if (onArrive) onArrive(t); }); return; }
 
       var from = mouth(jarEl);
+      /* Spread across the opening rather than all out of one point, so
+         the swarm leaves as separate fireflies (Pierce, 2026-09-21). */
+      var span = mouthWidth(jarEl) * 0.6;
+      var n = targets.length;
       targets.forEach(function (t, i) {
         if (!t.el && !t.pt) return;
         var to = t.pt || function () { return centre(t.el); };
-        fly(from, to, t.id || ('t' + i), color, i * STAGGER, function () {
+        var off = n > 1 ? (i / (n - 1) - 0.5) * span : 0;
+        var start = { x: from.x + off, y: from.y };
+        fly(start, to, t.id || ('t' + i), color, i * STAGGER, function () {
           if (onArrive) onArrive(t);
         });
       });

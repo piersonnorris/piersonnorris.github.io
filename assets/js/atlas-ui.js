@@ -299,7 +299,7 @@
        and converting each one into percentages first only invites the
        aspect-ratio mistakes the home layout has to make on purpose */
     var out = {};
-    var R = ids.length < 3 ? 0.18 : 0.30;
+    var R = ids.length < 3 ? 0.24 : 0.36;
     ids.forEach(function (id, i) {
       var j = hash01(id + '~spread');
       var ang = i * 2.39996 + j * 0.8;
@@ -313,10 +313,23 @@
     var moonX = MOON.x / 100 * W, moonY = MOON.y / 100 * H;
     var moonR = MOON.r + 18;
 
+    /* Stars keep their distance too, not only their labels — clear
+       labels still let two stars sit almost on top of each other
+       (Pierce, 2026-09-21: "they should also be spread out"). The gap
+       is what the sky can afford for this many stars. */
+    var minD = Math.min(W * 0.22, Math.sqrt(W * H / ids.length) * 0.62);
+
     for (var pass = 0; pass < 260; pass++) {
       for (var a = 0; a < ids.length; a++) {
         for (var b = a + 1; b < ids.length; b++) {
           var p = out[ids[a]], q = out[ids[b]];
+          var ddx = q.x - p.x, ddy = q.y - p.y;
+          var dd = Math.sqrt(ddx * ddx + ddy * ddy) || 0.01;
+          if (dd < minD) {
+            var push = (minD - dd) / dd * 0.5;
+            p.x -= ddx * push; p.y -= ddy * push;
+            q.x += ddx * push; q.y += ddy * push;
+          }
           var ba = boxes[ids[a]], bb = boxes[ids[b]];
           var needX = (ba.w + bb.w) / 2 + GAP;
           var needY = (ba.h + bb.h) / 2 + GAP;

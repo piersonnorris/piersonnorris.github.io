@@ -68,23 +68,51 @@
     .bio p b{color:var(--ink);font-weight:600}
 
     .photo{position:sticky;top:24px;margin:0}
-    .photo img{display:block;width:100%;height:auto;border-radius:var(--r-lg);border:1px solid var(--line2)}
 
-    .atlas-jar{display:flex;align-items:center;gap:14px;margin-top:14px;padding:12px 14px;
+    /* The evening scene (assets/js/nightfall.js). At rest every layer is
+       transparent, so the photo shows exactly as taken; the layers only
+       move once the jar is pressed. */
+    .scene{position:relative;overflow:hidden;border-radius:var(--r-lg);border:1px solid var(--line2);
+      --nf-glow:0;--nf-sink:0;--nf-dusk:0;--nf-night:0}
+    .scene img{display:block;width:100%;height:auto;
+      filter:brightness(calc(1 - .42 * var(--nf-night) - .1 * var(--nf-sink))) saturate(calc(1 - .4 * var(--nf-night)))}
+    .scene > div{position:absolute;inset:0;pointer-events:none}
+    /* the evening light: swells gold over the horizon, then sinks below it */
+    .nf-glow{background:radial-gradient(ellipse 85% 34% at 50% 57%,rgba(255,196,120,.75),rgba(255,140,90,.28) 45%,transparent 72%);
+      mix-blend-mode:screen;opacity:var(--nf-glow);transform:translateY(calc(var(--nf-sink) * 9%))}
+    .nf-dusk{background:linear-gradient(to bottom,rgba(84,48,140,.6),rgba(214,96,120,.32) 50%,rgba(18,28,72,.5));
+      mix-blend-mode:multiply;opacity:var(--nf-dusk)}
+    .nf-night{background:linear-gradient(to bottom,rgba(6,11,28,.9),rgba(6,11,28,.62) 57%,rgba(6,11,28,.55));opacity:var(--nf-night)}
+    .nf-stars i{position:absolute;border-radius:50%;background:#eef3ff;opacity:0;box-shadow:0 0 4px rgba(238,243,255,.8)}
+    /* the swarm and the veil live on <body>, fixed, above everything */
+    .nf-veil{position:fixed;inset:0;opacity:0;pointer-events:none;z-index:90}
+    .nf-swarm{position:fixed;inset:0;pointer-events:none;z-index:91}
+    .nf-swarm i{position:absolute;left:0;top:0;margin:-3px 0 0 -3px;border-radius:50%;opacity:0;
+      background:#fff3c4;box-shadow:0 0 8px 3px rgba(255,196,107,.85),0 0 22px 6px rgba(255,179,71,.35)}
+
+    .credit{margin:8px 2px 0;font:11px/1.4 var(--mono);color:var(--dim)}
+    .credit a{color:var(--mut)}
+
+    .firefly-jar{display:flex;align-items:center;gap:14px;margin-top:14px;padding:12px 14px;
       border:1px solid var(--line2);border-radius:var(--r-lg);background:#0a1024;color:var(--ink);text-decoration:none;
-      transition:border-color .2s ease,box-shadow .2s ease}
-    .atlas-jar svg{width:42px;height:56px;flex:none;transition:transform .3s ease}
-    .atlas-jar .ff-dots circle{fill:#ffc46b;filter:drop-shadow(0 0 3px #ffb347);animation:jarglow 2.6s ease-in-out infinite}
-    .atlas-jar .ff-dots circle:nth-child(2){animation-delay:-.7s}
-    .atlas-jar .ff-dots circle:nth-child(3){animation-delay:-1.3s}
-    .atlas-jar .ff-dots circle:nth-child(4){animation-delay:-1.9s}
-    .atlas-jar .ff-dots circle:nth-child(5){animation-delay:-.4s}
+      transition:border-color .2s ease,box-shadow .2s ease;--nf-jar-dots:1;--nf-lid:0}
+    .firefly-jar svg{width:42px;height:56px;flex:none;overflow:visible;transition:transform .3s ease}
+    .firefly-jar .lid{transform-box:fill-box;transform-origin:0% 100%;
+      transform:translate(calc(var(--nf-lid) * -3px),calc(var(--nf-lid) * -9px)) rotate(calc(var(--nf-lid) * -24deg))}
+    .firefly-jar .ff-dots{opacity:var(--nf-jar-dots)}
+    .firefly-jar .ff-dots circle{fill:#ffc46b;filter:drop-shadow(0 0 3px #ffb347);animation:jarglow 2.6s ease-in-out infinite}
+    .firefly-jar .ff-dots circle:nth-child(2){animation-delay:-.7s}
+    .firefly-jar .ff-dots circle:nth-child(3){animation-delay:-1.3s}
+    .firefly-jar .ff-dots circle:nth-child(4){animation-delay:-1.9s}
+    .firefly-jar .ff-dots circle:nth-child(5){animation-delay:-.4s}
     @keyframes jarglow{0%,100%{opacity:.35}50%{opacity:1}}
-    .atlas-jar b{display:block;font-weight:600}
-    .atlas-jar small{display:block;color:var(--mut);font-size:13px}
-    .atlas-jar:hover,.atlas-jar:focus-visible{border-color:#ffc46b;box-shadow:0 0 22px rgba(255,196,107,.18)}
-    .atlas-jar:hover svg{transform:translateY(-2px) rotate(-3deg)}
-    @media (prefers-reduced-motion:reduce){.atlas-jar .ff-dots circle{animation:none;opacity:.8}}
+    .firefly-jar b{display:block;font-weight:600}
+    .firefly-jar small{display:block;color:var(--mut);font-size:13px}
+    .firefly-jar:hover,.firefly-jar:focus-visible,.firefly-jar.is-opening{border-color:#ffc46b;box-shadow:0 0 22px rgba(255,196,107,.18)}
+    .firefly-jar:hover svg{transform:translateY(-2px) rotate(-3deg)}
+    .firefly-jar.is-opening svg{transform:none}
+    @media (prefers-reduced-motion:reduce){.firefly-jar .ff-dots circle{animation:none;opacity:.8}}
+
 
     .block{margin:44px 0 0}
     .block h2{font-size:20px;margin:0 0 14px}
@@ -174,13 +202,24 @@
         </div>
       </div>
 
-      <!-- Swap for a real photo later: drop it in assets/img/home/ and change src + alt. -->
       <figure class="photo">
-        <img src="/assets/img/home/hero.svg" width="400" height="600" alt="Illustration of a north star over the Chicago skyline and Lake Michigan">
-        <!-- a little jar of fireflies, the way into the Atlas -->
-        <a class="atlas-jar" href="/atlas/">
+        <div class="scene" id="scene">
+          <img src="/assets/img/home/lake-sunset-800.jpg"
+               srcset="/assets/img/home/lake-sunset-480.jpg 480w, /assets/img/home/lake-sunset-800.jpg 800w"
+               sizes="(max-width:760px) 240px, 400px"
+               width="800" height="1200" fetchpriority="high"
+               alt="Sunset over Lake Michigan: a gold and pink sky above the Chicago lakefront, a Ferris wheel on the horizon, blue water in the foreground">
+          <div class="nf-glow"></div>
+          <div class="nf-dusk"></div>
+          <div class="nf-night"></div>
+          <div class="nf-stars"></div>
+        </div>
+        <figcaption class="credit">Photo: <a href="https://commons.wikimedia.org/wiki/File:Chicago_Lakefront_Sunset_-_Lake_Michigan_Harbor.jpg" rel="noopener">Tony Webster</a>, <a href="https://creativecommons.org/licenses/by/2.0/" rel="noopener license">CC BY 2.0</a>, cropped</figcaption>
+        <!-- the jar: press it and night falls over the lake, the fireflies
+             get out, and it opens into the Firefly Jar (nightfall.js) -->
+        <a class="firefly-jar" id="firefly-jar" href="/jar/">
           <svg viewBox="0 0 60 80" aria-hidden="true">
-            <rect x="15" y="4" width="30" height="9" rx="2" fill="#a87f48"/>
+            <rect class="lid" x="15" y="4" width="30" height="9" rx="2" fill="#a87f48"/>
             <path d="M18 13h24v4c5 3 8 8 8 14v38c0 4-3 7-7 7H17c-4 0-7-3-7-7V31c0-6 3-11 8-14z" fill="#0a1024" stroke="rgba(226,244,253,.6)" stroke-width="1.5"/>
             <g class="ff-dots">
               <circle cx="24" cy="44" r="2.2"/><circle cx="36" cy="38" r="1.8"/>
@@ -188,7 +227,7 @@
               <circle cx="40" cy="60" r="1.9"/>
             </g>
           </svg>
-          <span><b>Atlas</b><small>What I’ve learned, as a night sky</small></span>
+          <span><b>Firefly Jar</b><small>My notes, as fireflies</small></span>
         </a>
       </figure>
     </div>
@@ -197,6 +236,7 @@
       <h2 id="links-h">Links</h2>
       <ul class="links">
         <li><a href="/jar/">Firefly Jar — my notes as fireflies</a></li>
+        <li><a href="/atlas/">Atlas — what I’ve learned, as a night sky</a></li>
         <li><a href="/athletics/">Athletics — training as part of life</a></li>
         <li><a href="https://truenorthservicesllc.netlify.app" rel="noopener">True North Services</a></li>
         <li><a href="/assets/resume/pierson-norris-resume.pdf">Résumé (PDF)</a></li>
@@ -247,6 +287,14 @@
   </main>
 
   <script src="/assets/js/nav.js"></script>
+  <script src="/assets/js/atlas-flight.js"></script>
+  <script src="/assets/js/nightfall.js"></script>
+  <script>
+    PNNightfall.mount({
+      scene: document.getElementById("scene"),
+      jar: document.getElementById("firefly-jar")
+    });
+  </script>
   <script>
     /* Short / Long bio toggle. With JS off, the short bio shows. */
     document.querySelectorAll('[data-bio]').forEach(function (btn) {

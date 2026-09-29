@@ -215,6 +215,16 @@
   jar.relayout();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(jar.relayout);
 
+  /* Arriving from the home page's jar (nightfall.js) as /jar/#open: the
+     fireflies just left that jar in the dark, so this one opens as the
+     page lands and they carry straight through. The hash is dropped at
+     once, so a reload or a shared link shows the sealed jar as normal.
+     PNJar makes the opening instant under reduced motion. */
+  if (location.hash === '#open') {
+    history.replaceState(null, '', location.pathname + location.search);
+    setTimeout(function () { if (jar.state() !== 'open') jar.open(); }, 380);
+  }
+
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
     if (jar.selected()) jar.select(null);

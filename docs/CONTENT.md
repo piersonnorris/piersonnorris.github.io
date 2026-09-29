@@ -19,7 +19,7 @@ Rules: use this copy verbatim (light grammatical smoothing allowed, meaning-chan
 - **LinkedIn:** https://www.linkedin.com/in/pierson-norris-634954246 `[OPEN: claiming a cleaner custom URL is on his checklist — use whichever exists at build time]`
 - **GitHub:** `[OPEN: username pending confirmation]`
 - **Other socials:** `[OPEN: TBD by Pierson — an Instagram for the business (oaisis_exterior_cleaning) exists from the Oasis era]`
-- **Photo:** `[OPEN]`
+- **Photo:** Home hero decided by Pierson 2026-09-29 — a real photograph of a Lake Michigan sunset, licensed and credited (Tony Webster, CC BY 2.0; see `assets/README.md` Image credits), replacing the north-star illustration. A portrait of Pierson himself is still `[OPEN]`.
 
 ## 2. About (draft, first person, ~300 words)
 

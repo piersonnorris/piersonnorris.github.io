@@ -143,12 +143,33 @@ for (const file of shellPages) {
   const html = read(file);
   check(`${file}: every root-relative link would publish`, () => {
     const refs = [...html.matchAll(/(?:href|src)="(\/[^"#?]*)/g)].map((m) => m[1]);
+    /* srcset holds several URLs, each followed by a width or a density */
+    for (const m of html.matchAll(/srcset="([^"]+)"/g)) {
+      for (const part of m[1].split(',')) {
+        const url = part.trim().split(/\s+/)[0];
+        if (url.startsWith('/')) refs.push(url.split(/[#?]/)[0]);
+      }
+    }
     for (const ref of new Set(refs)) {
       if (ref.startsWith('//')) continue; // protocol-relative, not ours
       assert.ok(publishable.has(fileFor(ref)), `${ref} -> ${fileFor(ref)} would 404`);
     }
   });
 }
+
+/* ------------------------------------------------------- reachability */
+
+/* Every page in the sitemap has to be reachable from home. On 2026-09-29
+   the home jar — then the only link to /atlas/ anywhere on the site — was
+   pointed at /jar/, which would have left the Atlas live but unlinked. */
+check('every sitemap page is linked from home', () => {
+  const home = read('index.html');
+  const linked = new Set([...home.matchAll(/href="(\/[^"#?]*)/g)].map((m) => m[1]));
+  for (const p of sitemapPaths) {
+    if (p === '/') continue;
+    assert.ok(linked.has(p), `${p} is in the sitemap but nothing on home links to it`);
+  }
+});
 
 /* ------------------------------------------------------------- llms.txt */
 

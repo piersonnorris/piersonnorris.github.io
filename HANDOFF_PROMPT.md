@@ -37,3 +37,9 @@ The local repo (not yet pushed to GitHub) contains: this handoff kit, `docs/`, a
 ## First reply
 
 Confirm you've read all four docs by summarizing the build in under 10 lines (goal, stack, brand, what's already live, the milestones still ahead, the security rules). List every `[OPEN]` item that blocks your next milestone. Then start with the shared stylesheet extraction described above.
+
+---
+
+Vault category: [[Documentation Index]]  
+Tags: #category/documentation
+

@@ -14,10 +14,10 @@ This site is actively maintained (scaffold live 2026-08-23). Content below is ke
 ## Pages
 
 Live now:
-- /: profile and elevator pitch
-- /atlas/: knowledge atlas — 25 linked notes on what he has learned and where (True North, Screencastify, self-directed investing, building these tools), readable as notes, a link graph, or a timeline. Curated public data (assets/js/atlas-data.js) traced to docs/CONTENT.md; it is not the private vault and carries no client names, portfolio values or former-employer figures.
-
-Not for crawling (noindex): /notes/ (PIN-gated)
+- /: profile and elevator pitch, links, and events grouped by organization
+- /jar/: Firefly Jar — Pierson Norris's Obsidian notes as fireflies in a mason jar. One firefly per note; bigger and brighter means more linked. Lift the lid, then press a firefly to read it.
+- /atlas/: knowledge atlas read as a night sky — what Pierson Norris has learned running True North Services LLC, interning at Screencastify, investing since 2020, and building his own tools. One star per note, one jar per domain, and a telescope that draws the links between them. Curated public data (assets/js/atlas-data.js) traced to docs/CONTENT.md; it is not the private vault and carries no client names, portfolio values or former-employer figures.
+- /athletics/: a public snapshot of how athletics and training fit into Pierson Norris's life, with aggregate workout data from 2023–2025 (Hevy export; yearly totals only, no individual workouts).
 
 Planned, not yet live (pending final content decisions — see docs/ROADMAP.md R4/R7):
 - /about/: full story

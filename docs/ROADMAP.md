@@ -10,6 +10,17 @@ Updated: 2026-09-15 — **R25: the fireflies land on their stars.** Pressing a j
 
 ## 1. Now — in flight
 
+### Site metadata pass + Athletics — ✅ done 2026-09-29
+Pierce: *"state an indepth plan for enhansements for the website describe it then complete it."* An audit found the site's machine-facing surface had drifted from the site itself since the home redesign and the tracker's move.
+- **Athletics shipped.** `/athletics/` (Hevy totals, 2023–2025, started the same day) got the shell every page has — header, nav, footer, favicon, share tags. Content and numbers untouched. One layout fix: its `.athletics{padding:56px 0 80px}` zeroed `.wrap`'s 24px side gutter, so text touched the screen edges on a phone and sat 24px left of the header on desktop; now `padding-top`/`padding-bottom` only.
+- **One nav everywhere.** Only home listed Athletics; `/jar/`, `/atlas/` and `404` now carry the same four links.
+- **Share cards (U5, see §3a).** Links to the site now unfurl as a card instead of bare text.
+- **`llms.txt` tells the truth.** It advertised a PIN-gated `/notes/` that no longer exists and omitted `/jar/` and `/athletics/`; its Live list is now exactly the live pages. `/atlas/` was live but missing from `sitemap.xml`; added.
+- **Fonts preconnect** on every page.
+- **A guard, so it cannot drift again.** `tools/tests/site-meta.test.js` checks that the sitemap, every page's canonical and share tags, the nav, `llms.txt` and every root-relative link agree — against what git would actually *publish*, not just the disk, since a `.gitignore`-eaten file is how this site has 404'd before (§4 rule 8). Written first and run against the unfixed site: 15 failures, one per finding. Passes after.
+- **`.gitignore`:** dropped `!/plan.md` — no such file existed, so the line only meant a future `plan.md` would publish itself.
+- **Not touched:** the two `[OPEN]` items in `CONTENT.md` (photo; "started at 18"), and About/Projects/Contact (R7, blocked on R4).
+
 ### The portfolio tracker moved out — ✅ done 2026-09-15
 Pierce: *"remove the stock part of the git repo and create a new trpo called stock trackers this eliminates the need for a password."* The tracker left `/tools/tracker/` for its own **private** repo, `piersonnorris/stock-trackers`. A public repo was the only reason its holdings ever needed a PIN; in a private one access is GitHub's job, so `build.js` there builds open by default — no PIN, no lock screen, no `TRACKER_PASSWORD` — with `--sealed` kept as an opt-in.
 - **Moved there:** the page, template and build script; `charts.js`, `prices.js` and `updates.js` (no other page loaded them); copies of the shared modules the tracker uses; `charts.test.js` and the build-seam tests from `notes-graph.test.js`; `ASSET_TRACKER_SPEC.md`, `STOCK_CHART_PLAN.md`, `PORTFOLIO_CALENDAR_PLAN.md`, `PORTFOLIO_TASKBOARD_PLAN.md`; and `refresh-tracker.yml`, which had failed here every day for want of secrets and now skips until they are set. The open build's guards came along unchanged: no calendar events or note bodies in plaintext, four tabs hidden.
@@ -210,7 +221,7 @@ A full pass over the live site (Home, Experience, Notes, Tracker, Island), verif
 - ✅ **U2 — Restore visible focus rings.** Correction made *while* fixing this: input/textarea/select were already fine (a later `:focus-visible` rule with equal specificity already wins the outline back in the cascade) — only `.pnchart-graph .vg-node:focus` was genuinely broken, because its two-class selector (0,0,3,0) outranks the generic `[tabindex]:focus-visible` rule (0,0,2,0) regardless of source order. Added `.vg-node:focus-visible` with its own ring.
 - ✅ **U3 — Add a skip-to-content link.** Added to all five pages + 404.
 - ✅ **U4 — Ship the favicon.** A bold green "P" mark, dark rounded-square ground, as an SVG (`assets/img/favicon.svg`) linked from every `<head>`.
-- 🔲 **U5 — Complete Open Graph + og:image.** Still open: a compliant og:image needs a real raster (PNG/JPG) asset — Facebook/Twitter's crawlers don't reliably render SVG og:images, and this session has no image-generation tool. Needs a dedicated design pass.
+- ✅ **U5 — Complete Open Graph + og:image.** Done 2026-09-29. The blocker was never design — it was that no session had a rasterizer. Headless Chrome is one: `tools/og/render.js` screenshots `tools/og/card.html` into a 1200×630 PNG per public page (`assets/img/og/`), so a copy change is one command. Every card line is lifted from that page's own `<h1>` or og:description. All four public pages now carry `og:image` (+ width, height, alt), `twitter:image` and `summary_large_image`, and `tools/tests/site-meta.test.js` fails if any of them loses its card or the PNG is not exactly 1200×630.
 
 **Navigation & information architecture**
 - ✅ **U6 — Mobile nav menu** (built 2026-09-06, its own pass). Hamburger toggle (`assets/js/nav.js`) shared across all six pages, collapsing `.navlinks` under 760px into a push-down panel. Caught a real trap: Experience defines its own unconditional `.navlinks{display:flex}` which — equal specificity, later in the cascade than site.css — would have silently beaten a site.css-only fix, so it got its own matching override. Verified at true desktop width (toggle hidden) and mobile (opens, closes, auto-closes on link click) on all six pages including the real encrypted tracker.
@@ -253,3 +264,10 @@ A dedicated inbox for anything that specifically needs Pierce: an open question 
 - **Ship-in-a-bottle Easter egg** — 🔨 entrance built 2026-09-07, viewer still open. Pierce picked the placement himself ("homepage and the to-do list"), so the *entrance* half is built: `assets/js/bottle.js` + `assets/css/bottle.css` (`PNBottle.mount()`), one component mounted twice — under the Currently card on Home, and washed up in the sand on `/island/`, wearing each page's own palette via `--pnb-*` variables. Click it, the cork pops, the ship sails out, and a porthole dialog opens onto the vault's front door: a generated constellation sketch, a lamp saying whether a vault exists *on this device* (key-presence only — the same check the home console already does), and links into `/notes/` and the stock desk. Esc/scrim close it and focus returns to the bottle.
   **Deliberately not built: the viewer itself.** The original idea had the ship open "an embedded Obsidian-vault viewer." A *public* page cannot show one — the notes are encrypted behind a PIN and decrypt only in the owner's browser — so anything drawn there would have to be faked, which would misrepresent what the site does. The porthole says so in its own copy, and the real viewer is `/notes/`, one click away. Making *that* polished was **R10** — ✅ **done 2026-09-10**: Pierce picked **Research studio**, and a skin-only pass applied it. The bottle's second door now opens onto a workspace rather than a form. See R22.
   **Source:** Pierce, Cowork chat with Claude, 2026-09-06 — his own words: "reaching a visual obsidian with some [Easter] eggs on the website like a shipping [bottle] ... in addition to something like that on the home site too that looks small, but has impact." Placement decided by Pierce 2026-09-07.
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

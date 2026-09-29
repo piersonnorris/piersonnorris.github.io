@@ -32,6 +32,9 @@
 !/notes/
 !/notes/index.html
 !/notes/README.md
+!/notes/athletics.md
+!/athletics/
+!/athletics/index.html
 !/island/
 !/island/index.html
 !/tools/
@@ -41,4 +44,8 @@
 !/tools/tests/
 !/tools/tests/*.test.js
 !/tools/obsidian-sync.js
+# Share-card generator (U5). The PNGs it writes land in assets/, already allowlisted.
+!/tools/og/
+!/tools/og/card.html
+!/tools/og/render.js
 /docs/STOCK_UPDATE_PROMPT.md

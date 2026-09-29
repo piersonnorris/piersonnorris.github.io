@@ -105,3 +105,10 @@ Card — **Portfolio Tracker**: removed 2026-09-15. The tracker moved to its own
 50+ clients · five-figure first-summer revenue (~$12k profit) · +68% customer growth · 7 workflows / 6 departments / 48 hours / 1 meeting added · 3 shipped fixes · 4–8 hrs/week → under 15 minutes · ~30 min/week saved on the Monday email · 76 posts audited · 3 Castify OS modules live · 30 min → 5 min per proposal · 9 weeks idea-to-platform · 5 platforms tracked · team of 4+ · 20/5/5/70 revenue split · $100 minimum job · 30%+ manager margin target · $500 signed-agreement threshold · $10 minimum referral incentive.
 
 **Never on the site:** the spreadsheet ID, any credential. Also off the site: portfolio dollar values, share counts and individual holdings — **everywhere, no exceptions**. The one exception there ever was, the open `/tools/tracker/` page Pierson chose on 2026-09-08, ended on 2026-09-15 when the tracker moved to its own private repo (`stock-trackers`). The figures it published remain in this public repo's git history. Also off the site: Screencastify client names, their internal channel performance figures, and their internal vendor tool names (see §3b); True North client names, addresses, and revenue figures.
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

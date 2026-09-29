@@ -18,3 +18,10 @@ Plain CSS and dependency-free vanilla JS. No npm, no bundler. Every module attac
 | `js/taskboard.js` | `PNTaskboard` | Project-board columns, normalize/metrics/move, and `seed()` — **seed mirrors `docs/ROADMAP.md`; keep them in sync.** |
 
 Tests live in `tools/tests/*.test.js` (plain Node, no test framework): `atlas-links`, `calendar`, `markdown`, `notes-graph` (graph model + `tools/obsidian-sync.js`), `taskboard`, `vault-groups` and `vault-publish`. The chart and build-seam tests left with the tracker.
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

@@ -381,3 +381,10 @@ just this rebuild.
 
    Before restarting this, re-read §8a finding 2: at the `docs/` snapshot it is one cluster plus three orphans, and it wants the real vault (BACKSTAGE_PLAN P4) before it can be judged fairly.
 4. ~~**Nav.**~~ **Moot while Q3 is parked** — the page is still the night sky, so the label is still "Atlas". Reopen with this rebuild.
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

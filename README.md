@@ -44,3 +44,9 @@ node tools/tests/vault-publish.test.js
 ```
 
 Preview by serving the folder root over HTTP (root-absolute paths — opening files directly won't resolve `/assets/…`). Any static server works.
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+

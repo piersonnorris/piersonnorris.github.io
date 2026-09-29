@@ -253,3 +253,10 @@ boundary), search indexing beyond client-side substring match, and any change to
    `/notes/`, or stand on its own?
 
 Source for all four: Claude, drafting this plan, 2026-09-08.
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

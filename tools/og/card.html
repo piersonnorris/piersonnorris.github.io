@@ -1,0 +1,232 @@
+<!doctype html>
+<!-- Share-card template. Rendered to a 1200x630 PNG per page by
+     tools/og/render.js (headless Chrome), never served to visitors.
+
+     Copy rule: every line on a card is lifted from that page's own <h1>,
+     og:description or title, which themselves come from docs/CONTENT.md.
+     Nothing here is new copy. If a page's words change, change them in
+     CARDS below and re-run `node tools/og/render.js`. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Share card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500&display=block">
+  <style>
+    /* Locked design system — the same tokens as assets/css/site.css. */
+    :root{
+      --bg:#0e1116;--panel:#151b23;--line:#232d39;--line2:#2e3947;
+      --ink:#e9edf3;--mut:#8b95a5;--dim:#7a8392;
+      --acc:#5FAE5A;--acc-hi:#8ED18A;--acc-soft:rgba(95,174,90,.12);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{width:1200px;height:630px;overflow:hidden;background:var(--bg)}
+    body{
+      position:relative;color:var(--ink);
+      font-family:'IBM Plex Sans',system-ui,sans-serif;
+      background:
+        radial-gradient(900px 520px at 88% 12%, rgba(95,174,90,.10), transparent 60%),
+        radial-gradient(700px 480px at 0% 100%, rgba(76,201,240,.05), transparent 60%),
+        var(--bg);
+    }
+    /* A faint grid, the same hairline weight the site's panels use. */
+    body::before{
+      content:"";position:absolute;inset:0;pointer-events:none;
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size:60px 60px;opacity:.28;
+      -webkit-mask-image:linear-gradient(90deg,#000 0%,transparent 70%);
+              mask-image:linear-gradient(90deg,#000 0%,transparent 70%);
+    }
+    .bar{position:absolute;left:0;top:0;bottom:0;width:10px;background:var(--acc)}
+    .copy{position:absolute;left:84px;top:78px;width:640px}
+    .eyebrow{
+      font:500 20px/1 'IBM Plex Mono',monospace;letter-spacing:.14em;
+      text-transform:uppercase;color:var(--acc-hi);
+    }
+    h1{
+      margin-top:26px;font:800 68px/1.02 Archivo,sans-serif;letter-spacing:-.02em;
+      text-wrap:balance;
+      color:var(--ink);
+    }
+    h1 .dot{color:var(--acc)}
+    .sub{margin-top:26px;font:400 27px/1.42 'IBM Plex Sans',sans-serif;color:#c7ced9;text-wrap:pretty}
+    .foot{
+      position:absolute;left:84px;right:84px;bottom:58px;
+      display:flex;justify-content:space-between;align-items:baseline;
+      padding-top:24px;border-top:1px solid var(--line2);
+    }
+    .name{font:700 26px/1 Archivo,sans-serif;color:var(--ink)}
+    .name .dot{color:var(--acc)}
+    .url{font:500 19px/1 'IBM Plex Mono',monospace;color:var(--mut);letter-spacing:.02em}
+    .art{position:absolute;right:70px;top:70px;width:340px;height:380px}
+  </style>
+</head>
+<body>
+  <div class="bar" aria-hidden="true"></div>
+  <div class="copy">
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="title"></h1>
+    <p class="sub" id="sub"></p>
+  </div>
+  <svg class="art" id="art" viewBox="0 0 340 380" aria-hidden="true"></svg>
+  <div class="foot">
+    <span class="name">Pierson Norris<span class="dot">.</span></span>
+    <span class="url" id="url"></span>
+  </div>
+
+  <script>
+    /* One entry per public page. `title` is the page's own <h1>, `sub` its
+       og:description; only line breaks were chosen here. */
+    var CARDS = {
+      home: {
+        eyebrow: 'Finance · Founder · AI',
+        title: 'Pierson Norris<span class="dot">.</span>',
+        sub: 'Founder, operator, and builder — business on the ground, AI in the workflow.',
+        path: '',
+        art: 'star'
+      },
+      jar: {
+        eyebrow: 'Firefly Jar',
+        title: 'My notes, as fireflies.',
+        sub: 'My notes as fireflies in a jar. Lift the lid and let them out.',
+        path: 'jar/',
+        art: 'jar'
+      },
+      atlas: {
+        eyebrow: 'Atlas',
+        title: 'What I’ve learned, and where.',
+        sub: 'What I’ve learned, where I learned it, and how the lessons link up — charted as a night sky over the island.',
+        path: 'atlas/',
+        art: 'sky'
+      },
+      athletics: {
+        eyebrow: 'Athletics · 2023–2025',
+        title: 'Athletics are part of the life I’m building.',
+        /* No-break spaces keep each number with its label. */
+        sub: '333 logged workouts · 5,811 logged sets · 63,023 logged reps',
+        path: 'athletics/',
+        art: 'bars'
+      }
+    };
+
+    var NS = 'http://www.w3.org/2000/svg';
+    function el(name, attrs, parent) {
+      var n = document.createElementNS(NS, name);
+      for (var k in attrs) n.setAttribute(k, attrs[k]);
+      (parent || art).appendChild(n);
+      return n;
+    }
+
+    /* Seeded, so a re-render draws the same card byte for byte. */
+    function rng(seed) {
+      return function () {
+        seed = (seed * 1664525 + 1013904223) % 4294967296;
+        return seed / 4294967296;
+      };
+    }
+
+    var ART = {
+      /* The north star from the home hero. */
+      star: function () {
+        var cx = 190, cy = 170;
+        var g = el('radialGradient', { id: 'glow' }, el('defs', {}));
+        el('stop', { offset: '0', 'stop-color': '#8ED18A', 'stop-opacity': '.45' }, g);
+        el('stop', { offset: '1', 'stop-color': '#8ED18A', 'stop-opacity': '0' }, g);
+        el('circle', { cx: cx, cy: cy, r: 150, fill: 'url(#glow)' });
+        el('path', {
+          d: 'M' + cx + ' ' + (cy - 118) + ' L' + (cx + 16) + ' ' + (cy - 16) + ' L' + (cx + 118) + ' ' + cy +
+             ' L' + (cx + 16) + ' ' + (cy + 16) + ' L' + cx + ' ' + (cy + 118) + ' L' + (cx - 16) + ' ' + (cy + 16) +
+             ' L' + (cx - 118) + ' ' + cy + ' L' + (cx - 16) + ' ' + (cy - 16) + 'Z',
+          fill: '#e9edf3'
+        });
+        el('path', {
+          d: 'M' + cx + ' ' + (cy - 62) + ' L' + (cx + 9) + ' ' + (cy - 9) + ' L' + (cx + 62) + ' ' + cy +
+             ' L' + (cx + 9) + ' ' + (cy + 9) + ' L' + cx + ' ' + (cy + 62) + ' L' + (cx - 9) + ' ' + (cy + 9) +
+             ' L' + (cx - 62) + ' ' + cy + ' L' + (cx - 9) + ' ' + (cy - 9) + 'Z',
+          fill: '#5FAE5A', transform: 'rotate(45 ' + cx + ' ' + cy + ')'
+        });
+        var r = rng(7);
+        for (var i = 0; i < 26; i++) {
+          el('circle', { cx: 10 + r() * 320, cy: 10 + r() * 360, r: .8 + r() * 1.6, fill: '#e9edf3', opacity: .25 + r() * .5 });
+        }
+      },
+
+      /* A mason jar with fireflies inside, the same silhouette as home's. */
+      jar: function () {
+        var defs = el('defs', {});
+        var g = el('radialGradient', { id: 'ff' }, defs);
+        el('stop', { offset: '0', 'stop-color': '#f7e27a', 'stop-opacity': '1' }, g);
+        el('stop', { offset: '.35', 'stop-color': '#e8c547', 'stop-opacity': '.55' }, g);
+        el('stop', { offset: '1', 'stop-color': '#e8c547', 'stop-opacity': '0' }, g);
+        el('rect', { x: 110, y: 20, width: 130, height: 34, rx: 7, fill: '#a87f48' });
+        el('path', {
+          d: 'M122 54h106v16c26 14 40 38 40 66v186c0 18-14 32-32 32H114c-18 0-32-14-32-32V136c0-28 14-52 40-66z',
+          fill: '#0a1024', stroke: 'rgba(226,244,253,.55)', 'stroke-width': 3
+        });
+        /* Jittered grid, so the swarm fills the glass instead of bunching. */
+        var r = rng(11);
+        for (var i = 0; i < 16; i++) {
+          var col = i % 4, row = Math.floor(i / 4);
+          var x = 108 + col * 40 + r() * 26, y = 118 + row * 54 + r() * 38, s = 5 + r() * 9;
+          el('circle', { cx: x, cy: y, r: s * 2.4, fill: 'url(#ff)', opacity: .8 });
+          el('circle', { cx: x, cy: y, r: s * .35, fill: '#fff7c9' });
+        }
+      },
+
+      /* A constellation: stars joined by the links between lessons. */
+      sky: function () {
+        var pts = [[40,70],[118,42],[196,96],[286,60],[250,170],[156,188],[74,224],[196,284],[300,300],[110,330]];
+        var links = [[0,1],[1,2],[2,3],[2,4],[4,5],[5,6],[5,7],[7,8],[4,8],[6,9],[7,9],[1,5]];
+        links.forEach(function (l) {
+          el('line', { x1: pts[l[0]][0], y1: pts[l[0]][1], x2: pts[l[1]][0], y2: pts[l[1]][1],
+            stroke: '#8ED18A', 'stroke-opacity': .38, 'stroke-width': 1.6 });
+        });
+        var deg = pts.map(function (_, i) {
+          return links.filter(function (l) { return l[0] === i || l[1] === i; }).length;
+        });
+        pts.forEach(function (p, i) {
+          el('circle', { cx: p[0], cy: p[1], r: 7 + deg[i] * 3.2, fill: '#8ED18A', opacity: .13 });
+          el('circle', { cx: p[0], cy: p[1], r: 2.8 + deg[i] * 1.1, fill: '#e9edf3' });
+        });
+      },
+
+      /* Logged workouts per year — the page's own table: 16, 143, 174. */
+      bars: function () {
+        var data = [['2023', 16], ['2024', 143], ['2025', 174]];
+        var max = 174, base = 330, top = 60, w = 74, gap = 34, x0 = 30;
+        el('line', { x1: 10, y1: base, x2: 330, y2: base, stroke: '#2e3947', 'stroke-width': 2 });
+        data.forEach(function (d, i) {
+          var h = Math.max(6, (d[1] / max) * (base - top));
+          var x = x0 + i * (w + gap);
+          el('rect', { x: x, y: base - h, width: w, height: h, rx: 6,
+            fill: i === data.length - 1 ? '#5FAE5A' : '#3a5a3f' });
+          var v = el('text', { x: x + w / 2, y: base - h - 14, 'text-anchor': 'middle',
+            fill: '#e9edf3', 'font-family': 'Archivo', 'font-weight': 700, 'font-size': 30 });
+          v.textContent = d[1];
+          var t = el('text', { x: x + w / 2, y: base + 34, 'text-anchor': 'middle',
+            fill: '#8b95a5', 'font-family': 'IBM Plex Mono', 'font-size': 20 });
+          t.textContent = d[0];
+        });
+      }
+    };
+
+    var art = document.getElementById('art');
+    var key = new URLSearchParams(location.search).get('page') || 'home';
+    var card = CARDS[key];
+    if (!card) {
+      document.body.textContent = 'Unknown card: ' + key;
+    } else {
+      document.getElementById('eyebrow').textContent = card.eyebrow;
+      document.getElementById('title').innerHTML = card.title;
+      document.getElementById('sub').textContent = card.sub;
+      document.getElementById('url').textContent = 'piersonnorris.github.io/' + card.path;
+      ART[card.art]();
+      /* render.js waits for this before it captures. */
+      document.fonts.ready.then(function () { document.body.dataset.ready = '1'; });
+    }
+  </script>
+</body>
+</html>

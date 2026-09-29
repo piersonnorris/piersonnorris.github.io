@@ -121,3 +121,10 @@ Recommendation is *above it* — recruiters scan, and the timeline is the scanna
 2. **Is the home-page strip in scope for R18's pass**, or a follow-up?
 3. **Lane labels** — the six above are drafted from §3. They are claims about your own career, so they need
    your words, not mine, before they ship.
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

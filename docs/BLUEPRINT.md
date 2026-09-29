@@ -175,3 +175,10 @@ The portfolio dashboard is no longer part of this site. It lived at `/tools/trac
 3. One milestone at a time; commit/push walkthrough after each.
 4. No secrets in chat, repo, or client code — ever.
 5. No new dependencies, frameworks, or build steps without Pierson's explicit yes.
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

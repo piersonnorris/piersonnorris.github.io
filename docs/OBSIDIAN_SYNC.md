@@ -109,3 +109,10 @@ Same as the portfolio calendar plan (now in the `stock-trackers` repo) says abou
 The site is static, served from GitHub Pages. It has no server, no OAuth, and no way to read a folder on disk — not from the browser, not from CI. `obsidian-sync.js` runs on the machine that has the vault, outside the site's own code. Refreshing means running it again and re-importing (or rebuilding). GitHub Actions cannot do this pull: the vault lives on Pierce's disk, not behind a portable credential.
 
 Note text never enters the repo. The bundle path is gitignored, and Route B's copy exists only inside the AES-256-GCM payload.
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

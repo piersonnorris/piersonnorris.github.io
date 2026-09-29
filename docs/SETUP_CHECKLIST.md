@@ -30,3 +30,10 @@ Mirrors the Build HQ page. Check items off here (or there) and tell Claude/ChatG
 - [ ] Headshot for About (fresh, or Claude screens the May 2026 Drive photo set)
 - [ ] Install the monthly-tab Apps Script on the sheet (written; in the private spec)
 - [ ] Refresh the resume PDF → `/assets/resume/pierson-norris-resume.pdf` (Claude drafts it from CONTENT.md once timeline gaps close)
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

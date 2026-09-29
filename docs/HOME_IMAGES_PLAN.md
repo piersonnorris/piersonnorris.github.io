@@ -48,3 +48,10 @@ A small image on the True North and Screencastify tiles, like Brittany Chiang's 
 - [ ] One headshot
 - [ ] 3–4 event photos
 - [ ] A one-line caption + date for each (or confirm the feed wording above)
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

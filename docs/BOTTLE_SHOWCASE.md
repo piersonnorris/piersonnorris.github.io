@@ -372,3 +372,10 @@ switched off.
 - **How much of today's home page survives** (phase E). Needs Pierce's call on what must stay plainly readable
   outside the metaphor — at minimum the contact route, probably the Currently card.
 - **Does the R19 strip land in this pass** (phase F) or immediately after?
+
+---
+
+Vault category: [[Website Project Index]]  
+Tags: #category/website
+
+

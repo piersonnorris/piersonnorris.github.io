@@ -311,10 +311,14 @@
     }
 
     jar.addEventListener('click', function (e) {
+      /* Not gated on the photo having loaded: the scene's size comes from
+         the <img> width/height attributes, so the geometry is right either
+         way, and a fast click on a slow connection should still get its
+         evening rather than silently skipping it. */
       var what = decide(e, {
         running: running,
         reducedMotion: reducedMotion(),
-        ready: !!(img && img.complete)
+        ready: true
       });
       if (what === 'native') return;
       e.preventDefault();

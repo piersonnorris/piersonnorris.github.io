@@ -120,7 +120,7 @@ test('the click decision keeps the link a link', () => {
   }
   assert.equal(N.decide({ button: 1 }, env), 'native', 'middle click opens normally');
   assert.equal(N.decide(plain, { ...env, reducedMotion: true }), 'native', 'reduced motion goes straight there');
-  assert.equal(N.decide(plain, { ...env, ready: false }), 'native', 'photo not loaded: just go');
+  assert.equal(N.decide(plain, { ...env, ready: false }), 'native', 'scene not mounted: just go');
   assert.equal(N.decide({ button: 0, defaultPrevented: true }, env), 'native');
   assert.equal(N.decide(plain, { ...env, running: true }), 'ignore', 'a second click does not stack a second evening');
 });

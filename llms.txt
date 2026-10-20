@@ -2,13 +2,14 @@
 
 > Personal site of Pierson Norris (goes by Pierce): Finance student at Elon University (class of 2027), founder of True North Services LLC (Chicago North Shore exterior services), AI intern at Screencastify (Jun–Aug 2026), president of Elon's AI & ET Club. This file is the machine-readable summary; the site's HTML is fully semantic and crawlable.
 
-This site is actively maintained (scaffold live 2026-08-23). Content below is kept in sync with the site at each milestone.
+This site is actively maintained; last content update 2026-10-20. Content below is kept in sync with the site at each milestone.
 
 ## Who he is
 
 - Founder & CEO, True North Services LLC (2026; grew from Oasis Exterior Cleaning, founded May 2023): 50+ clients and five-figure revenue in the first summer, +68% customer growth. Incorporated the company in spring 2026 on a manager-contractor model with a written operations and risk framework, documented pricing floors ($100 minimum job, 30%+ manager margin target, signed client agreement above $500), a mandatory three-form workflow feeding one master sheet, and a head-manager training program he wrote himself.
 - AI Intern, Screencastify (Jun 9 – Aug 7, 2026): mapped 7 workflows across 6 departments in 48 hours via one written diagnostic prompt; shipped 3 live automation fixes, including one cutting a 4–8 hr/week finance task to under 15 minutes. Also built Castify OS — three internal AI modules live in nine weeks (a proposal generator that took proposals from 30 minutes to 5, an approval-gated outbound email agent, and a traffic dashboard that breaks out AI-assistant referrals as their own channel).
-- Elon University: Finance major, minors in Entrepreneurship and Mandarin Chinese (conversational). Team lead, Elon AI Hub (since it started, Feb 2025). President, AI & ET Club (Aug 2025 – present).
+- Elon University: Finance major, minors in Entrepreneurship and Mandarin Chinese (conversational). AI Hub Leader | Outreach Team Lead, Elon AI Hub (since it started, Feb 2025). President, AI & ET Club (Aug 2025 – present).
+- Fall 2026: as club president, hosted the Crypto & Digital Assets Night (Sep 29) and Applied AI: From Campus to Workplace with Duke FinTech (Oct 13); member of Transfer Ready, a student startup team formed at Techstars Startup Weekend AI, Winston-Salem (Oct 2-4), testing a low-cost audit for business owners.
 - Self-directed investor since 2020; builds his own tools, including a private portfolio tracker.
 
 ## Pages
@@ -17,7 +18,7 @@ Live now:
 - /: profile and elevator pitch, links, and events grouped by organization
 - /jar/: Firefly Jar — Pierson Norris's Obsidian notes as fireflies in a mason jar. One firefly per note; bigger and brighter means more linked. Lift the lid, then press a firefly to read it.
 - /atlas/: knowledge atlas read as a night sky — what Pierson Norris has learned running True North Services LLC, interning at Screencastify, investing since 2020, and building his own tools. One star per note, one jar per domain, and a telescope that draws the links between them. Curated public data (assets/js/atlas-data.js) traced to docs/CONTENT.md; it is not the private vault and carries no client names, portfolio values or former-employer figures.
-- /athletics/: a public snapshot of how athletics and training fit into Pierson Norris's life, with aggregate workout data from 2023–2025 (Hevy export; yearly totals only, no individual workouts).
+- /athletics/: a public snapshot of how athletics and training fit into Pierson Norris's life, with aggregate workout data from 2023–2026 (Hevy export plus a 2026 year-to-date sync and Strava cardio total; yearly totals only, no individual workouts).
 
 Planned, not yet live (pending final content decisions — see docs/ROADMAP.md R4/R7):
 - /about/: full story

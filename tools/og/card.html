@@ -103,10 +103,10 @@
         art: 'sky'
       },
       athletics: {
-        eyebrow: 'Athletics · 2023–2025',
+        eyebrow: 'Athletics · 2023–2026',
         title: 'Athletics are part of the life I’m building.',
         /* No-break spaces keep each number with its label. */
-        sub: '333 logged workouts · 5,811 logged sets · 63,023 logged reps',
+        sub: '101 logged workouts so far in 2026 · 361 miles of cardio on Strava',
         path: 'athletics/',
         art: 'bars'
       }
@@ -195,8 +195,8 @@
 
       /* Logged workouts per year — the page's own table: 16, 143, 174. */
       bars: function () {
-        var data = [['2023', 16], ['2024', 143], ['2025', 174]];
-        var max = 174, base = 330, top = 60, w = 74, gap = 34, x0 = 30;
+        var data = [['2023', 16], ['2024', 143], ['2025', 174], ['2026', 101]];
+        var max = 174, base = 330, top = 60, w = 58, gap = 26, x0 = 12;
         el('line', { x1: 10, y1: base, x2: 330, y2: base, stroke: '#2e3947', 'stroke-width': 2 });
         data.forEach(function (d, i) {
           var h = Math.max(6, (d[1] / max) * (base - top));

@@ -51,4 +51,8 @@
 # Reproducible crop of the home hero photo (the 22 MB original is not committed).
 !/tools/img/
 !/tools/img/crop-hero.ps1
+# Résumé source + build; the PDF it writes lands in assets/resume/, already allowlisted.
+!/tools/resume/
+!/tools/resume/resume.html
+!/tools/resume/build.ps1
 /docs/STOCK_UPDATE_PROMPT.md

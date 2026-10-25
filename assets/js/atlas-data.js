@@ -308,7 +308,7 @@
     /* ---------------- school & language ---------------- */
     {
       id: 'dual-major',
-      title: 'Two majors, four years, one company running',
+      title: 'One major, four years, one company running',
       domain: 'study', source: 'elon', learned: '2023-08',
       tags: ['education', 'finance'],
       evidence: ['class of 2027'],
@@ -322,12 +322,12 @@
       title: 'Mandarin, past the textbook',
       domain: 'study', source: 'elon', learned: '2023-08',
       tags: ['language', 'education'],
-      evidence: ['near-fluent'],
-      body: 'Mandarin Chinese to near-fluency, carried as a minor alongside Entrepreneurship. Listed on the skills grid next to ' +
+      evidence: ['conversational'],
+      body: 'Conversational Mandarin Chinese, carried as a minor alongside Entrepreneurship. Listed on the skills grid next to ' +
         'English, and the one item on this atlas that took the longest and automates the least. ' +
-        'Part of [[Two majors, four years, one company running]].'
+        'Part of [[One major, four years, one company running]].'
     }
   ];
 
-  global.PNAtlasData = { domains: DOMAINS, sources: SOURCES, notes: NOTES, updated: '2026-09-07' };
+  global.PNAtlasData = { domains: DOMAINS, sources: SOURCES, notes: NOTES, updated: '2026-10-25' };
 })(typeof window !== 'undefined' ? window : globalThis);

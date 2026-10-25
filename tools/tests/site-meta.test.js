@@ -173,7 +173,8 @@ check('every sitemap page is linked from home', () => {
 
 /* ------------------------------------------------------------- llms.txt */
 
-const llms = read('llms.txt');
+/* A Windows checkout has CRLF endings; the block regex below splits on \n\n. */
+const llms = read('llms.txt').replace(/\r\n/g, '\n');
 
 check('llms.txt names every sitemap page', () => {
   for (const p of sitemapPaths) {

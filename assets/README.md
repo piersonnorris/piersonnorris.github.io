@@ -26,6 +26,9 @@ Tests live in `tools/tests/*.test.js` (plain Node, no test framework): `atlas-li
 |---|---|---|
 | `img/home/lake-sunset-800.jpg`, `-480.jpg` | [Chicago Lakefront Sunset – Lake Michigan Harbor](https://commons.wikimedia.org/wiki/File:Chicago_Lakefront_Sunset_-_Lake_Michigan_Harbor.jpg), **Tony Webster**, via Wikimedia Commons | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) — **attribution required**, credited under the photo on the home page. Cropped to a 2:3 portrait (full height, from 55.5% across, which keeps the speedboat and its passengers out of frame) by `tools/img/crop-hero.ps1`. The 22 MB original is not committed. |
 
+| `img/home/headshot.jpg` | Pierson's own LinkedIn profile photo (595×595), chosen by him 2026-10-25 | His own photo. Re-encoded, so no camera metadata. |
+| `img/home/applied-ai-1.jpg` … `-5.jpg` | The five photos from Pierson's own Oct 20, 2026 LinkedIn post on the Oct 13 Applied AI event, chosen by him 2026-10-25 | His own post. Cropped to 3:4 at 480×640 and re-encoded (no EXIF/GPS). |
+
 CC BY is satisfied only while the credit stays visible next to the photo: if the photo moves, the credit moves with it.
 
 ---

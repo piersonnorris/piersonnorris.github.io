@@ -7,7 +7,7 @@ Mirrors the Build HQ page. Check items off here (or there) and tell Claude/ChatG
 - [ ] Confirm (or pick) the GitHub username — it becomes `username.github.io`; `piersonnorris` is ideal if free
 - [ ] Install GitHub Desktop (desktop.github.com) + VS Code (code.visualstudio.com)
 - [ ] Pick the public contact email (norrispierce506@gmail.com or a cleaner alias)
-- [ ] LinkedIn: claim a custom URL (currently `/pierson-norris-634954246`) + add Screencastify and True North entries
+- [ ] LinkedIn: ~~claim a custom URL~~ (done: `/in/piersonnorris`, seen 2026-10-25) + add Screencastify and True North entries
 - [ ] ~~Choose the tracker password~~ — no longer needed: the tracker moved to its own private repo on 2026-09-15 and runs without one
 - [ ] React to the timeline (accent A/B/C, confirm chips, 2024/2025 gaps, the 2027 headline)
 

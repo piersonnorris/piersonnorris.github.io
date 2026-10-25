@@ -45,8 +45,8 @@ A small image on the True North and Screencastify tiles, like Brittany Chiang's 
 
 ## What Pierce provides
 
-- [ ] One headshot
-- [ ] 3–4 event photos
+- [x] One headshot — LinkedIn profile photo, 2026-10-25 (round, beside the name; JPG, not WebP)
+- [x] Event photos — five from the Oct 20 Applied AI LinkedIn post, 2026-10-25 (a strip under that event)
 - [ ] A one-line caption + date for each (or confirm the feed wording above)
 
 ---

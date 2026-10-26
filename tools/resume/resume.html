@@ -2,6 +2,7 @@
 <!-- Source for assets/resume/pierson-norris-resume.pdf.
      Every line comes from docs/CONTENT.md; anything marked [OPEN] there stays off.
      No phone number, no school email — contact is the public email, LinkedIn and the site.
+     The headshot is the same file the home page uses.
      Rebuild (one page, US Letter):
        powershell -ExecutionPolicy Bypass -File tools\resume\build.ps1 -->
 <html lang="en">
@@ -9,54 +10,64 @@
 <meta charset="utf-8">
 <title>Pierson Norris — Résumé</title>
 <style>
-  @page{size:Letter;margin:0.45in 0.55in}
+  @page{size:Letter;margin:0.4in 0.5in}
   *{box-sizing:border-box}
-  body{margin:0;font:9.6pt/1.28 "Segoe UI",Arial,sans-serif;color:#1a1f27}
-  h1{font-size:21pt;margin:0;letter-spacing:-.01em}
-  .contact{margin:3px 0 0;color:#3d4654;font-size:9.5pt}
+  body{margin:0;font:9.2pt/1.25 "Segoe UI",Arial,sans-serif;color:#1a1f27}
+  header{display:flex;align-items:center;gap:14px}
+  header img{width:0.95in;height:0.95in;border-radius:50%;object-fit:cover;border:1px solid #b9c3cf}
+  h1{font-size:20pt;margin:0;letter-spacing:-.01em}
+  .tag{margin:1px 0 0;color:#3d4654;font-size:9.4pt}
+  .contact{margin:3px 0 0;color:#3d4654;font-size:9pt}
   .contact a{color:#2b5d27;text-decoration:none}
-  h2{font-size:9.8pt;letter-spacing:.12em;text-transform:uppercase;color:#2b5d27;margin:10px 0 4px;padding-bottom:2px;border-bottom:1px solid #b9c3cf}
-  .job{margin:0 0 5px;break-inside:avoid}
+  h2{font-size:9.4pt;letter-spacing:.12em;text-transform:uppercase;color:#2b5d27;margin:8px 0 3px;padding-bottom:2px;border-bottom:1px solid #b9c3cf}
+  .job{margin:0 0 4px;break-inside:avoid}
   .row{display:flex;justify-content:space-between;gap:12px}
   .row b{font-weight:650}
   .when{white-space:nowrap;color:#3d4654}
   .sub{color:#3d4654;font-style:italic}
-  ul{margin:2px 0 0;padding-left:15px}
-  li{margin:1px 0}
-  .skills p{margin:1px 0}
+  ul{margin:1px 0 0;padding-left:14px}
+  li{margin:0}
+  .skills p{margin:0}
 </style>
 </head>
 <body>
-  <h1>Pierson Norris</h1>
-  <p class="contact">
-    <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a> ·
-    <a href="https://www.linkedin.com/in/piersonnorris">linkedin.com/in/piersonnorris</a> ·
-    <a href="https://piersonnorris.github.io">piersonnorris.github.io</a>
-  </p>
+  <header>
+    <img src="../../assets/img/home/headshot.jpg" alt="Pierson Norris">
+    <div>
+      <h1>Pierson Norris</h1>
+      <p class="tag">Founder, operator, and builder — business on the ground, AI in the workflow.</p>
+      <p class="contact">
+        <a href="mailto:norrispierce506@gmail.com">norrispierce506@gmail.com</a> ·
+        <a href="https://www.linkedin.com/in/piersonnorris">linkedin.com/in/piersonnorris</a> ·
+        <a href="https://piersonnorris.github.io">piersonnorris.github.io</a>
+      </p>
+    </div>
+  </header>
 
   <h2>Education</h2>
   <div class="job">
     <div class="row"><span><b>Elon University</b>, Martha and Spencer Love School of Business — Elon, NC</span><span class="when">Class of 2027</span></div>
-    <div class="sub">Finance major</div>
+    <div class="sub">Finance major; minors in Entrepreneurship and Mandarin Chinese</div>
+  </div>
+  <div class="job">
+    <div class="row"><span><b>New Trier High School</b> — Winnetka, IL</span><span class="when">Class of 2023</span></div>
   </div>
 
   <h2>Experience</h2>
   <div class="job">
     <div class="row"><span><b>CEO</b>, True North Services LLC — Chicago North Shore</span><span class="when">Apr 2026 – Present</span></div>
     <ul>
-      <li>Incorporated the company (Apr – May 2026) on a manager-contractor model with a written operations &amp; risk framework and priority roadmap; team of four-plus, with an operations lead running weekly ops calls.</li>
-      <li>Put the company on a documented operating system: three mandatory forms (quote scheduling, quote result &amp; pricing, end-of-job report) feeding one master sheet; pricing floors of a $100 minimum job and a 30%+ manager margin target, and a signed client agreement on jobs over $500.</li>
-      <li>Wrote the head-manager crew training program (power washing, paver-sand reapplication, window washing) and ran the first company all-hands (Jul 17, 2026): quote process, marketing standard, referral incentive.</li>
-      <li>Hand-built the company site, lead-capture form, a post-quote form that makes close rate a visible number, and a 90+ photo marketing library.</li>
+      <li>Incorporated the company (Apr – May 2026) on a manager-contractor model with a written operations &amp; risk framework; team of four-plus, with an operations lead running weekly ops calls.</li>
+      <li>Put it on a documented operating system: three mandatory forms feeding one master sheet, a $100 minimum job, a 30%+ manager margin target, and a signed client agreement on jobs over $500.</li>
+      <li>Wrote the head-manager crew training program, ran the first company all-hands (Jul 17, 2026), and hand-built the company site, lead capture and a 90+ photo marketing library.</li>
     </ul>
   </div>
   <div class="job">
     <div class="row"><span><b>AI Intern</b>, Screencastify</span><span class="when">Jun – Aug 2026</span></div>
     <ul>
-      <li>Mapped 7 workflows across 6 departments in 48 hours with one written diagnostic prompt and one added meeting; all seven shared one failure — a person acting as the API between systems that don’t talk.</li>
-      <li>Shipped three fixes, including a weekly finance AR-collections task cut from 4–8 hours to under 15 minutes.</li>
-      <li>Built Castify OS, three internal AI modules live in nine weeks: a Proposal Generator (30 min → 5 min per proposal), an approval-gated outbound email agent, and a traffic dashboard that breaks out AI-assistant referrals as their own channel.</li>
-      <li>Audited 76 posts and reframed marketing as under-concentrated, not under-worked, proposing one anchor asset repurposed into eight placements.</li>
+      <li>Mapped 7 workflows across 6 departments in 48 hours with one written diagnostic prompt and one added meeting; shipped three fixes, including a weekly finance AR-collections task cut from 4–8 hours to under 15 minutes.</li>
+      <li>Built Castify OS, three internal AI modules live in nine weeks: a Proposal Generator (30 min → 5 min per proposal), an approval-gated outbound email agent, and AI-referral traffic analytics.</li>
+      <li>Audited 76 posts and reframed marketing as under-concentrated, not under-worked.</li>
     </ul>
   </div>
   <div class="job">
@@ -66,9 +77,21 @@
     </ul>
   </div>
   <div class="job">
+    <div class="row"><span><b>Chief Marketing Officer</b>, Student Maintenance — Glenview, IL</span><span class="when">Dec 2024 – Jul 2025</span></div>
+    <ul>
+      <li>Led a crew of high-school and college students on operations, scheduling and client interactions: $24,000 in revenue and 270+ client leads landed and processed.</li>
+    </ul>
+  </div>
+  <div class="job">
     <div class="row"><span><b>Founder</b>, Oasis Exterior Cleaning — Chicago North Shore</span><span class="when">Founded May 2023</span></div>
     <ul>
-      <li>Power-washing and window-washing business: 50+ clients and five-figure revenue in the first summer, +68% customer growth from hand-built local marketing (flyers, Nextdoor, Instagram, Facebook), managing a crew of high-school and college students.</li>
+      <li>Power-washing and window-washing business: 50+ clients and five-figure revenue in the first summer, +68% customer growth from hand-built local marketing, managing a student crew.</li>
+    </ul>
+  </div>
+  <div class="job">
+    <div class="row"><span><b>Senior Project</b>, Gemini Builds It — Elgin, IL</span><span class="when">Mar – May 2023</span></div>
+    <ul>
+      <li>Shadowed CEO Courtney Wright; helped with marketing for the M&amp;M Project and worked with employees across departments.</li>
     </ul>
   </div>
 
@@ -76,23 +99,34 @@
   <div class="job">
     <div class="row"><span><b>President</b>, Elon AI &amp; Emerging Tech Club</span><span class="when">Aug 2025 – Present</span></div>
     <ul>
-      <li>Member since 2024. Hosted Applied AI: From Campus to Workplace (Oct 13, 2026) with the Elon AI Hub, partner student organizations and a Duke FinTech workshop, and the Crypto &amp; Digital Assets Night (Sep 29, 2026).</li>
+      <li>Member since 2024. Hosted Applied AI: From Campus to Workplace (Oct 13, 2026) with the Elon AI Hub, partner student organizations and Duke FinTech, and the Crypto &amp; Digital Assets Night (Sep 29, 2026).</li>
     </ul>
   </div>
   <div class="job">
-    <div class="row"><span><b>Transfer Ready</b>, Techstars Startup Weekend AI — Winston-Salem, NC</span><span class="when">Oct 2026 – Present</span></div>
+    <div class="row"><span><b>Vice President of Student Development</b>, Pi Sigma Epsilon</span><span class="when">2026 – Present</span></div>
     <ul>
-      <li><b>2nd place and the Social Impact Award</b> (Oct 2–4, 2026) for a better way to find, value and hand over a business’s intangible assets at sale; the team now tests a low-cost audit with real owners before building software.</li>
+      <li>Executive board of Elon’s professional sales and marketing fraternity; ran fall 2026 rush interviews (34 candidates).</li>
+    </ul>
+  </div>
+  <div class="job">
+    <div class="row"><span><b>Sales &amp; consulting lead</b>, Transfer Ready — Techstars Startup Weekend AI, Winston-Salem</span><span class="when">Oct 2026 – Present</span></div>
+    <ul>
+      <li><b>2nd place and the Social Impact Award</b> (Oct 2–4, 2026); built the customer process map and co-presented the final pitch. The team now tests a low-cost audit with real owners before building software.</li>
+    </ul>
+  </div>
+  <div class="job">
+    <div class="row"><span><b>Leader</b>, Kitten Foster Program (volunteer) — Winnetka, IL</span><span class="when">Jan 2019 – Present</span></div>
+    <ul>
+      <li>Fostered and helped 200+ kittens find permanent homes and shelters.</li>
     </ul>
   </div>
 
-  <h2>Skills</h2>
+  <h2>Skills &amp; Certifications</h2>
   <div class="skills">
-    <p><b>Operations &amp; leadership</b> — crew hiring and training programs, documented ops frameworks, weekly ops cadence, manager-contractor structuring, client management.</p>
-    <p><b>Sales &amp; marketing</b> — door-to-door and referral sales, in-person quoting, Nextdoor/Meta local campaigns, lead-capture funnels.</p>
+    <p><b>Certification</b> — Microsoft Office Specialist: Excel Associate (Jan 2026).</p>
+    <p><b>Operations &amp; sales</b> — crew hiring and training, documented ops frameworks, manager-contractor structuring, door-to-door and referral sales, in-person quoting, local campaigns.</p>
     <p><b>Finance &amp; markets</b> — unit economics, pricing floors and margin structures; self-directed investor since 2020.</p>
-    <p><b>AI &amp; automation</b> — workflow mapping and diagnosis, prompt-built internal tools, agent modules with human approval gates, Google Sheets / Apps Script automation.</p>
-    <p><b>Web</b> — hand-built HTML/CSS sites, form-to-sheet plumbing, static deploys.</p>
+    <p><b>AI &amp; web</b> — workflow mapping, prompt-built internal tools, agent modules with human approval gates, Google Sheets / Apps Script automation, hand-built HTML/CSS sites.</p>
     <p><b>Languages</b> — English; Mandarin Chinese (conversational).</p>
   </div>
 </body>

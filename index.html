@@ -70,6 +70,11 @@
     .toggle button[aria-pressed="true"]{background:var(--panel2);color:var(--ink)}
     .bio p{margin:0 0 14px;color:#c7ced9;max-width:62ch}
     .bio p b{color:var(--ink);font-weight:600}
+    .now{margin:26px 0 0;padding:16px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .now .label{margin-bottom:9px}
+    .now ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+    .now li{display:grid;grid-template-columns:72px 1fr;gap:12px;font-size:13.5px;color:var(--mut)}
+    .now b{font:500 10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--acc);padding-top:2px}
 
     .photo{position:sticky;top:24px;margin:0}
 
@@ -219,6 +224,14 @@
           <p>The other thread is AI. In summer 2026 I was the AI intern at <b>Screencastify</b>, where I learned my favorite working method: don’t start with the tool, start with someone’s actual Tuesday. One written prompt got seven workflows mapped across six departments in 48 hours, and every single one had the same failure — a person acting as the API between systems that don’t talk. We shipped three fixes; one cut a 4–8 hour weekly finance task to under 15 minutes.</p>
           <p>Now I run True North, trade and track my own portfolio (since 2020), serve as president of Elon’s AI &amp; ET Club, am an AI Hub Leader and Outreach Team Lead at the Elon AI Hub (since it started in February 2025), work with a student team on Transfer Ready, and build my own tools.</p>
         </div>
+        <section class="now" aria-labelledby="now-h">
+          <p class="label" id="now-h">Right now</p>
+          <ul>
+            <li><b>Operating</b><span>Building the systems that let True North run as a trained, documented team.</span></li>
+            <li><b>Leading</b><span>Growing applied-AI programming through Elon’s AI &amp; ET Club and AI Hub outreach.</span></li>
+            <li><b>Building</b><span>Working with the Transfer Ready student-startup team and making small tools of my own.</span></li>
+          </ul>
+        </section>
       </div>
 
       <figure class="photo">
@@ -390,6 +403,7 @@
   </main>
 
   <script src="/assets/js/nav.js"></script>
+  <script src="/assets/js/changelog.js"></script>
   <script src="/assets/js/atlas-flight.js"></script>
   <script src="/assets/js/nightfall.js"></script>
   <script>

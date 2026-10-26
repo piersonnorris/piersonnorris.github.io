@@ -5,6 +5,7 @@
   'use strict';
 
   var entries = [
+    { date: 'Oct 25', title: 'Highlights became a filmstrip', detail: 'Six selected moments now sit in a simple swipeable row—no autoplay, just images, titles, and direct links.' },
     { date: 'Oct 25', title: 'The story has more texture', detail: 'New event photography, a rebuilt résumé, and a clearer view of the work behind the roles.' },
     { date: 'Oct 25', title: 'Athletics joined the site', detail: 'A focused page for training, competition, and the part movement plays in the larger story.' },
     { date: 'Sep 29', title: 'Atlas and Firefly Jar refined', detail: 'Two quieter ways to explore notes, ideas, and the connections between them.' }

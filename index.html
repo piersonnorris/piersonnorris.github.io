@@ -137,9 +137,10 @@
     .events .when,.events time{font-family:var(--mono);font-size:12px;color:var(--dim);white-space:nowrap}
     .events .sub{margin:10px 0 0 2px;padding-left:14px;border-left:2px solid var(--line2)}
     .events .sub li{padding:6px 0;font-size:14.5px}
-    /* event photos: one row of 3:4 shots under an event, lazy-loaded */
-    .shots{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;list-style:none;margin:10px 0 4px;padding:0}
-    .shots img{display:block;width:100%;height:auto;border-radius:var(--r-md,8px);border:1px solid var(--line)}
+    /* event photos: a row of shots under an event, one fixed height so
+       portrait and landscape photos keep their own shape; lazy-loaded */
+    .shots{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:10px 0 4px;padding:0}
+    .shots img{display:block;height:170px;width:auto;max-width:100%;object-fit:cover;border-radius:var(--r-md,8px);border:1px solid var(--line)}
     .events .sub .shots-row{display:block}
     .events a{color:var(--ink);border-bottom:1px solid var(--line2);text-decoration:none}
     .events a:hover{color:var(--acc-hi);border-bottom-color:var(--acc)}
@@ -153,7 +154,7 @@
       .home{grid-template-columns:1fr;gap:28px;padding-top:36px}
       .photo{position:static;max-width:240px}
       .links{columns:1}
-      .shots{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .shots img{height:112px}
       .headshot{width:76px;height:76px}
     }
   </style>
@@ -271,6 +272,24 @@
       <ul class="events">
         <li class="org">
           <div class="head"><span class="what"><b>Elon AI Hub</b><small>AI Hub Leader | Outreach Team Lead</small></span><span class="when">Feb 2025 – Present</span></div>
+          <ul class="sub">
+            <li><span class="what">AI Summit at the Love School of Business<small>Higher education and responsible AI in the classroom; my team, A2, built an AI-assisted teaching concept for a core Elon course</small></span><time datetime="2026-05-06">May 2026</time></li>
+            <li class="shots-row">
+              <ul class="shots" aria-label="Photos from the AI Summit">
+                <li><img src="/assets/img/home/ai-summit-1.jpg" width="720" height="480" loading="lazy" alt="A team presents at a podium in a classroom while faculty listen from the front tables"></li>
+                <li><img src="/assets/img/home/ai-summit-2.jpg" width="720" height="480" loading="lazy" alt="A five-person panel seated on stage under a screen reading AI Summit"></li>
+                <li><img src="/assets/img/home/ai-summit-3.jpg" width="720" height="480" loading="lazy" alt="Two speakers in armchairs on stage in front of an AI Summit slide, an audience in the foreground"></li>
+              </ul>
+            </li>
+            <li><span class="what">AI for Public Good conference, UNC Chapel Hill<small>An Executive Dialogue with AI industry leaders, including perspectives from OpenAI and Anthropic</small></span><time datetime="2026-04-19">Apr 2026</time></li>
+            <li class="shots-row">
+              <ul class="shots" aria-label="Photos from the AI for Public Good conference">
+                <li><img src="/assets/img/home/ai-public-good-1.jpg" width="360" height="480" loading="lazy" alt="Two students in conference lanyards being interviewed on camera in a hallway"></li>
+                <li><img src="/assets/img/home/ai-public-good-2.jpg" width="640" height="480" loading="lazy" alt="A group of Elon students lined up in a conference atrium"></li>
+                <li><img src="/assets/img/home/ai-public-good-3.jpg" width="360" height="480" loading="lazy" alt="A stage with two speakers under a slide titled Executive Dialogue: Perspectives from AI Industry Leaders"></li>
+              </ul>
+            </li>
+          </ul>
         </li>
         <li class="org">
           <div class="head"><span class="what"><b>Elon AI &amp; Emerging Tech Club</b><small>President</small></span><span class="when">Aug 2025 – Present</span></div>
@@ -285,8 +304,21 @@
                 <li><img src="/assets/img/home/applied-ai-5.jpg" width="480" height="640" loading="lazy" alt="Students stop at a table where two presenters walk them through printed handouts and a laptop"></li>
               </ul>
             </li>
-            <li><span class="what">Crypto &amp; Digital Assets Night</span><time datetime="2026-09-29">Sep 29, 2026</time></li>
+            <li><span class="what">Crypto &amp; Digital Assets Night<small>Professor Thibaut Morillon on blockchain, DeFi, stablecoins and the infrastructure growing around digital assets</small></span><time datetime="2026-09-29">Sep 29, 2026</time></li>
+            <li class="shots-row">
+              <ul class="shots" aria-label="Photo from the Crypto &amp; Digital Assets Night">
+                <li><img src="/assets/img/home/crypto-night-1.jpg" width="360" height="480" loading="lazy" alt="Club members stand in a row with the guest speaker in front of a presentation screen"></li>
+              </ul>
+            </li>
             <li><span class="what">Fall kickoff</span><time datetime="2026-09-08">Sep 8, 2026</time></li>
+            <li><span class="what">DA@D Digital Assets at Duke, year two<small>Founders, investors and student builders on real-world assets, payments, identity, and the AI plus crypto stack</small></span><time datetime="2026-02-06">Feb 2026</time></li>
+            <li class="shots-row">
+              <ul class="shots" aria-label="Photos from Digital Assets at Duke">
+                <li><img src="/assets/img/home/dad-duke-1.jpg" width="653" height="480" loading="lazy" alt="A group of students under a blue devil-horn arch at Cameron Indoor Stadium"></li>
+                <li><img src="/assets/img/home/dad-duke-2.jpg" width="720" height="480" loading="lazy" alt="Students at a dinner table high-five the Duke Blue Devil mascot"></li>
+                <li><img src="/assets/img/home/dad-duke-3.jpg" width="640" height="480" loading="lazy" alt="Five students take a selfie at a round dinner table during the conference"></li>
+              </ul>
+            </li>
           </ul>
         </li>
         <li class="org">
@@ -301,6 +333,16 @@
           <ul class="sub">
             <li><span class="what">Wrote the PSE student guide for Applied AI<small>Visit each org table, then reflect on the guest talks</small></span><time datetime="2026-10-13">Oct 2026</time></li>
             <li><span class="what">Ran fall rush interviews<small>34 candidates</small></span><time datetime="2026-09-07">Sep 7–11, 2026</time></li>
+            <li><span class="what">PSE National Convention, Norfolk, VA<small>Brought back two sales frameworks, S.P.I.N. and L.E.A.R.; met teams from Oracle, Enterprise Mobility, Pella and Rocket</small></span><time datetime="2026-03-25">Mar 25–27, 2026</time></li>
+            <li class="shots-row">
+              <ul class="shots" aria-label="Photos from the PSE National Convention">
+                <li><img src="/assets/img/home/pse-nationals-1.jpg" width="294" height="480" loading="lazy" alt="Two students in suits at the PSE 2026 National Convention backdrop, Norfolk, VA"></li>
+                <li><img src="/assets/img/home/pse-nationals-2.jpg" width="360" height="480" loading="lazy" alt="Three people in suits in front of a purple and gold Pi Sigma Epsilon banner"></li>
+                <li><img src="/assets/img/home/pse-nationals-3.jpg" width="640" height="480" loading="lazy" alt="Elon students and a faculty adviser hold an Elon University Business banner at the Pella booth"></li>
+                <li><img src="/assets/img/home/pse-nationals-4.jpg" width="640" height="480" loading="lazy" alt="Elon students hold the Elon Business banner with a recruiter at the Rocket booth"></li>
+                <li><img src="/assets/img/home/pse-nationals-7.jpg" width="360" height="480" loading="lazy" alt="Elon students hold the Elon Business banner at the Enterprise Mobility booth"></li>
+              </ul>
+            </li>
           </ul>
         </li>
         <li class="org">
@@ -312,6 +354,9 @@
         </li>
         <li class="org">
           <div class="head"><span class="what"><b>Screencastify</b><small>AI intern</small></span><span class="when">Jun – Aug 2026</span></div>
+          <ul class="shots" aria-label="Photo from the Screencastify internship">
+            <li><img src="/assets/img/home/screencastify-1.jpg" width="640" height="480" loading="lazy" alt="The Screencastify team gathered around a kitchen counter in their office"></li>
+          </ul>
           <details class="more">
             <summary>Learn more</summary>
             <ul class="sub">
@@ -320,6 +365,18 @@
               <li><span class="what">Castify OS third module in beta<small>Nine weeks from idea to platform</small></span><time datetime="2026-07-31">Jul 31, 2026</time></li>
             </ul>
           </details>
+        </li>
+        <li class="org">
+          <div class="head"><span class="what"><b>SurveySentry</b><small>Team at Techstars Startup Weekend Des Moines</small></span><span class="when">Apr 2025</span></div>
+          <ul class="sub">
+            <li><span class="what"><b>People’s Choice Award</b><small>Pivoted from a social app to a platform that filters junk survey responses; validated 100+ responses over the weekend</small></span><time datetime="2025-04">Apr 2025</time></li>
+            <li class="shots-row">
+              <ul class="shots" aria-label="Photos from Techstars Startup Weekend Des Moines">
+                <li><img src="/assets/img/home/techstars-dsm-1.jpg" width="360" height="480" loading="lazy" alt="Four teammates in event lanyards stand together against a grey wall"></li>
+                <li><img src="/assets/img/home/techstars-dsm-3.jpg" width="734" height="480" loading="lazy" alt="Three participants talk with their hands mid-conversation at the startup weekend"></li>
+              </ul>
+            </li>
+          </ul>
         </li>
       </ul>
     </section>

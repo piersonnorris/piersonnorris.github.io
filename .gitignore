@@ -56,3 +56,15 @@
 !/tools/resume/resume.html
 !/tools/resume/build.ps1
 /docs/STOCK_UPDATE_PROMPT.md
+# Machine-local: this computer's Codex safety hooks (the app writes it)
+.codex/hooks.json
+# Machine-local: which Sable install this machine's hooks use (the app writes it at launch)
+.claude/sable_paths
+# Machine-local files the app writes; never synced (added by the app)
+.claude/cc_runtime.json
+.claude/session_start*.txt
+.claude/command_center_runs/
+.claude/*_log.txt
+.claude/*_state.json
+.claude/perm_log.jsonl
+.claude/ui_prefs.json
